@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://heeere.github.io/sitemap.xml

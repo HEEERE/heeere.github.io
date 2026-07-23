@@ -1,0 +1,45 @@
+@media (max-width: 1024px) {
+  .site-hud { grid-template-columns: 1fr 1fr; }
+  .site-hud nav { display: none; }
+  .system-status { top: 78px; }
+  .hub-copy { top: auto; right: 24px; bottom: 104px; left: 24px; width: auto; translate: none; }
+  .hub-copy h2 { max-width: 520px; font-size: clamp(52px, 11vw, 86px); }
+  .project-panel { width: min(680px, 72vw); }
+  .simple-hero { grid-template-columns: 1fr .48fr; }
+}
+
+@media (max-width: 720px) {
+  body { overflow: auto; }
+  .site-hud { min-height: 62px; padding: 0 14px; }
+  .brand span, .hud-actions [data-mode-toggle] { display: none; }
+  .hud-actions { gap: 7px; }
+  .system-status { top: 68px; left: 14px; }
+  .system-status small { display: none; }
+  .hub-copy { bottom: 110px; }
+  .hub-copy h2 { margin: 10px 0 14px; font-size: clamp(46px, 15vw, 68px); }
+  .hub-copy > p:not(.micro-label) { font-size: 15px; }
+  .project-nav { right: 12px; bottom: 12px; left: 12px; width: auto; translate: none; }
+  .project-nav button { min-width: 0; min-height: 54px; padding: 0 10px; flex: 1; }
+  .project-nav i { margin-right: 7px; }
+  .project-nav span { font-size: 9px; }
+  .interaction-prompt { display: none; }
+  .project-panel { top: auto; bottom: 0; width: 100%; height: min(78svh, 760px); padding: 76px 22px 92px; translate: 0 100%; border-top: 1px solid var(--line); border-left: 0; border-radius: 18px 18px 0 0; }
+  .project-panel.is-open { translate: 0; }
+  .panel-close { top: 28px; right: 22px; }
+  .identity-reveal h1 { font-size: clamp(70px, 23vw, 114px); }
+  .identity-actions { display: grid; }
+  .identity-actions button { width: min(300px, 84vw); }
+  .simple-shell { width: min(100% - 28px, 660px); }
+  .simple-hero { grid-template-columns: 1fr; min-height: auto; padding: 100px 0 80px; }
+  .simple-hero figure { width: min(280px, 70vw); grid-row: 1; }
+  .simple-hero h1 { font-size: clamp(78px, 27vw, 120px); }
+  .simple-section { grid-template-columns: 1fr; padding: 84px 0; gap: 30px; }
+  .stack-list { grid-template-columns: 1fr; }
+  .stack-list div { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .stack-list p { margin-top: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

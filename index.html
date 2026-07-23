@@ -1,297 +1,270 @@
 <!doctype html>
-<html lang="zh-Hans">
+<html lang="zh-Hans" data-mode="cinematic">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="纪喆元的个人网站，研究与实践方向包括 AI Agent、知识图谱、LLM-RAG 与 Agent 安全。">
-    <meta name="theme-color" content="#090b0d">
-    <title>纪喆元 | AI Agent Systems</title>
-    <link rel="icon" href="data:,">
-    <link rel="preload" href="assets/portrait.png" as="image">
-    <link rel="stylesheet" href="styles.css">
-    <script>document.documentElement.classList.add("js", "is-loading");</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090b0d" />
+    <meta name="description" content="纪喆元的 AI Agent 系统作品集：过程记忆、知识图谱、LLM / RAG 与多智能体安全。" />
+    <meta name="author" content="纪喆元" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="纪喆元 | AI Agent Memory Core" />
+    <meta property="og:description" content="探索 PMU-Graph、LLM4EKG 与多智能体污染防御实验平台。" />
+    <meta property="og:url" content="https://heeere.github.io/" />
+    <meta property="og:image" content="https://heeere.github.io/images/og-cover.png" />
+    <meta property="og:image:alt" content="纪喆元 AI Agent Memory Core 作品集封面" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="纪喆元 | AI Agent Memory Core" />
+    <meta name="twitter:description" content="探索 PMU-Graph、LLM4EKG 与多智能体污染防御实验平台。" />
+    <link rel="canonical" href="https://heeere.github.io/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>纪喆元 | AI Agent Memory Core</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "纪喆元",
+        "alternateName": "JI ZHEYUAN",
+        "url": "https://heeere.github.io/",
+        "email": "mailto:2401266324@qq.com",
+        "sameAs": ["https://github.com/HEEERE"],
+        "affiliation": {"@type": "CollegeOrUniversity", "name": "海南大学"},
+        "knowsAbout": ["AI Agent", "RAG", "知识图谱", "过程记忆", "多智能体安全"]
+      }
+    </script>
   </head>
   <body>
-    <div class="preloader" aria-hidden="true">
-      <div class="preloader__meta">
-        <span>JZY / AI SYSTEMS</span>
-        <span data-loader-counter>000</span>
+    <a class="skip-link" href="#accessible-content">跳到主要内容</a>
+
+    <canvas id="webgl" aria-hidden="true"></canvas>
+    <video id="fallback-video" class="fallback-video" muted playsinline preload="metadata" aria-hidden="true">
+      <source src="/video/intro-fallback.mp4" type="video/mp4" />
+    </video>
+
+    <div id="cinematic-layer" class="cinematic-layer" aria-label="电影式开场">
+      <div class="boot-noise" aria-hidden="true"></div>
+      <div class="boot-copy" aria-live="polite">
+        <p class="micro-label">JZY AGENT SYSTEM / BOOT SEQUENCE</p>
+        <ol class="boot-log">
+          <li>INITIALIZING MEMORY GRAPH</li>
+          <li>SECURITY LAYER ONLINE</li>
+          <li>LOADING PROCEDURAL CORE</li>
+        </ol>
+        <div class="load-meter">
+          <span data-load-label>LOADING ASSETS</span>
+          <strong data-load-progress>000</strong>
+          <i><b data-load-bar></b></i>
+        </div>
       </div>
-      <div class="preloader__name" aria-label="纪喆元">
-        <span>纪</span><span>喆</span><span>元</span>
+      <div class="identity-reveal" aria-labelledby="identity-title">
+        <p class="micro-label">IDENTITY RESOLVED / 00</p>
+        <h1 id="identity-title"><span>纪喆元</span><small>JI ZHEYUAN</small></h1>
+        <p>AI AGENT SYSTEMS <i>/</i> KNOWLEDGE GRAPH <i>/</i> AGENT SECURITY</p>
+        <div class="identity-actions">
+          <button class="primary-action" type="button" data-enter-system>ENTER SYSTEM</button>
+          <button type="button" data-simple-mode>VIEW SIMPLE MODE</button>
+          <button type="button" data-replay-intro>REPLAY INTRO</button>
+        </div>
       </div>
-      <div class="preloader__track"><span></span></div>
-      <div class="preloader__signals">
-        <span></span><span></span><span></span><span></span><span></span>
-      </div>
+      <button class="skip-intro" type="button" data-skip-intro>SKIP INTRO <span>↘</span></button>
     </div>
 
-    <div class="scroll-progress" aria-hidden="true"><span></span></div>
-
-    <header class="site-header" data-hero-reveal>
-      <a class="brand" href="#top" aria-label="纪喆元，返回首页">
-        <span>JZY</span>
-        <small>AI / 26</small>
+    <header id="site-hud" class="site-hud">
+      <a class="brand" href="#/hub" aria-label="返回 Agent Core">
+        <strong>JZY</strong><span>AGENT MEMORY CORE</span>
       </a>
-      <nav class="nav" aria-label="主导航">
-        <a href="#profile">简介</a>
-        <a href="#projects">项目</a>
-        <a href="#stack">技术</a>
-        <a href="#contact">联系</a>
+      <div class="system-status" aria-live="polite">
+        <i></i><span data-system-state>BOOT</span><small data-quality-label>QUALITY / AUTO</small>
+      </div>
+      <nav aria-label="主要导航">
+        <a href="#/profile">PROFILE</a>
+        <a href="#/stack">STACK</a>
+        <a href="#/contact">CONTACT</a>
+        <a href="https://github.com/HEEERE" target="_blank" rel="noreferrer">GITHUB ↗</a>
       </nav>
-      <a class="header-link" href="https://github.com/HEEERE" target="_blank" rel="noreferrer">GitHub ↗</a>
+      <div class="hud-actions">
+        <button type="button" data-mode-toggle>EXPLORER MODE</button>
+        <button type="button" data-sound-toggle aria-pressed="false">SOUND OFF</button>
+        <button type="button" data-help-toggle aria-expanded="false">HELP</button>
+      </div>
     </header>
 
-    <main id="top">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="graph-field" aria-hidden="true">
-          <span class="graph-line graph-line--one"></span>
-          <span class="graph-line graph-line--two"></span>
-          <span class="graph-line graph-line--three"></span>
-          <i class="graph-node graph-node--one"></i>
-          <i class="graph-node graph-node--two"></i>
-          <i class="graph-node graph-node--three"></i>
-          <i class="graph-node graph-node--four"></i>
-        </div>
-
-        <div class="hero__inner">
-          <div class="hero__copy">
-            <p class="eyebrow" data-hero-reveal>
-              <span class="status-dot"></span>
-              Hainan University · Data Science
-            </p>
-            <h1 id="hero-title" aria-label="纪喆元">
-              <span class="title-line"><span>纪喆元</span></span>
-            </h1>
-            <div class="hero__role" data-hero-reveal>
-              <span>AI Agent</span>
-              <span>Backend Systems</span>
-              <span>Knowledge Graph</span>
-            </div>
-            <p class="hero__lead" data-hero-reveal>
-              海南大学数据科学与大数据技术本科生，专注 AI Agent 后端系统、知识图谱与 LLM 应用工程化。把复杂流程抽象成可验证、可追踪、可落地的系统。
-            </p>
-            <div class="hero__actions" data-hero-reveal>
-              <a class="button button--primary" href="#projects">查看项目 <span>↘</span></a>
-              <a class="button button--line" href="mailto:2401266324@qq.com">发送邮件 <span>↗</span></a>
-            </div>
-          </div>
-
-          <figure class="portrait" data-portrait>
-            <div class="portrait__backdrop"></div>
-            <img src="assets/portrait.png" alt="纪喆元的个人照片">
-            <figcaption>
-              <span>JI ZHEYUAN</span>
-              <span>HAIKOU / CHINA</span>
-            </figcaption>
-            <div class="portrait__label">AI / AGENT</div>
-          </figure>
-        </div>
-
-        <div class="hero__footer" data-hero-reveal>
-          <span>本科 · 2023 — 至今</span>
-          <span>Python / C++ / FastAPI</span>
-          <span>Seeking AI Engineering Internship</span>
-        </div>
+    <main id="content-layer">
+      <section class="hub-copy" aria-labelledby="hub-title" data-hub-copy>
+        <p class="micro-label">00 / SYSTEM OVERVIEW</p>
+        <h2 id="hub-title">AI AGENT<br />MEMORY CORE</h2>
+        <p>过程记忆、可追溯知识与多智能体安全。</p>
+        <span>选择节点进入项目系统</span>
       </section>
 
-      <section class="signal-strip" aria-label="研究方向">
-        <div class="signal-strip__track">
-          <span>AI AGENT SYSTEMS</span><i></i>
-          <span>KNOWLEDGE GRAPH</span><i></i>
-          <span>LLM · RAG</span><i></i>
-          <span>AGENT SECURITY</span><i></i>
-          <span>AI AGENT SYSTEMS</span><i></i>
-          <span>KNOWLEDGE GRAPH</span><i></i>
-          <span>LLM · RAG</span><i></i>
-          <span>AGENT SECURITY</span><i></i>
-        </div>
-      </section>
+      <aside id="project-panel" class="project-panel" aria-live="polite" aria-hidden="true">
+        <button class="panel-close" type="button" data-panel-close aria-label="返回 Agent Core">ESC / BACK</button>
+        <div data-project-panel-content></div>
+      </aside>
 
-      <section class="profile section-band" id="profile">
-        <div class="section-shell">
-          <div class="section-index reveal">
-            <span>01</span>
-            <p>PROFILE / EDUCATION</p>
-          </div>
-          <div class="profile__statement reveal">
-            <p class="section-kicker">系统思维，工程落地</p>
-            <h2>关注 Agent 如何记忆、推理，以及在复杂环境中保持可控。</h2>
-          </div>
-          <div class="profile__detail reveal">
-            <p>
-              具备扎实的 Python 与 C++ 编程基础，主导多个 AI Agent 后端系统的架构设计与核心开发。熟悉接口开发、复杂业务流程抽象、异步事件系统和项目协作流程。
-            </p>
-            <dl>
-              <div>
-                <dt>学校</dt>
-                <dd>海南大学 · 211 / 双一流</dd>
-              </div>
-              <div>
-                <dt>专业</dt>
-                <dd>数据科学与大数据技术</dd>
-              </div>
-              <div>
-                <dt>学院</dt>
-                <dd>网络空间安全学院</dd>
-              </div>
-              <div>
-                <dt>时间</dt>
-                <dd>2023.09 — 至今</dd>
-              </div>
-            </dl>
-          </div>
-          <div class="course-line reveal">
-            <span>数据结构</span>
-            <span>分布式系统</span>
-            <span>机器学习</span>
-            <span>自然语言处理</span>
-            <span>知识图谱</span>
-            <span>数据仓库与挖掘</span>
-            <span>大数据安全</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="projects section-band" id="projects">
-        <div class="section-shell">
-          <div class="section-heading reveal">
-            <div class="section-index">
-              <span>02</span>
-              <p>SELECTED PROJECTS</p>
-            </div>
-            <h2>三个项目，一条从 Agent 记忆到安全防御的技术路径。</h2>
-          </div>
-
-          <article class="project project--lime">
-            <div class="project__rail">
-              <span class="project__number">01</span>
-              <span class="project__date">2026.01 — 至今</span>
-            </div>
-            <div class="project__main">
-              <p class="project__type">Procedural Memory / Skill Graph</p>
-              <h3>PMU-Graph</h3>
-              <p class="project__subtitle">面向 LLM Agent 的过程记忆与技能图谱系统</p>
-              <p class="project__description">
-                将 Agent 的操作轨迹抽象为可验证、可复用的 Procedural Memory Unit。负责整体系统设计与后端开发，构建生命周期管理、风险检测、证据校验、图谱导出和任务合成能力。
-              </p>
-            </div>
-            <div class="project__evidence">
-              <p>构建 Metadata Knowledge Graph 与 Scenario-Mediated Skill Graph 双图结构。</p>
-              <p>设计 Candidate、Verified、Active 状态机制和 Executor-Judge-Repair 验证流程。</p>
-              <p>结合 Docker Sandbox 隔离测试，降低不可靠过程记忆被复用的风险。</p>
-              <div class="tags">
-                <span>FastAPI</span><span>Pydantic v2</span><span>SQLAlchemy</span><span>Docker</span>
+      <section id="accessible-content" class="simple-content" aria-labelledby="simple-title">
+        <div class="simple-shell">
+          <header class="simple-hero">
+            <div>
+              <p class="micro-label">SIMPLE MODE / ACCESSIBLE PORTFOLIO</p>
+              <h1 id="simple-title">纪喆元<small>JI ZHEYUAN</small></h1>
+              <p>海南大学数据科学与大数据技术本科生，专注 AI Agent 后端系统、知识图谱、过程记忆、LLM / RAG 与多智能体安全。</p>
+              <div class="simple-actions">
+                <a href="mailto:2401266324@qq.com">发送邮件 ↗</a>
+                <a href="https://github.com/HEEERE" target="_blank" rel="noreferrer">GitHub ↗</a>
+                <button type="button" data-cinematic-mode>进入 3D 体验</button>
               </div>
             </div>
-          </article>
+            <figure aria-label="JZY 抽象身份标识">
+              <div class="identity-mark" aria-hidden="true">
+                <span>JZY</span>
+                <small>AGENT / 00</small>
+              </div>
+              <figcaption>JZY / HAIKOU / CHINA</figcaption>
+            </figure>
+          </header>
 
-          <article class="project project--cyan">
-            <div class="project__rail">
-              <span class="project__number">02</span>
-              <span class="project__date">2025.05 — 2026.01</span>
-            </div>
-            <div class="project__main">
-              <p class="project__type">LLM-RAG / Emergency Knowledge</p>
-              <h3>LLM4EKG</h3>
-              <p class="project__subtitle">面向应急预案的知识图谱增强生成框架</p>
-              <p class="project__description">
-                构建“文档解析—规则结构化—实体关系抽取—知识图谱构建—可追溯检索生成”的完整链路，解决安全关键长文本中的语义碎片化、实体漂移和依据不可追踪问题。
-              </p>
-            </div>
-            <div class="project__evidence">
-              <p>结合模式抽取与大模型抽取，识别实体、动作、触发条件和跨段关系。</p>
-              <p>使用 embedding 实体对齐与中心性锚定聚类，缓解实体漂移。</p>
-              <p>设计 Entity Index 与 Rule Index，并构建 Emergency-SOP Benchmark。</p>
-              <div class="tags">
-                <span>Neo4j</span><span>Embedding</span><span>RAG</span><span>Benchmark</span>
+          <section id="profile" class="simple-section">
+            <div class="section-index">01 / PROFILE</div>
+            <div>
+              <h2>关注 Agent 如何记忆、推理，以及在复杂环境中保持可控。</h2>
+              <p>具备扎实的 Python 与 C++ 编程基础，主导多个 AI Agent 后端系统的架构设计与核心开发。熟悉接口开发、复杂业务流程抽象、异步事件系统和项目协作流程。</p>
+              <dl>
+                <div><dt>学校</dt><dd>海南大学 · 211 / 双一流</dd></div>
+                <div><dt>专业</dt><dd>数据科学与大数据技术</dd></div>
+                <div><dt>学院</dt><dd>网络空间安全学院</dd></div>
+                <div><dt>学制</dt><dd>本科 · 全日制</dd></div>
+                <div><dt>地点</dt><dd>海口，中国</dd></div>
+                <div><dt>时间</dt><dd>2023.09 — 至今</dd></div>
+              </dl>
+              <div class="resume-meta">
+                <h3>主修课程</h3>
+                <p>数据结构 · 分布式系统 · 机器学习 · 自然语言处理 · 知识图谱 · 数据仓库与挖掘 · 大数据安全</p>
+                <h3>研究方向</h3>
+                <p>AI Agent · RAG · 知识图谱 · 过程记忆 · 多智能体协同与安全</p>
               </div>
             </div>
-          </article>
+          </section>
 
-          <article class="project project--coral">
-            <div class="project__rail">
-              <span class="project__number">03</span>
-              <span class="project__date">2026.04 — 至今</span>
+          <section id="skills" class="simple-section simple-skills">
+            <div class="section-index">02 / PROFESSIONAL SKILLS</div>
+            <div>
+              <h2>从模型能力到稳定系统，覆盖完整的工程链路。</h2>
+              <ol>
+                <li>熟悉 <strong>Python、C++</strong>，具备扎实的数据结构与面向对象编程基础，能够独立完成需求分析、系统设计、接口开发、测试与部署。</li>
+                <li>熟悉 <strong>FastAPI、Pydantic、SQLAlchemy、SQLite、WebSocket</strong> 等后端技术，具备异步任务、事件驱动架构和复杂业务状态流转开发经验。</li>
+                <li>熟悉 <strong>RAG 全链路设计与优化</strong>，掌握文档解析、文本切分、向量化、混合检索、Rerank、引用核查和 RAGAS 评测。</li>
+                <li>熟悉 <strong>AI Agent 基本原理与工程实现</strong>，掌握 Tool Calling、Memory、Planning、Reflection、多 Agent 协作与权限控制等机制。</li>
+                <li>熟悉<strong>知识图谱建模与检索增强生成</strong>，能够使用 Neo4j 进行实体关系建模、图谱构建、证据追踪与图谱推理。</li>
+                <li>熟悉 <strong>Claude Code、Codex</strong> 等 AI 编程及 Agent 工具，能够应用于代码理解、任务拆解、功能开发和问题修复。</li>
+                <li>具备 <strong>Prompt Injection、RAG 污染、工具滥用和记忆污染</strong>等 Agent 安全问题的研究与实验平台开发经验。</li>
+                <li>熟悉 <strong>Docker、Git、Linux</strong> 等开发工具，具备容器化部署、版本管理和团队协作能力。</li>
+              </ol>
             </div>
-            <div class="project__main">
-              <p class="project__type">Multi-Agent / Security</p>
-              <h3>污染防御实验平台</h3>
-              <p class="project__subtitle">多智能体污染传播检测与防御平台</p>
-              <p class="project__description">
-                模拟 Prompt Injection、RAG 上下文污染、工具调用污染和记忆污染在多 Agent 链路中的传播过程，负责系统架构与后端核心能力。
-              </p>
-            </div>
-            <div class="project__evidence">
-              <p>以 MessageBus 构建异步事件流，完成策略管理、事件追踪与 Trace 回放。</p>
-              <p>实现 L1 正则、L2 向量语义、L3 LLM 意图检测三级流水线。</p>
-              <p>设计 7 类 Guard Agent 与四级共识机制，动态阻断污染节点与危险工具。</p>
-              <div class="tags">
-                <span>WebSocket</span><span>ChromaDB</span><span>SQLite WAL</span><span>Agent Security</span>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
+          </section>
 
-      <section class="stack section-band" id="stack">
-        <div class="section-shell">
-          <div class="section-heading reveal">
-            <div class="section-index">
-              <span>03</span>
-              <p>TECHNICAL STACK</p>
+          <section id="projects" class="simple-section simple-projects">
+            <div class="section-index">03 / PROJECTS</div>
+            <div>
+              <h2>三个项目，一条从 Agent 记忆到安全防御的技术路径。</h2>
+              <article style="--accent: #b8ff3d">
+                <span>01 / 2026.01 — 至今</span><h3>PMU-Graph</h3>
+                <p class="project-subtitle">面向 LLM Agent 的过程记忆与技能图谱系统</p>
+                <p>面向长期运行的 LLM Agent，将任务执行轨迹抽象为可验证、可复用的过程记忆单元 PMU，通过生命周期管理、风险检测和技能图谱组织，提高经验复用能力与行为可控性。</p>
+                <ul>
+                  <li><strong>过程记忆生命周期管理：</strong>设计 Candidate、Verified、Active 等状态及状态流转规则，覆盖过程记忆生成、验证、激活、复用与淘汰的完整流程。</li>
+                  <li><strong>双图谱架构：</strong>构建 Metadata Knowledge Graph 与 Scenario-Mediated Skill Graph，支持来源审计、证据追踪、风险关联及“环境状态—技能—目标状态”的任务推理。</li>
+                  <li><strong>后端接口开发：</strong>完成 PMU 管理、任务执行、风险检测、图谱导出、状态流转和任务合成等核心接口设计与实现。</li>
+                  <li><strong>验证闭环：</strong>设计 Executor–Judge–Repair 验证流程，形成过程记忆的验证与修复闭环。</li>
+                  <li><strong>隔离测试：</strong>结合 Docker Sandbox 隔离测试，降低不可靠过程记忆被复用的风险。</li>
+                </ul>
+                <p class="tag-line">FastAPI · Pydantic v2 · SQLAlchemy · Python · Docker · Knowledge Graph</p>
+                <a href="#/project/pmu">在 3D 系统中查看 ↗</a>
+              </article>
+              <article style="--accent: #44d9e6">
+                <span>02 / 2025.05 — 2026.01</span><h3>LLM4EKG</h3>
+                <p class="project-subtitle">面向应急预案的知识图谱增强生成框架</p>
+                <p>面向安全关键型应急预案文本，构建“文档解析—规则抽取—实体对齐—知识图谱—可追溯问答”的完整处理链路，解决长文本语义碎片化、实体漂移和答案依据不可追踪等问题。</p>
+                <ul>
+                  <li><strong>双通道信息抽取：</strong>结合正则、模式匹配与大模型抽取，识别组织实体、触发条件、处置动作及跨段落隐式关系。</li>
+                  <li><strong>实体对齐优化：</strong>使用 Embedding 相似度与中心性锚定聚类方法，缓解不同段落中同一实体表述不一致的问题。</li>
+                  <li><strong>图谱增强问答：</strong>基于 Neo4j 构建应急知识图谱，将实体关系检索与原文证据召回相结合，提高回答完整性与可解释性。</li>
+                  <li><strong>索引与评测：</strong>设计 Entity Index、Rule Index 与 Emergency-SOP Benchmark。</li>
+                </ul>
+                <p class="tag-line">Python · Neo4j · LLM · RAG · Embedding · Knowledge Graph</p>
+                <a href="#/project/ekg">在 3D 系统中查看 ↗</a>
+              </article>
+              <article style="--accent: #ff6f61">
+                <span>03 / 2026.04 — 至今</span><h3>多智能体污染防御策略实验平台</h3>
+                <p class="project-subtitle">多智能体污染传播检测与防御平台</p>
+                <p>面向 LLM Agent 安全，以模拟数据演示 Prompt Injection、RAG 上下文污染、工具调用污染和记忆污染在多智能体链路中的传播，并提供检测、防御、阻断与实验评估能力。</p>
+                <ul>
+                  <li><strong>异步事件流架构：</strong>以 MessageBus 为核心构建多 Agent 事件流，支持任务执行、检测事件、决策结果及污染传播过程的实时追踪。</li>
+                  <li><strong>三级检测流水线：</strong>实现 L1 正则检测、L2 向量语义检测和 L3 LLM 意图检测，并通过 Fail-Fast 机制减少无效检测开销。</li>
+                  <li><strong>多 Agent 共识决策：</strong>设计 7 类 Guard Agent，以及 Veto、Quorum、Weighted Vote、Fallback 四类共识机制，聚合多源检测证据。</li>
+                  <li><strong>动态污染阻断：</strong>通过 ContainmentRegistry 对污染节点、危险工具、传播边和记忆键进行动态隔离与阻断。</li>
+                  <li><strong>实验平台工程化：</strong>支持 JSON/YAML 策略配置、策略校验与编译、异步运行、WebSocket 实时推送、Benchmark、Trace Replay 和 Docker 部署。</li>
+                </ul>
+                <p class="tag-line">FastAPI · Pydantic v2 · SQLite WAL · ChromaDB · WebSocket · Docker</p>
+                <a href="#/project/security">在 3D 系统中查看 ↗</a>
+              </article>
             </div>
-            <h2>从模型能力到稳定后端，中间的工程细节同样重要。</h2>
-          </div>
-          <div class="stack-grid">
-            <div class="stack-group reveal">
-              <span class="stack-group__index">A</span>
-              <h3>Backend</h3>
-              <p>Python · C++ · FastAPI · Pydantic v2 · SQLAlchemy · SQLite WAL · WebSocket</p>
-            </div>
-            <div class="stack-group reveal">
-              <span class="stack-group__index">B</span>
-              <h3>AI / Data</h3>
-              <p>LLM Agent · RAG · Embedding · sentence-transformers · ChromaDB · NLP</p>
-            </div>
-            <div class="stack-group reveal">
-              <span class="stack-group__index">C</span>
-              <h3>Graph / Infra</h3>
-              <p>Neo4j · Knowledge Graph · Docker Sandbox · Trace Replay · Benchmark</p>
-            </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <section class="contact section-band" id="contact">
-        <div class="section-shell">
-          <div class="section-index reveal">
-            <span>04</span>
-            <p>CONTACT / CONNECT</p>
-          </div>
-          <div class="contact__main">
-            <p class="section-kicker reveal">Open to AI engineering internships</p>
-            <h2 class="contact__title">
-              <span class="title-line reveal"><span>一起构建更可靠的</span></span>
-              <span class="title-line reveal"><span>AI Agent 系统。</span></span>
-            </h2>
-            <div class="contact__links reveal">
-              <a href="mailto:2401266324@qq.com">2401266324@qq.com <span>↗</span></a>
-              <a href="tel:+8618002079719">180 0207 9719 <span>↗</span></a>
-              <a href="https://github.com/HEEERE" target="_blank" rel="noreferrer">github.com/HEEERE <span>↗</span></a>
+          <section id="stack" class="simple-section">
+            <div class="section-index">04 / STACK</div>
+            <div class="stack-list">
+              <div><b>A / Backend</b><p>Python · C++ · FastAPI · Pydantic v2 · SQLAlchemy · SQLite WAL · WebSocket</p></div>
+              <div><b>B / AI & Data</b><p>LLM Agent · Tool Calling · Memory · Planning · Reflection · Multi-Agent · RAG · Embedding · Hybrid Retrieval · Rerank · RAGAS · ChromaDB · NLP</p></div>
+              <div><b>C / Graph & Infra</b><p>Neo4j · Knowledge Graph · Docker Sandbox · Trace Replay · Benchmark · Git · Linux · Claude Code · Codex</p></div>
             </div>
-          </div>
-          <footer>
-            <span>纪喆元 · 2026</span>
-            <span>Haikou, China</span>
-            <span>Built with GSAP</span>
-          </footer>
+          </section>
+
+          <section id="summary" class="simple-section simple-summary">
+            <div class="section-index">05 / SUMMARY</div>
+            <div>
+              <h2>持续研究，也持续把研究落成可运行的系统。</h2>
+              <p>具备扎实的 Python 编程、后端开发和系统架构基础，持续研究 AI Agent、RAG、知识图谱、过程记忆与多智能体安全方向。能够独立完成从需求分析、架构设计、接口开发到实验评估和部署的完整流程，具有较强的自主学习、问题分析和工程落地能力。</p>
+            </div>
+          </section>
+
+          <section id="contact" class="simple-section simple-contact">
+            <div class="section-index">06 / CONTACT</div>
+            <div>
+              <p class="micro-label">OPEN TO AI ENGINEERING INTERNSHIPS</p>
+              <h2>一起构建更可靠的<br />AI Agent 系统。</h2>
+              <a href="mailto:2401266324@qq.com">2401266324@qq.com ↗</a>
+              <a href="https://github.com/HEEERE" target="_blank" rel="noreferrer">github.com/HEEERE ↗</a>
+            </div>
+          </section>
         </div>
       </section>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/ScrollTrigger.min.js"></script>
-    <script src="script.js"></script>
+    <nav id="project-nav" class="project-nav" aria-label="项目节点">
+      <button type="button" data-project="pmu"><i>01</i><span>PMU-GRAPH</span></button>
+      <button type="button" data-project="ekg"><i>02</i><span>LLM4EKG</span></button>
+      <button type="button" data-project="security"><i>03</i><span>SECURITY</span></button>
+    </nav>
+
+    <div id="interaction-prompt" class="interaction-prompt" aria-live="polite">SELECT A NODE / 1 · 2 · 3</div>
+
+    <dialog id="help-dialog" class="help-dialog">
+      <button type="button" data-help-close aria-label="关闭帮助">CLOSE ×</button>
+      <h2>CONTROL MAP</h2>
+      <dl>
+        <div><dt>1 / 2 / 3</dt><dd>选择项目节点</dd></div>
+        <div><dt>ENTER / E</dt><dd>激活当前节点</dd></div>
+        <div><dt>ESC</dt><dd>返回 Agent Core</dd></div>
+        <div><dt>W A S D</dt><dd>Explorer Mode 移动</dd></div>
+        <div><dt>SHIFT</dt><dd>轻微加速</dd></div>
+        <div><dt>M</dt><dd>打开 / 关闭项目地图</dd></div>
+        <div><dt>H</dt><dd>显示本帮助</dd></div>
+      </dl>
+    </dialog>
+
+    <noscript>
+      <style>.cinematic-layer,.site-hud,.project-nav,.interaction-prompt,#webgl{display:none!important}.simple-content{display:block!important}</style>
+    </noscript>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

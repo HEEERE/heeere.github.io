@@ -1,0 +1,17 @@
+import {defineConfig} from 'vite';
+
+export default defineConfig({
+  base: '/',
+  build: {
+    target: 'es2022',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'three-vendor': ['three'],
+          'motion-vendor': ['gsap'],
+        },
+      },
+    },
+  },
+});

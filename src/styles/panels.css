@@ -1,0 +1,32 @@
+.project-panel {
+  position: fixed;
+  z-index: 24;
+  top: 0;
+  right: 0;
+  width: min(600px, 46vw);
+  height: 100%;
+  padding: 104px clamp(26px, 4vw, 64px) 120px;
+  overflow-y: auto;
+  translate: 100% 0;
+  border-left: 1px solid var(--line);
+  background: linear-gradient(115deg, rgba(9,11,13,.92), rgba(16,20,23,.98));
+  backdrop-filter: blur(22px);
+  transition: translate .7s cubic-bezier(.16,1,.3,1);
+}
+.project-panel.is-open { translate: 0; }
+.panel-close { position: absolute; top: 90px; right: 34px; border: 0; background: transparent; color: var(--muted); font: 700 10px/1 var(--mono); }
+.project-panel .project-code { display: flex; justify-content: space-between; padding-bottom: 14px; border-bottom: 2px solid var(--project-color); color: var(--project-color); font: 700 11px/1 var(--mono); }
+.project-panel h2 { margin: 26px 0 10px; font-size: clamp(48px, 6vw, 78px); line-height: .88; letter-spacing: -.055em; }
+.project-panel[data-project="security"] h2 { font-size: clamp(44px, 4.4vw, 60px); line-height: .98; letter-spacing: -.04em; }
+.project-panel .panel-subtitle { margin-bottom: 28px; color: #d4d9d5; font-size: 18px; font-weight: 720; }
+.project-panel .panel-description { color: #afb7b0; font-size: 16px; line-height: 1.75; }
+.project-panel h3 { margin: 34px 0 12px; color: var(--project-color); font: 700 11px/1 var(--mono); letter-spacing: .1em; }
+.project-panel ul { margin: 0; padding: 0; list-style: none; }
+.project-panel li { position: relative; padding: 12px 0 12px 18px; border-top: 1px solid var(--line); color: #c4cbc5; font-size: 14px; line-height: 1.55; }
+.project-panel li::before { position: absolute; top: 20px; left: 0; width: 5px; height: 5px; content: ""; background: var(--project-color); }
+.flow-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.flow-list span { padding: 8px 10px; border: 1px solid color-mix(in srgb, var(--project-color), transparent 55%); color: var(--project-color); font: 700 10px/1 var(--mono); }
+.scene-action { width: 100%; min-height: 48px; margin-top: 30px; border: 1px solid var(--project-color); background: transparent; color: var(--project-color); font: 800 11px/1 var(--mono); }
+.scene-action:hover { background: var(--project-color); color: var(--bg); }
+.simulation-note { margin-top: 12px; color: var(--muted); font: 700 9px/1.5 var(--mono); }
+.scene-trace { min-height: 24px; margin-top: 18px; color: var(--project-color); font: 700 10px/1.6 var(--mono); }
