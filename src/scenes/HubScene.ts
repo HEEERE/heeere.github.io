@@ -17,14 +17,15 @@ export class HubScene implements SceneController {
 
   public constructor(private readonly cameraRig: CameraRig, quality: QualityManager) {
     this.group.name = 'HUB_SCENE';
-    this.graph = new KnowledgeGraph(quality.profile.graphNodes);
+    this.graph = new KnowledgeGraph(quality.profile.graphNodes, quality.profile.roamers);
     this.particles = new ParticleField(quality.profile.particleCount);
     this.projectNodes = [
       new ProjectNode('pmu', '#b8ff3d', [-3.4, -1.25, -0.6]),
       new ProjectNode('ekg', '#44d9e6', [1.8, 3.05, -1.6]),
       new ProjectNode('security', '#ff6f61', [6.1, -1.1, -1.1]),
     ];
-    this.group.add(this.graph, this.particles, this.core, ...this.projectNodes, new AmbientLight('#53615b', 0.72), new HemisphereLight('#a9c9c3', '#080a0b', 1.1));
+    this.projectNodes.forEach((node) => node.setDetail(quality.profile.detail));
+    this.group.add(this.graph, this.particles, this.core, ...this.projectNodes, new AmbientLight('#53615b', 0.9), new HemisphereLight('#a9c9c3', '#080a0b', 1.35));
   }
 
   public setReducedMotion(value: boolean): void { this.reducedMotion = value; }
@@ -33,7 +34,7 @@ export class HubScene implements SceneController {
     if (this.graph.nodes.count !== profile.graphNodes) {
       this.group.remove(this.graph);
       this.graph.disposeGraph();
-      this.graph = new KnowledgeGraph(profile.graphNodes);
+      this.graph = new KnowledgeGraph(profile.graphNodes, profile.roamers);
       this.group.add(this.graph);
     }
     if (this.particles.geometry.getAttribute('position').count !== profile.particleCount) {
@@ -42,21 +43,22 @@ export class HubScene implements SceneController {
       this.particles = new ParticleField(profile.particleCount);
       this.group.add(this.particles);
     }
+    this.projectNodes.forEach((node) => node.setDetail(profile.detail));
   }
 
   public async enter(): Promise<void> {
     this.group.visible = true;
     this.projectNodes.forEach((node) => node.setActive(false));
-    this.core.setEnergy(0.78);
+    this.core.setEnergy(0.9);
     await this.cameraRig.home();
   }
 
-  public async exit(): Promise<void> { this.core.setEnergy(1.4); }
+  public async exit(): Promise<void> { this.core.setEnergy(1.7); }
 
   public update(delta: number, elapsed: number): void {
     if (!this.group.visible) return;
     this.core.update(delta, elapsed, this.reducedMotion);
-    this.graph.update(elapsed, this.reducedMotion);
+    this.graph.update(delta, elapsed, this.reducedMotion);
     this.particles.update(elapsed, this.reducedMotion);
     this.projectNodes.forEach((node) => node.update(delta, elapsed, this.reducedMotion));
   }

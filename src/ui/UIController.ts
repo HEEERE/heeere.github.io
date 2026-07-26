@@ -44,13 +44,13 @@ export class UIController {
     this.hud.classList.add('is-visible');
     this.nav.classList.add('is-visible');
     this.prompt.classList.add('is-visible');
-    this.hubCopy.hidden = false;
+    this.hubCopy.classList.add('is-visible');
     this.stateLabel.textContent = 'HUB / READY';
     this.nav.querySelectorAll('button').forEach((button) => button.classList.remove('is-active'));
   }
 
   public showProject(id: ProjectId): void {
-    this.hubCopy.hidden = true;
+    this.hubCopy.classList.remove('is-visible');
     this.stateLabel.textContent = `${id.toUpperCase()} / INSPECT`;
     this.nav.querySelectorAll<HTMLButtonElement>('button').forEach((button) => button.classList.toggle('is-active', button.dataset.project === id));
   }

@@ -1,6 +1,7 @@
 :root {
   color-scheme: dark;
   font-family: Inter, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  --sans: Inter, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
   --bg: #090b0d;
   --surface: #101417;
   --line: rgba(243, 245, 242, 0.15);
@@ -26,6 +27,16 @@ body {
   color: var(--text);
 }
 
+body::before {
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: radial-gradient(ellipse at 50% 48%, transparent 55%, rgba(3, 4, 5, 0.5) 100%);
+}
+html[data-mode="simple"] body::before { display: none; }
+
 body::after {
   position: fixed;
   z-index: 1000;
@@ -37,7 +48,7 @@ body::after {
   mix-blend-mode: soft-light;
 }
 
-button, a { color: inherit; font: inherit; }
+button, a { color: inherit; font: inherit; transition: color .2s ease, background-color .2s ease, border-color .2s ease, opacity .2s ease; }
 button { cursor: pointer; }
 a { text-decoration: none; }
 img { display: block; max-width: 100%; }
@@ -151,6 +162,14 @@ html[data-webgl="unavailable"] [data-cinematic-mode] { display: none; }
   width: min(430px, 36vw);
   translate: 0 -50%;
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .7s ease, visibility 0s .7s;
+}
+.hub-copy.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .7s ease .15s, visibility 0s;
 }
 .hub-copy h2 { margin: 16px 0 22px; font-size: clamp(52px, 6.7vw, 112px); font-weight: 900; line-height: .84; letter-spacing: -.07em; }
 .hub-copy > p:not(.micro-label) { max-width: 360px; color: #d2d6d2; font-size: clamp(16px, 1.5vw, 22px); }

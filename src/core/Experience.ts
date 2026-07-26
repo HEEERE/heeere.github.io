@@ -57,6 +57,7 @@ export class Experience {
     this.pmu = new PMUScene(this.cameraRig, this.bus, trace);
     this.ekg = new EKGScene(this.cameraRig, this.bus, trace);
     this.security = new SecurityScene(this.cameraRig, this.bus, trace);
+    [this.pmu, this.ekg, this.security].forEach((scene) => scene.setReducedMotion(this.accessibility.reducedMotion.matches));
     this.renderer.scene.add(this.hub.group, this.pmu.group, this.ekg.group, this.security.group);
 
     this.machine.register('intro', this.introScene);
@@ -84,7 +85,7 @@ export class Experience {
     this.visibility = new VisibilitySystem((hidden) => this.renderer.setPaused(hidden));
     this.intro = new IntroOverlay(
       () => { void this.introScene.dive(); },
-      () => { this.hub.core.setEnergy(2.1); void this.introScene.reveal(); },
+      () => { this.hub.core.setEnergy(2.6); void this.introScene.reveal(); },
       () => this.ui.showIdentity(),
       () => { void this.enterHub(); },
     );
@@ -104,20 +105,21 @@ export class Experience {
 
   public async start(): Promise<void> {
     this.intro.updateProgress(0);
-    const assetsReady = this.assets.preload().catch(() => this.intro.updateProgress(1));
+    const initialHash = location.hash;
+    const simple = initialHash === '#/simple' || ['#/profile', '#/stack', '#/contact'].includes(initialHash);
+    const project = this.projectFromHash(initialHash);
+    const instant = this.accessibility.reducedMotion.matches || simple || Boolean(project) || sessionStorage.getItem('jzy-intro-complete') === '1';
+    const assetsReady = this.assets.preload(instant).catch(() => this.intro.updateProgress(1));
     this.renderer.clock.start();
     this.frame = requestAnimationFrame(this.tick);
     await assetsReady;
 
-    const initialHash = location.hash;
-    const simple = initialHash === '#/simple' || ['#/profile', '#/stack', '#/contact'].includes(initialHash);
     if (this.accessibility.reducedMotion.matches || simple) {
       this.intro.hideImmediately();
       await this.enterHub(false);
       if (simple) this.openSimpleRoute(initialHash);
       return;
     }
-    const project = this.projectFromHash(initialHash);
     if (project) {
       this.intro.hideImmediately();
       await this.enterHub(false);
@@ -212,7 +214,11 @@ export class Experience {
     this.cameraRig.setPointer((event.clientX / innerWidth) * 2 - 1, -((event.clientY / innerHeight) * 2 - 1));
   };
   private readonly resize = (): void => this.renderer.resize(innerWidth, innerHeight);
-  private readonly motionChange = (event: MediaQueryListEvent): void => { this.cameraRig.setReducedMotion(event.matches); this.hub.setReducedMotion(event.matches); };
+  private readonly motionChange = (event: MediaQueryListEvent): void => {
+    this.cameraRig.setReducedMotion(event.matches);
+    this.hub.setReducedMotion(event.matches);
+    [this.pmu, this.ekg, this.security].forEach((scene) => scene.setReducedMotion(event.matches));
+  };
 
   public dispose(): void {
     this.disposed = true;

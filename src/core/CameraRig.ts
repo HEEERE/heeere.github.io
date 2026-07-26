@@ -8,6 +8,8 @@ export class CameraRig {
   public readonly camera = new PerspectiveCamera(48, 1, 0.1, 120);
   private readonly base = HOME.clone();
   private readonly lookAt = LOOK_HOME.clone();
+  private readonly currentLook = LOOK_HOME.clone();
+  private readonly targetLook = new Vector3();
   private readonly pointer = new Vector2();
   private readonly velocity = new Vector3();
   private readonly targetPosition = HOME.clone();
@@ -49,12 +51,17 @@ export class CameraRig {
       this.base.z = Math.max(5, Math.min(18, this.base.z));
     }
     this.targetPosition.copy(this.base);
+    this.targetLook.copy(this.lookAt);
     if (!this.reducedMotion) {
       this.targetPosition.x += this.pointer.x * 0.2;
       this.targetPosition.y += this.pointer.y * 0.13;
+      this.targetLook.x += this.pointer.x * 0.45;
+      this.targetLook.y += this.pointer.y * 0.3;
     }
     this.camera.position.lerp(this.targetPosition, 1 - Math.exp(-delta * 6));
-    this.camera.lookAt(this.lookAt);
+    if (this.reducedMotion) this.currentLook.copy(this.targetLook);
+    else this.currentLook.lerp(this.targetLook, 1 - Math.exp(-delta * 5));
+    this.camera.lookAt(this.currentLook);
   }
 
   public resize(width: number, height: number): void {

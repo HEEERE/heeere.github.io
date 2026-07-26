@@ -8,6 +8,8 @@ export type QualityProfile = {
   graphNodes: number;
   bloomStrength: number;
   antialias: boolean;
+  roamers: number;
+  detail: boolean;
 };
 
 export class QualityManager {
@@ -29,9 +31,9 @@ export class QualityManager {
 
   private forLevel(level: QualityLevel): QualityProfile {
     const mobile = matchMedia('(max-width: 720px)').matches;
-    if (level === 'low') return {level, pixelRatio: Math.min(devicePixelRatio, mobile ? 1 : 1.15), particleCount: 180, graphNodes: 42, bloomStrength: 0.32, antialias: false};
-    if (level === 'medium') return {level, pixelRatio: Math.min(devicePixelRatio, mobile ? 1.15 : 1.35), particleCount: 420, graphNodes: 76, bloomStrength: 0.48, antialias: false};
-    return {level, pixelRatio: Math.min(devicePixelRatio, 1.5), particleCount: 720, graphNodes: 112, bloomStrength: 0.58, antialias: true};
+    if (level === 'low') return {level, pixelRatio: Math.min(devicePixelRatio, mobile ? 1 : 1.15), particleCount: 180, graphNodes: 42, bloomStrength: 0.35, antialias: false, roamers: 0, detail: false};
+    if (level === 'medium') return {level, pixelRatio: Math.min(devicePixelRatio, mobile ? 1.15 : 1.35), particleCount: 420, graphNodes: 76, bloomStrength: 0.5, antialias: false, roamers: 2, detail: true};
+    return {level, pixelRatio: Math.min(devicePixelRatio, 1.5), particleCount: 720, graphNodes: 112, bloomStrength: 0.62, antialias: true, roamers: 4, detail: true};
   }
 
   public sample(delta: number): void {

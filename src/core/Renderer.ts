@@ -1,4 +1,4 @@
-import {Clock, Color, Scene, WebGLRenderer} from 'three';
+import {ACESFilmicToneMapping, Clock, Color, FogExp2, Scene, WebGLRenderer} from 'three';
 import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import {OutputPass} from 'three/examples/jsm/postprocessing/OutputPass.js';
 import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -17,14 +17,16 @@ export class Renderer {
 
   public constructor(canvas: HTMLCanvasElement, private readonly cameraRig: CameraRig, private readonly quality: QualityManager) {
     this.scene.background = new Color('#090b0d');
-    this.scene.fog = null;
+    this.scene.fog = new FogExp2('#090b0d', 0.022);
     this.webgl = new WebGLRenderer({canvas, antialias: quality.profile.antialias, powerPreference: 'high-performance', alpha: false});
     this.webgl.setPixelRatio(quality.profile.pixelRatio);
     this.webgl.outputColorSpace = 'srgb';
+    this.webgl.toneMapping = ACESFilmicToneMapping;
+    this.webgl.toneMappingExposure = 1.1;
     this.webgl.shadowMap.enabled = false;
     this.composer = new EffectComposer(this.webgl);
     this.composer.addPass(new RenderPass(this.scene, cameraRig.camera));
-    this.bloom = new UnrealBloomPass(new Vector2(innerWidth, innerHeight), quality.profile.bloomStrength, 0.58, 0.78);
+    this.bloom = new UnrealBloomPass(new Vector2(innerWidth, innerHeight), quality.profile.bloomStrength, 0.5, 0.85);
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
   }

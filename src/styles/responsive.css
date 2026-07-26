@@ -18,7 +18,8 @@
   .hub-copy { bottom: 110px; }
   .hub-copy h2 { margin: 10px 0 14px; font-size: clamp(46px, 15vw, 68px); }
   .hub-copy > p:not(.micro-label) { font-size: 15px; }
-  .project-nav { right: 12px; bottom: 12px; left: 12px; width: auto; translate: none; }
+  .project-nav { right: 12px; bottom: 12px; left: 12px; width: auto; translate: 0 14px; }
+  .project-nav.is-visible { translate: 0 0; }
   .project-nav button { min-width: 0; min-height: 54px; padding: 0 10px; flex: 1; }
   .project-nav i { margin-right: 7px; }
   .project-nav span { font-size: 9px; }

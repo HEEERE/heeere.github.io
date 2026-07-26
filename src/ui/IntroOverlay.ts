@@ -3,6 +3,7 @@ import gsap from 'gsap';
 export class IntroOverlay {
   private readonly layer = document.querySelector<HTMLElement>('#cinematic-layer')!;
   private readonly identity = document.querySelector<HTMLElement>('.identity-reveal')!;
+  private readonly identityParts = Array.from(this.identity.children);
   private readonly progress = document.querySelector<HTMLElement>('[data-load-progress]')!;
   private readonly bar = document.querySelector<HTMLElement>('[data-load-bar]')!;
   private readonly logs = Array.from(document.querySelectorAll<HTMLElement>('.boot-log li'));
@@ -43,6 +44,7 @@ export class IntroOverlay {
     this.layer.hidden = false;
     this.identity.classList.remove('is-visible');
     gsap.set(this.identity, {autoAlpha: 0, y: 24});
+    gsap.set(this.identityParts, {autoAlpha: 0, y: 26});
     gsap.set('.boot-copy', {autoAlpha: 1});
     if (this.ready) this.startTimeline();
   }
@@ -58,8 +60,8 @@ export class IntroOverlay {
       .call(this.onCore, [], 3.4)
       .to(this.layer, {backgroundColor: 'rgba(5,6,7,0.56)', duration: 1.2}, 3.5)
       .call(this.onIdentity, [], 5.35)
-      .set(this.identity, {visibility: 'visible'}, 5.4)
-      .to(this.identity, {autoAlpha: 1, y: 0, duration: 1.1, ease: 'power4.out'}, 5.4)
+      .set(this.identity, {visibility: 'visible', autoAlpha: 1, y: 0}, 5.4)
+      .to(this.identityParts, {autoAlpha: 1, y: 0, duration: 0.9, ease: 'power4.out', stagger: 0.09}, 5.45)
       .add(() => {
         this.identity.classList.add('is-visible');
         sessionStorage.setItem('jzy-intro-complete', '1');
