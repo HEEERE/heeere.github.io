@@ -39,7 +39,7 @@ export class HubScene implements SceneController {
       security: new SignalPulse('#ff6f61'),
     };
     this.projectNodes.forEach((node) => node.setQuality(quality.profile));
-    this.group.add(this.graph, this.particles, this.core, ...this.projectNodes, ...Object.values(this.corePulses), new AmbientLight('#53615b', 0.9), new HemisphereLight('#a9c9c3', '#080a0b', 1.35));
+    this.group.add(this.graph, this.particles, this.core, ...this.projectNodes, ...Object.values(this.corePulses), new AmbientLight('#53615b', 0.55), new HemisphereLight('#94aaa4', '#080a0b', 0.86));
   }
 
   public setReducedMotion(value: boolean): void { this.reducedMotion = value; }
@@ -102,7 +102,7 @@ export class HubScene implements SceneController {
   private applyEnvironmentState(pulseCore: boolean): void {
     const focus = this.selected ?? this.hovered;
     this.projectNodes.forEach((node) => {
-      const presence = !focus ? 1 : node.projectId === focus ? 1 : this.selected ? 0.25 : 0.45;
+      const presence = !focus ? 1 : node.projectId === focus ? 1 : this.selected ? 0 : 0.3;
       node.setPresence(presence);
     });
     if (!focus) {

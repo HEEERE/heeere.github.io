@@ -74,7 +74,7 @@ export class Renderer {
     this.webgl.setPixelRatio(quality.profile.pixelRatio);
     this.webgl.outputColorSpace = 'srgb';
     this.webgl.toneMapping = ACESFilmicToneMapping;
-    this.webgl.toneMappingExposure = 0.96;
+    this.webgl.toneMappingExposure = 0.9;
     this.webgl.shadowMap.enabled = false;
 
     const pmrem = new PMREMGenerator(this.webgl);
@@ -86,7 +86,7 @@ export class Renderer {
     this.bloomComposer = new EffectComposer(this.webgl, bloomTarget);
     this.bloomComposer.renderToScreen = false;
     this.bloomComposer.addPass(new RenderPass(this.scene, cameraRig.camera));
-    this.bloom = new UnrealBloomPass(new Vector2(innerWidth, innerHeight), quality.profile.bloomStrength, 0.32, 0.9);
+    this.bloom = new UnrealBloomPass(new Vector2(innerWidth, innerHeight), quality.profile.bloomStrength, 0.22, 0.94);
     this.bloomComposer.addPass(this.bloom);
 
     this.finalComposer = new EffectComposer(this.webgl);
@@ -116,7 +116,7 @@ export class Renderer {
     this.webgl.setPixelRatio(profile.pixelRatio);
     this.bloom.strength = profile.bloomStrength;
     this.gtao.enabled = profile.ao;
-    this.composite.uniforms.bloomMix!.value = profile.selectiveBloom ? 0.58 : 0;
+    this.composite.uniforms.bloomMix!.value = profile.selectiveBloom ? 0.34 : 0;
     this.resize(innerWidth, innerHeight);
   }
 

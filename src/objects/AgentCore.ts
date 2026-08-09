@@ -1,5 +1,4 @@
 import {
-  AdditiveBlending,
   Color,
   DoubleSide,
   Euler,
@@ -50,11 +49,11 @@ const CORE_FRAGMENT = /* glsl */ `
 
   void main() {
     float fresnel = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vView)), 0.0, 1.0), 2.7);
-    float bands = 0.5 + 0.5 * sin(vObjectPosition.y * 14.0 + sin(vObjectPosition.x * 6.0 + uTime) * 1.8 - uTime * 1.45);
-    float veins = smoothstep(0.72, 1.0, sin((vObjectPosition.x + vObjectPosition.z) * 18.0 - uTime * 1.2) * 0.5 + 0.5);
-    vec3 body = mix(uColor * 0.22, uRim * (0.42 + bands * 0.32), fresnel * 0.72 + veins * 0.16);
-    vec3 color = body * (0.48 + uEnergy * 0.48) + uRim * fresnel * 0.82;
-    gl_FragColor = vec4(color, 0.92);
+    float bands = 0.5 + 0.5 * sin(vObjectPosition.y * 11.0 + sin(vObjectPosition.x * 4.0 + uTime * 0.6) * 1.2 - uTime * 0.72);
+    float veins = smoothstep(0.8, 1.0, sin((vObjectPosition.x + vObjectPosition.z) * 13.0 - uTime * 0.62) * 0.5 + 0.5);
+    vec3 body = mix(uColor, uRim * (0.24 + bands * 0.12), fresnel * 0.48 + veins * 0.06);
+    vec3 color = body * (0.72 + uEnergy * 0.14) + uRim * fresnel * 0.18;
+    gl_FragColor = vec4(color, 0.74);
   }
 `;
 
@@ -65,9 +64,9 @@ export class AgentCore extends Group {
   private readonly coreMaterial: ShaderMaterial;
   private readonly shockwave: Mesh;
   private readonly rings: Mesh[] = [];
-  private readonly baseRim = new Color('#b8ff3d');
-  private readonly accent = new Color('#b8ff3d');
-  private readonly currentRim = new Color('#b8ff3d');
+  private readonly baseRim = new Color('#86cbb9');
+  private readonly accent = new Color('#86cbb9');
+  private readonly currentRim = new Color('#86cbb9');
   private readonly light: PointLight;
   private readonly rest = new Map<Object3D, RestTransform>();
   private model: Group | null = null;
@@ -85,49 +84,46 @@ export class AgentCore extends Group {
       uniforms: {
         uTime: {value: 0},
         uEnergy: {value: this.energy},
-        uColor: {value: new Color('#061311')},
-        uRim: {value: new Color('#b8ff3d')},
+        uColor: {value: new Color('#14342f')},
+        uRim: {value: new Color('#86cbb9')},
       },
       vertexShader: CORE_VERTEX,
       fragmentShader: CORE_FRAGMENT,
       transparent: true,
       depthWrite: false,
-      blending: AdditiveBlending,
     });
-    this.coreMaterial.userData.bloom = true;
+    this.coreMaterial.userData.bloom = false;
     const fluidCore = new Mesh(new SphereGeometry(0.72, 56, 40), this.coreMaterial);
     fluidCore.name = 'RUNTIME_FLUID_CORE';
     this.add(fluidCore);
 
     this.fallbackCage = new Mesh(
       new IcosahedronGeometry(1.12, 3),
-      new MeshStandardMaterial({color: '#0d1c18', emissive: '#4c7d26', emissiveIntensity: 0.9, roughness: 0.28, metalness: 0.58, wireframe: true, transparent: true, opacity: 0.72}),
+      new MeshStandardMaterial({color: '#13211e', emissive: '#07100e', emissiveIntensity: 0.35, roughness: 0.24, metalness: 0.42, transparent: true, opacity: 0.52}),
     );
     this.fallbackCage.name = 'CORE_PROCEDURAL_FALLBACK';
     this.add(this.fallbackCage);
 
-    const haloColors = ['#b8ff3d', '#44d9e6', '#ff6f61'];
-    haloColors.forEach((color, index) => {
-      const ring = new Mesh(
-        index === 0 ? new TorusGeometry(1.52, 0.013, 8, 112) : new RingGeometry(1.7 + index * 0.24, 1.71 + index * 0.24, 112),
-        new MeshBasicMaterial({color, transparent: true, opacity: 0.38 - index * 0.07, side: DoubleSide, blending: AdditiveBlending, depthWrite: false}),
-      );
-      ring.name = `RUNTIME_HALO_${index}`;
-      ring.rotation.set(index * 0.72, 0.4 + index * 0.62, index * 0.41);
-      this.rings.push(ring);
-      this.add(ring);
-    });
+    const halo = new Mesh(
+      new TorusGeometry(1.54, 0.008, 6, 112),
+      new MeshBasicMaterial({color: '#718b84', transparent: true, opacity: 0.02, depthWrite: false}),
+    );
+    halo.name = 'RUNTIME_HALO_0';
+    halo.rotation.set(1.04, 0.28, 0.14);
+    this.rings.push(halo);
+    this.add(halo);
 
     this.shockwave = new Mesh(
       new RingGeometry(0.96, 1, 72),
-      new MeshBasicMaterial({color: '#b8ff3d', transparent: true, opacity: 0, side: DoubleSide, blending: AdditiveBlending, depthWrite: false}),
+      new MeshBasicMaterial({color: '#86cbb9', transparent: true, opacity: 0, side: DoubleSide, depthWrite: false}),
     );
     this.shockwave.rotation.x = -Math.PI * 0.5 * 0.35;
     this.shockwave.visible = false;
     this.add(this.shockwave);
-    this.light = new PointLight('#b8ff3d', 3.8, 9, 2);
+    this.light = new PointLight('#86cbb9', 1.1, 7, 2);
     this.add(this.light);
     this.position.set(1.8, 0, 0);
+    this.scale.setScalar(0.88);
   }
 
   public attachModel(source: Group, profile: QualityProfile): void {
@@ -149,7 +145,7 @@ export class AgentCore extends Group {
 
   public setQuality(profile: QualityProfile): void {
     if (this.model) configureModelQuality(this.model, profile);
-    this.rings[2]!.visible = profile.modelDetail >= 1;
+    this.rings[0]!.visible = profile.modelDetail >= 1;
     this.fallbackCage.visible = !this.model;
   }
 
@@ -168,7 +164,7 @@ export class AgentCore extends Group {
     this.coreMaterial.uniforms.uTime!.value = elapsed;
     (this.coreMaterial.uniforms.uRim!.value as Color).copy(this.currentRim);
     this.light.color.copy(this.currentRim);
-    this.light.intensity += ((3.4 + this.energy * 0.9) - this.light.intensity) * Math.min(1, delta * 3);
+    this.light.intensity += ((0.9 + this.energy * 0.28) - this.light.intensity) * Math.min(1, delta * 3);
 
     if (this.model) this.updateModel(delta, elapsed, reducedMotion, motionScale);
     if (!reducedMotion) {
@@ -183,7 +179,7 @@ export class AgentCore extends Group {
       this.shockwave.visible = true;
       this.shockwave.scale.setScalar(1 + this.waveTime * 2.4);
       (this.shockwave.material as MeshBasicMaterial).color.copy(this.currentRim);
-      (this.shockwave.material as MeshBasicMaterial).opacity = 0.34 * (1 - this.waveTime) ** 2 * Math.min(1, this.energy);
+      (this.shockwave.material as MeshBasicMaterial).opacity = 0.075 * (1 - this.waveTime) ** 2 * Math.min(1, this.energy);
     } else {
       this.shockwave.visible = false;
     }
@@ -211,7 +207,7 @@ export class AgentCore extends Group {
           if (!(object instanceof Mesh)) return;
           const material = object.material as MeshStandardMaterial;
           if (material.userData.baseEmissiveIntensity === undefined) material.userData.baseEmissiveIntensity = material.emissiveIntensity;
-          material.emissiveIntensity += (((material.userData.baseEmissiveIntensity as number) + (active ? 3.2 * this.accentStrength : 0)) - material.emissiveIntensity) * Math.min(1, delta * 5);
+          material.emissiveIntensity += (((material.userData.baseEmissiveIntensity as number) + (active ? 1.1 * this.accentStrength : 0)) - material.emissiveIntensity) * Math.min(1, delta * 5);
         });
       });
     });

@@ -4,9 +4,7 @@ import {
   BufferGeometry,
   BoxGeometry,
   Color,
-  ConeGeometry,
   CylinderGeometry,
-  DodecahedronGeometry,
   DoubleSide,
   Group,
   IcosahedronGeometry,
@@ -16,9 +14,9 @@ import {
   Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
-  OctahedronGeometry,
   Points,
   RingGeometry,
+  SphereGeometry,
   Vector3,
 } from 'three';
 import type {CameraRig} from '../core/CameraRig';
@@ -69,14 +67,15 @@ export abstract class BaseProjectScene implements SceneController {
         new MeshPhysicalMaterial({
           color: this.inactiveColor,
           emissive: this.inactiveColor,
-          emissiveIntensity: 0.55,
-          roughness: this.id === 'security' ? 0.34 : 0.18,
-          metalness: this.id === 'security' ? 0.42 : 0.08,
-          transmission: this.id === 'security' ? 0 : this.id === 'ekg' ? 0.34 : 0.22,
-          thickness: 0.7,
-          iridescence: this.id === 'security' ? 0 : 0.24,
+          emissiveIntensity: 0.24,
+          roughness: this.id === 'security' ? 0.3 : 0.16,
+          metalness: this.id === 'security' ? 0.28 : 0.04,
+          clearcoat: 0.72,
+          transmission: this.id === 'security' ? 0 : this.id === 'ekg' ? 0.2 : 0.15,
+          thickness: 0.42,
+          iridescence: 0.04,
           transparent: true,
-          opacity: 0.78,
+          opacity: 0.56,
         }),
       );
       node.position.copy(position);
@@ -93,11 +92,11 @@ export abstract class BaseProjectScene implements SceneController {
     });
     const geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(new Float32Array(lineArray), 3));
-    this.connections = new LineSegments(geometry, new LineBasicMaterial({color: '#34413c', transparent: true, opacity: 0.52}));
+    this.connections = new LineSegments(geometry, new LineBasicMaterial({color: '#34413c', transparent: true, opacity: 0.22}));
     this.group.add(this.connections);
     this.pulse = new SignalPulse(this.project.color);
     this.group.add(this.pulse);
-    this.outerRing = new Mesh(new RingGeometry(5.7, 5.71, 128), new MeshBasicMaterial({color: this.project.color, transparent: true, opacity: 0.12, side: DoubleSide}));
+    this.outerRing = new Mesh(new RingGeometry(5.7, 5.705, 128), new MeshBasicMaterial({color: this.project.color, transparent: true, opacity: 0.025, side: DoubleSide}));
     this.outerRing.rotation.x = Math.PI / 2;
     this.group.add(this.outerRing);
   }
@@ -108,27 +107,27 @@ export abstract class BaseProjectScene implements SceneController {
     this.transmissionEnabled = profile.transmission;
     this.nodes.forEach((node) => {
       const material = node.material as MeshPhysicalMaterial;
-      material.transmission = this.transmissionEnabled ? this.id === 'ekg' ? 0.34 : this.id === 'pmu' ? 0.22 : 0 : 0;
-      material.iridescence = this.transmissionEnabled && this.id !== 'security' ? 0.24 : 0;
+      material.transmission = this.transmissionEnabled ? this.id === 'ekg' ? 0.2 : this.id === 'pmu' ? 0.15 : 0 : 0;
+      material.iridescence = this.transmissionEnabled && this.id !== 'security' ? 0.04 : 0;
       material.needsUpdate = true;
     });
   }
 
   private createNodeGeometry(index: number): BufferGeometry {
-    if (this.id === 'pmu') return index % 3 === 0 ? new IcosahedronGeometry(0.42, 2) : new ConeGeometry(0.28, 0.72, 6, 2);
+    if (this.id === 'pmu') return index % 3 === 0 ? new IcosahedronGeometry(0.3, 2) : new SphereGeometry(0.26 + index % 2 * 0.035, 24, 16);
     if (this.id === 'ekg') {
-      if (index < 2) return new BoxGeometry(0.78, 0.54, 0.09, 2, 2, 1);
-      return index % 2 ? new OctahedronGeometry(0.4, 1) : new CylinderGeometry(0.34, 0.42, 0.62, 6, 2);
+      if (index < 2) return new BoxGeometry(0.62, 0.44, 0.055, 2, 2, 1);
+      return index % 2 ? new SphereGeometry(0.27, 24, 16) : new CylinderGeometry(0.25, 0.29, 0.48, 16, 2);
     }
-    return index % 2 ? new CylinderGeometry(0.29, 0.38, 0.18, 6) : new DodecahedronGeometry(0.4, 1);
+    return index % 2 ? new CylinderGeometry(0.27, 0.3, 0.12, 24) : new SphereGeometry(0.28, 24, 16);
   }
 
   private makePositions(count: number, layout: Layout): Vector3[] {
-    if (layout === 'line') return Array.from({length: count}, (_, index) => new Vector3((index - (count - 1) / 2) * 1.65, Math.sin(index * 1.4) * 0.7, 0));
-    if (layout === 'archive') return Array.from({length: count}, (_, index) => new Vector3((index % 3 - 1) * 2.3, (1 - Math.floor(index / 3)) * 1.6, (index % 2) * -0.6));
+    if (layout === 'line') return Array.from({length: count}, (_, index) => new Vector3((index - (count - 1) / 2) * 1.3, Math.sin(index * 1.4) * 0.38, 0));
+    if (layout === 'archive') return Array.from({length: count}, (_, index) => new Vector3((index % 3 - 1) * 1.8, (1 - Math.floor(index / 3)) * 1.25, (index % 2) * -0.32));
     return Array.from({length: count}, (_, index) => {
       const angle = (index / count) * Math.PI * 2 - Math.PI / 2;
-      return new Vector3(Math.cos(angle) * 3.8, Math.sin(angle) * 2.5, 0);
+      return new Vector3(Math.cos(angle) * 3.2, Math.sin(angle) * 2.08, 0);
     });
   }
 
@@ -153,7 +152,7 @@ export abstract class BaseProjectScene implements SceneController {
           node.scale.setScalar(0.01);
           material.opacity = 0.18;
           gsap.to(node.scale, {x: 1, y: 1, z: 1, duration: 0.62, ease: 'back.out(1.35)', delay: 0.14 + index * 0.1});
-          gsap.to(material, {opacity: 0.8, duration: 0.38, delay: 0.14 + index * 0.1});
+          gsap.to(material, {opacity: 0.56, duration: 0.38, delay: 0.14 + index * 0.1});
         } else if (this.id === 'ekg') {
           node.position.x = base.x - 2.2 - index * 0.12;
           node.position.y = base.y + (index % 2 ? -0.24 : 0.24);
@@ -161,12 +160,12 @@ export abstract class BaseProjectScene implements SceneController {
           material.opacity = 0.08;
           gsap.to(node.position, {x: base.x, y: base.y, duration: 0.86, ease: 'power3.out', delay: 0.12 + index * 0.055});
           gsap.to(node.scale, {x: 1, y: 1, z: 1, duration: 0.72, ease: 'power2.out', delay: 0.12 + index * 0.055});
-          gsap.to(material, {opacity: 0.8, duration: 0.5, delay: 0.12 + index * 0.055});
+          gsap.to(material, {opacity: 0.56, duration: 0.5, delay: 0.12 + index * 0.055});
         } else {
           node.scale.setScalar(0.34);
           material.opacity = 0.06;
           gsap.to(node.scale, {x: 1, y: 1, z: 1, duration: 0.42, ease: 'power4.out', delay: 0.16 + index * 0.045});
-          gsap.to(material, {opacity: 0.8, duration: 0.24, delay: 0.16 + index * 0.045});
+          gsap.to(material, {opacity: 0.56, duration: 0.24, delay: 0.16 + index * 0.045});
         }
       });
       this.lineReveal.value = 0;

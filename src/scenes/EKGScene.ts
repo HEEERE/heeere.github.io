@@ -1,27 +1,28 @@
-import {AdditiveBlending, BoxGeometry, Group, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, OctahedronGeometry, TorusGeometry} from 'three';
+import {BoxGeometry, Group, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, OctahedronGeometry, TorusGeometry} from 'three';
 import type {CameraRig} from '../core/CameraRig';
 import type {EventBus} from '../core/EventBus';
 import type {AppEvents} from '../core/types';
 import {BaseProjectScene} from './BaseProjectScene';
 
-const DOC_SPOTS: ReadonlyArray<[number, number, number]> = [[-3.2, 1.4, -3.2], [2.8, -0.9, -3.6], [-1.2, -1.6, -2.9], [3.6, 1.8, -4]];
+const DOC_SPOTS: ReadonlyArray<[number, number, number]> = [[-3, 1.25, -3.4], [2.7, -1.05, -3.8]];
 
 export class EKGScene extends BaseProjectScene {
   private readonly docs: Mesh[] = [];
   private readonly evidence = new Group();
 
   public constructor(cameraRig: CameraRig, bus: EventBus<AppEvents>, private readonly trace: (message: string) => void) {
-    super('ekg', cameraRig, bus, 'archive');
-    const geometry = new BoxGeometry(0.72, 1.02, 0.055, 2, 3, 1);
-    const material = new MeshPhysicalMaterial({color: '#174f53', emissive: '#0c3538', emissiveIntensity: 0.8, roughness: 0.22, transmission: 0.22, thickness: 0.24, transparent: true, opacity: 0.28});
+    super('ekg', cameraRig, bus, 'line');
+    const geometry = new BoxGeometry(0.58, 0.82, 0.035, 2, 3, 1);
+    const material = new MeshPhysicalMaterial({color: '#163a3d', emissive: '#08191b', emissiveIntensity: 0.3, roughness: 0.18, clearcoat: 0.65, transmission: 0.16, thickness: 0.18, transparent: true, opacity: 0.18});
+    material.userData.bloom = false;
     DOC_SPOTS.forEach((spot) => {
       const doc = new Mesh(geometry, material);
       doc.position.set(...spot);
       this.docs.push(doc);
       this.group.add(doc);
     });
-    const beaconRing = new Mesh(new TorusGeometry(0.55, 0.018, 7, 72), new MeshBasicMaterial({color: '#44d9e6', transparent: true, opacity: 0.5, blending: AdditiveBlending, depthWrite: false}));
-    const beaconCore = new Mesh(new OctahedronGeometry(0.2, 2), new MeshBasicMaterial({color: '#d8ffff', transparent: true, opacity: 0.72, blending: AdditiveBlending, depthWrite: false}));
+    const beaconRing = new Mesh(new TorusGeometry(0.42, 0.009, 6, 72), new MeshBasicMaterial({color: '#6faeb2', transparent: true, opacity: 0.24, depthWrite: false}));
+    const beaconCore = new Mesh(new OctahedronGeometry(0.12, 2), new MeshBasicMaterial({color: '#9cc9ca', transparent: true, opacity: 0.48, depthWrite: false}));
     beaconRing.name = 'EVIDENCE_BEACON_RING';
     beaconCore.name = 'EVIDENCE_BEACON_CORE';
     this.evidence.position.set(3.9, -1.65, -0.2);

@@ -78,7 +78,7 @@ export class KnowledgeGraph extends LineSegments {
     }
     const geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(new Float32Array(linePositions), 3));
-    const backgroundMaterial = new LineBasicMaterial({color: '#35504d', transparent: true, opacity: 0.26, blending: AdditiveBlending});
+    const backgroundMaterial = new LineBasicMaterial({color: '#2b3b38', transparent: true, opacity: 0.14});
     backgroundMaterial.userData.bloom = false;
     super(geometry, backgroundMaterial);
     this.positions = positions;
@@ -89,7 +89,7 @@ export class KnowledgeGraph extends LineSegments {
       this.adjacency.set(to, [...(this.adjacency.get(to) ?? []), from]);
     });
 
-    const nodeMaterial = new MeshBasicMaterial({color: '#ffffff', vertexColors: true, transparent: true, opacity: 0.72});
+    const nodeMaterial = new MeshBasicMaterial({color: '#ffffff', vertexColors: true, transparent: true, opacity: 0.48});
     nodeMaterial.onBeforeCompile = (shader) => {
       shader.uniforms.uTime = this.time;
       shader.vertexShader = shader.vertexShader
@@ -118,7 +118,7 @@ export class KnowledgeGraph extends LineSegments {
     this.add(this.nodes);
 
     const conceptPositions = positions.filter((_, index) => index % 11 === 0);
-    const conceptMaterial = new MeshBasicMaterial({color: '#a9ece1', transparent: true, opacity: 0.42, wireframe: true});
+    const conceptMaterial = new MeshBasicMaterial({color: '#7fa39d', transparent: true, opacity: 0.18, wireframe: true});
     const conceptGeometry = new IcosahedronGeometry(0.15, 1);
     this.conceptNodes = new InstancedMesh(conceptGeometry, conceptMaterial, conceptPositions.length);
     conceptPositions.forEach((position, index) => {
@@ -129,7 +129,7 @@ export class KnowledgeGraph extends LineSegments {
     this.add(this.conceptNodes);
 
     const roamerGeometry = new SphereGeometry(0.045, 8, 8);
-    this.roamerMaterial = new MeshBasicMaterial({color: this.baseNodeColor.clone().multiplyScalar(1.8), transparent: true, opacity: 0.9, blending: AdditiveBlending, depthWrite: false});
+    this.roamerMaterial = new MeshBasicMaterial({color: this.baseNodeColor, transparent: true, opacity: 0.48, depthWrite: false});
     this.roamerMaterial.userData.bloom = true;
     for (let index = 0; index < roamers; index++) {
       const from = Math.floor(this.random() * count);
@@ -142,7 +142,7 @@ export class KnowledgeGraph extends LineSegments {
     const focusGeometry = new SphereGeometry(0.072, 10, 10);
     this.focusPulseMaterial = new MeshBasicMaterial({color: this.focusColor, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false});
     this.focusPulseMaterial.userData.bloom = true;
-    this.conduitMaterial = new MeshBasicMaterial({color: this.focusColor, transparent: true, opacity: 0, blending: AdditiveBlending, depthWrite: false});
+    this.conduitMaterial = new MeshBasicMaterial({color: this.focusColor, transparent: true, opacity: 0, depthWrite: false});
     this.conduitMaterial.userData.bloom = true;
     for (let index = 0; index < 6; index++) {
       const mesh = new Mesh(focusGeometry, this.focusPulseMaterial);
@@ -197,7 +197,7 @@ export class KnowledgeGraph extends LineSegments {
       pulse.progress = 0;
       pulse.delay = index * 0.13;
       pulse.mesh.visible = false;
-      if (index < 4) {
+      if (index < 2) {
         const conduit = new Mesh(new TubeGeometry(pulse.curve, this.curveSegments * 2, 0.004 + index % 2 * 0.001, 5, false), this.conduitMaterial);
         conduit.name = `FOCUS_CONDUIT_${index}`;
         this.focusConduits.push(conduit);
@@ -210,11 +210,11 @@ export class KnowledgeGraph extends LineSegments {
     const focusLerp = 1 - Math.exp(-delta * (this.focusTarget > this.focusAmount ? 8 : 3.2));
     this.focusAmount += (this.focusTarget - this.focusAmount) * focusLerp;
     const lineMaterial = this.material as LineBasicMaterial;
-    const baseLineOpacity = this.focusMode === 'selected' && this.focusTarget > 0 ? 0.13 : 0.32;
-    const lineTarget = baseLineOpacity * (1 - this.focusAmount * (this.focusMode === 'selected' ? 0.08 : 0.45));
+    const baseLineOpacity = this.focusMode === 'selected' && this.focusTarget > 0 ? 0.055 : 0.16;
+    const lineTarget = baseLineOpacity * (1 - this.focusAmount * (this.focusMode === 'selected' ? 0.12 : 0.48));
     lineMaterial.opacity += (lineTarget - lineMaterial.opacity) * Math.min(1, delta * 5);
-    this.conduitMaterial.opacity += ((this.focusTarget > 0 ? 0.18 : 0) * this.focusAmount - this.conduitMaterial.opacity) * Math.min(1, delta * 5);
-    (this.conceptNodes.material as MeshBasicMaterial).opacity += ((0.42 - this.focusAmount * 0.2) - (this.conceptNodes.material as MeshBasicMaterial).opacity) * Math.min(1, delta * 4);
+    this.conduitMaterial.opacity += ((this.focusTarget > 0 ? 0.045 : 0) * this.focusAmount - this.conduitMaterial.opacity) * Math.min(1, delta * 5);
+    (this.conceptNodes.material as MeshBasicMaterial).opacity += ((0.18 - this.focusAmount * 0.08) - (this.conceptNodes.material as MeshBasicMaterial).opacity) * Math.min(1, delta * 4);
 
     const dimScale = this.focusMode === 'selected' ? 0.18 : 0.42;
     this.currentColors.forEach((current, index) => {
@@ -229,7 +229,7 @@ export class KnowledgeGraph extends LineSegments {
     if (this.nodes.instanceColor) this.nodes.instanceColor.needsUpdate = true;
 
     this.roamerMaterial.color.lerp(this.focusAmount > 0.05 ? this.focusColor : this.baseNodeColor.clone().multiplyScalar(1.8), Math.min(1, delta * 4));
-    this.roamerMaterial.opacity += ((0.9 - this.focusAmount * 0.55) - this.roamerMaterial.opacity) * Math.min(1, delta * 4);
+    this.roamerMaterial.opacity += ((0.48 - this.focusAmount * 0.3) - this.roamerMaterial.opacity) * Math.min(1, delta * 4);
     this.updateFocusPulses(delta, reducedMotion);
     this.updateIdlePulse(delta, idle && this.focusAmount < 0.02 && !reducedMotion);
     this.idleSignal.update(delta);
@@ -246,7 +246,7 @@ export class KnowledgeGraph extends LineSegments {
       }
       roamer.mesh.position.lerpVectors(this.positions[roamer.from]!, this.positions[roamer.to]!, easeInOut(roamer.t));
     });
-    if (this.focusAmount < 0.02) lineMaterial.opacity += (0.32 + Math.sin(elapsed * 0.35) * 0.06 - lineMaterial.opacity) * Math.min(1, delta * 2);
+    if (this.focusAmount < 0.02) lineMaterial.opacity += (0.16 + Math.sin(elapsed * 0.35) * 0.025 - lineMaterial.opacity) * Math.min(1, delta * 2);
   }
 
   private updateFocusPulses(delta: number, reducedMotion: boolean): void {

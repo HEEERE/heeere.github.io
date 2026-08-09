@@ -61,11 +61,11 @@ const glow = (color: string): MeshBasicMaterial => {
   const material = new MeshBasicMaterial({
     color: new Color(color).multiplyScalar(1.08),
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.42,
     blending: AdditiveBlending,
     depthWrite: false,
   });
-  material.userData.bloom = true;
+  material.userData.bloom = false;
   return material;
 };
 
@@ -211,7 +211,17 @@ abstract class BaseProjectVisual implements ProjectVisual {
 
   public setHovered(value: boolean): void { this.hovered = value; }
   public setActive(value: boolean): void { this.active = value; }
-  public setPresence(value: number): void { this.targetPresence = value; }
+  public setPresence(value: number): void {
+    this.targetPresence = value;
+    const visibleRoot = this.model ?? this.fallback;
+    if (value === 0) {
+      this.presence = 0;
+      setModelPresence(visibleRoot, 0);
+      visibleRoot.visible = false;
+    } else {
+      visibleRoot.visible = true;
+    }
+  }
   public setQuality(profile: QualityProfile): void {
     this.profile = profile;
     configureModelQuality(this.fallback, profile);
@@ -224,11 +234,12 @@ abstract class BaseProjectVisual implements ProjectVisual {
     this.presence += (this.targetPresence - this.presence) * (1 - Math.exp(-delta * (this.targetPresence > this.presence ? 8 : 4)));
     const visibleRoot = this.model ?? this.fallback;
     setModelPresence(visibleRoot, this.presence);
+    visibleRoot.visible = this.presence > 0.015;
     this.response.setActive(target > 0);
     this.response.update(delta, elapsed, reducedMotion);
     if (reducedMotion) return;
-    visibleRoot.rotation.y += delta * (0.13 + this.activity * 0.3) * motionScale;
-    visibleRoot.rotation.x = Math.sin(elapsed * 0.42 + this.root.id) * 0.045;
+    visibleRoot.rotation.y += delta * (0.045 + this.activity * 0.085) * motionScale;
+    visibleRoot.rotation.x = Math.sin(elapsed * 0.32 + this.root.id) * 0.025;
     this.animate(delta, elapsed, motionScale);
   }
 

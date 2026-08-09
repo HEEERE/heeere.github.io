@@ -18,9 +18,9 @@ export type QualityProfile = {
 };
 
 export const qualityProfileForLevel = (level: QualityLevel, mobile: boolean, pixelRatio: number): QualityProfile => {
-  if (level === 'low') return {level, pixelRatio: Math.min(pixelRatio, mobile ? 1 : 1.15), particleCount: 180, graphNodes: 42, bloomStrength: 0.3, antialias: false, roamers: 0, detail: false, modelDetail: 0, ao: false, selectiveBloom: false, transmission: false, curveSegments: 5};
-  if (level === 'medium') return {level, pixelRatio: Math.min(pixelRatio, mobile ? 1.15 : 1.35), particleCount: 420, graphNodes: 76, bloomStrength: 0.34, antialias: false, roamers: 2, detail: true, modelDetail: 1, ao: true, selectiveBloom: true, transmission: true, curveSegments: 8};
-  return {level, pixelRatio: Math.min(pixelRatio, 1.5), particleCount: 720, graphNodes: 112, bloomStrength: 0.42, antialias: true, roamers: 4, detail: true, modelDetail: 2, ao: true, selectiveBloom: true, transmission: true, curveSegments: 12};
+  if (level === 'low') return {level, pixelRatio: Math.min(pixelRatio, mobile ? 1 : 1.15), particleCount: 140, graphNodes: 36, bloomStrength: 0.14, antialias: false, roamers: 0, detail: false, modelDetail: 0, ao: false, selectiveBloom: false, transmission: false, curveSegments: 5};
+  if (level === 'medium') return {level, pixelRatio: Math.min(pixelRatio, mobile ? 1.15 : 1.35), particleCount: 300, graphNodes: 62, bloomStrength: 0.18, antialias: false, roamers: 1, detail: true, modelDetail: 1, ao: true, selectiveBloom: true, transmission: true, curveSegments: 8};
+  return {level, pixelRatio: Math.min(pixelRatio, 1.5), particleCount: 460, graphNodes: 82, bloomStrength: 0.23, antialias: true, roamers: 2, detail: true, modelDetail: 2, ao: true, selectiveBloom: true, transmission: true, curveSegments: 12};
 };
 
 export class QualityManager {

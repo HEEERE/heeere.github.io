@@ -1,5 +1,4 @@
 import {
-  AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
   CatmullRomCurve3,
@@ -28,7 +27,7 @@ export class PMUScene extends BaseProjectScene {
     geometry.setAttribute('position', new BufferAttribute(new Float32Array([-5.5, -1.7, 0, 5.82, -1.7, 0]), 3));
     this.conveyor = new LineSegments(geometry, new LineDashedMaterial({color: '#b8ff3d', transparent: true, opacity: 0.25, dashSize: 0.18, gapSize: 0.14}));
     this.conveyor.computeLineDistances();
-    const stemMaterial = new MeshBasicMaterial({color: '#39551c', transparent: true, opacity: 0.11, blending: AdditiveBlending, depthWrite: false});
+    const stemMaterial = new MeshBasicMaterial({color: '#506647', transparent: true, opacity: 0.16, depthWrite: false});
     stemMaterial.userData.bloom = false;
     const branchPaths = [
       [new Vector3(-4.8, -2.2, -0.5), new Vector3(-3.2, -1.6, -0.2), new Vector3(-1.8, -0.4, 0.1), new Vector3(-0.8, 1.1, 0)],
@@ -39,7 +38,9 @@ export class PMUScene extends BaseProjectScene {
       const stem = new Mesh(new TubeGeometry(new CatmullRomCurve3(points), 38, 0.009 + index * 0.002, 6, false), stemMaterial);
       stem.name = `CULTIVATION_STEM_${index}`;
       this.cultivation.add(stem);
-      const bud = new Mesh(new IcosahedronGeometry(0.12 + index * 0.025, 1), new MeshBasicMaterial({color: '#b8ff3d', transparent: true, opacity: 0.52, blending: AdditiveBlending, depthWrite: false}));
+      const budMaterial = new MeshBasicMaterial({color: '#9abe68', transparent: true, opacity: 0.38, depthWrite: false});
+      budMaterial.userData.bloom = false;
+      const bud = new Mesh(new IcosahedronGeometry(0.09 + index * 0.018, 1), budMaterial);
       bud.name = `CULTIVATION_BUD_${index}`;
       bud.position.copy(points.at(-1)!);
       this.buds.push(bud);
