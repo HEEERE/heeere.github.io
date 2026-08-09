@@ -32,6 +32,8 @@ const FRAGMENT = /* glsl */ `
 `;
 
 export class ParticleField extends Points {
+  private time = 0;
+
   public constructor(count: number) {
     const random = mulberry32(20260718);
     const positions = new Float32Array(count * 3);
@@ -59,10 +61,11 @@ export class ParticleField extends Points {
     this.frustumCulled = false;
   }
 
-  public update(elapsed: number, reducedMotion: boolean): void {
+  public update(delta: number, reducedMotion: boolean, speedScale = 1): void {
     if (reducedMotion) return;
-    (this.material as ShaderMaterial).uniforms.uTime!.value = elapsed;
-    this.rotation.y = elapsed * 0.004;
+    this.time += delta * speedScale;
+    (this.material as ShaderMaterial).uniforms.uTime!.value = this.time;
+    this.rotation.y += delta * 0.004 * speedScale;
   }
 
   public disposeField(): void { this.geometry.dispose(); (this.material as ShaderMaterial).dispose(); }

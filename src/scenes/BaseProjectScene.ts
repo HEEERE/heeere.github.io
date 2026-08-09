@@ -31,10 +31,13 @@ export abstract class BaseProjectScene implements SceneController {
   protected readonly nodes: Mesh[] = [];
   protected readonly pulse: SignalPulse;
   protected readonly outerRing: Mesh;
+  protected readonly connections: LineSegments;
   protected reducedMotion = false;
   protected simulationTime = -1;
   private lastStep = -1;
   private readonly paths: Array<[Vector3, Vector3]> = [];
+  private readonly basePositions: Vector3[] = [];
+  private readonly lineReveal = {value: 1};
   private readonly activeColor: Color;
   private readonly inactiveColor: Color;
 
@@ -51,6 +54,7 @@ export abstract class BaseProjectScene implements SceneController {
     this.group.visible = false;
     this.group.position.set(0, 0, -3);
     const positions = this.makePositions(this.project.flow.length, layout);
+    this.basePositions.push(...positions.map((position) => position.clone()));
     const lineArray: number[] = [];
     positions.forEach((position, index) => {
       const node = new Mesh(
@@ -68,7 +72,8 @@ export abstract class BaseProjectScene implements SceneController {
     });
     const geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(new Float32Array(lineArray), 3));
-    this.group.add(new LineSegments(geometry, new LineBasicMaterial({color: '#34413c', transparent: true, opacity: 0.52})));
+    this.connections = new LineSegments(geometry, new LineBasicMaterial({color: '#34413c', transparent: true, opacity: 0.52}));
+    this.group.add(this.connections);
     this.pulse = new SignalPulse(this.project.color);
     this.group.add(this.pulse);
     this.outerRing = new Mesh(new RingGeometry(5.7, 5.71, 128), new MeshBasicMaterial({color: this.project.color, transparent: true, opacity: 0.12, side: DoubleSide}));
@@ -90,13 +95,48 @@ export abstract class BaseProjectScene implements SceneController {
   public async enter(): Promise<void> {
     this.group.visible = true;
     this.group.scale.setScalar(1);
+    gsap.killTweensOf(this.lineReveal);
+    const lineCount = this.connections.geometry.getAttribute('position').count;
     if (this.reducedMotion) {
-      this.nodes.forEach((node) => node.scale.setScalar(1));
+      this.nodes.forEach((node, index) => {
+        node.scale.setScalar(1);
+        node.position.copy(this.basePositions[index]!);
+      });
+      this.connections.geometry.setDrawRange(0, lineCount);
     } else {
       gsap.killTweensOf(this.nodes.map((node) => node.scale));
       this.nodes.forEach((node, index) => {
-        node.scale.setScalar(0.01);
-        gsap.to(node.scale, {x: 1, y: 1, z: 1, duration: 0.7, ease: 'back.out(1.8)', delay: 0.18 + index * 0.07});
+        const base = this.basePositions[index]!;
+        const material = node.material as MeshBasicMaterial;
+        node.position.copy(base);
+        if (this.id === 'pmu') {
+          node.scale.setScalar(0.01);
+          material.opacity = 0.18;
+          gsap.to(node.scale, {x: 1, y: 1, z: 1, duration: 0.62, ease: 'back.out(1.35)', delay: 0.14 + index * 0.1});
+          gsap.to(material, {opacity: 0.8, duration: 0.38, delay: 0.14 + index * 0.1});
+        } else if (this.id === 'ekg') {
+          node.position.x = base.x - 2.2 - index * 0.12;
+          node.position.y = base.y + (index % 2 ? -0.24 : 0.24);
+          node.scale.setScalar(0.72);
+          material.opacity = 0.08;
+          gsap.to(node.position, {x: base.x, y: base.y, duration: 0.86, ease: 'power3.out', delay: 0.12 + index * 0.055});
+          gsap.to(node.scale, {x: 1, y: 1, z: 1, duration: 0.72, ease: 'power2.out', delay: 0.12 + index * 0.055});
+          gsap.to(material, {opacity: 0.8, duration: 0.5, delay: 0.12 + index * 0.055});
+        } else {
+          node.scale.setScalar(0.34);
+          material.opacity = 0.06;
+          gsap.to(node.scale, {x: 1, y: 1, z: 1, duration: 0.42, ease: 'power4.out', delay: 0.16 + index * 0.045});
+          gsap.to(material, {opacity: 0.8, duration: 0.24, delay: 0.16 + index * 0.045});
+        }
+      });
+      this.lineReveal.value = 0;
+      this.connections.geometry.setDrawRange(0, 0);
+      gsap.to(this.lineReveal, {
+        value: 1,
+        duration: this.id === 'pmu' ? 1.2 : this.id === 'ekg' ? 0.86 : 0.54,
+        delay: this.id === 'security' ? 0.24 : 0.3,
+        ease: this.id === 'security' ? 'power4.out' : 'power2.inOut',
+        onUpdate: () => this.connections.geometry.setDrawRange(0, Math.floor(lineCount * this.lineReveal.value / 2) * 2),
       });
     }
     await this.cameraRig.flyTo([0, 0.8, 11], [0, 0, -3], 1.5);
@@ -104,6 +144,7 @@ export abstract class BaseProjectScene implements SceneController {
 
   public async exit(): Promise<void> {
     gsap.killTweensOf(this.nodes.map((node) => node.scale));
+    gsap.killTweensOf(this.lineReveal);
     this.simulationTime = -1;
     this.lastStep = -1;
     this.resetNodes();

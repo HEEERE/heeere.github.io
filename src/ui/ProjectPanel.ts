@@ -12,15 +12,23 @@ export class ProjectPanel {
     this.panel.style.setProperty('--project-color', project.color);
     this.content.innerHTML = `
       <div class="project-code"><span>${project.number} / ${project.type}</span><span>${project.period}</span></div>
-      <h2>${project.title}</h2>
+      <h2 class="project-title-mask"><span>${project.title}</span></h2>
       <p class="panel-subtitle">${project.subtitle}</p>
       <p class="panel-description">${project.description}</p>
-      <h3>KEY CONTRIBUTIONS</h3>
-      <ul>${project.contributions.map((item) => `<li>${item}</li>`).join('')}</ul>
-      <h3>PROCESS TRACE</h3>
-      <div class="flow-list">${project.flow.map((step) => `<span>${step}</span>`).join('')}</div>
-      <h3>TECHNICAL STACK</h3>
-      <div class="flow-list">${project.stack.map((item) => `<span>${item}</span>`).join('')}</div>
+      <section class="panel-section panel-contributions">
+        <h3>KEY CONTRIBUTIONS</h3>
+        <ul>${project.contributions.map((item) => `<li>${item}</li>`).join('')}</ul>
+      </section>
+      <section class="panel-section panel-process">
+        <h3>CORE ARCHITECTURE / PROCESS TRACE</h3>
+        <div class="architecture-flow architecture-${id}">
+          ${project.flow.map((step, index) => `<div class="architecture-step"><span>${step}</span>${index < project.flow.length - 1 ? '<i aria-hidden="true"></i>' : ''}</div>`).join('')}
+        </div>
+      </section>
+      <section class="panel-section panel-stack">
+        <h3>TECHNICAL STACK</h3>
+        <div class="flow-list">${project.stack.map((item) => `<span>${item}</span>`).join('')}</div>
+      </section>
       <button type="button" class="scene-action" data-scene-action>${id === 'security' ? '释放测试污染 / SAFE SIMULATION' : id === 'ekg' ? '运行知识处理演示 / RUN ARCHIVE' : '运行记忆验证 / RUN MEMORY CYCLE'}</button>
       ${id === 'security' ? '<p class="simulation-note">安全演示 / 本地模拟数据 / 不包含真实攻击载荷</p>' : '<p class="simulation-note">LOCAL DEMO DATA / NO EXTERNAL API REQUEST</p>'}
       <div class="scene-trace" data-scene-trace>READY / AWAITING INPUT</div>

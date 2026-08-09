@@ -46,6 +46,8 @@ export class Experience {
   private explorer = false;
   private selected: ProjectId | null = null;
   private disposed = false;
+  private lastActivity = performance.now();
+  private idle = false;
 
   public constructor(private readonly canvas: HTMLCanvasElement) {
     this.cameraRig.setReducedMotion(this.accessibility.reducedMotion.matches);
@@ -74,7 +76,10 @@ export class Experience {
       toggleExplorer: () => this.toggleExplorer(),
       toggleSound: () => this.audio.toggle(),
     });
-    this.interaction = new InteractionSystem(canvas, this.cameraRig.camera, this.hub.projectNodes, (id) => this.ui.hover(id), (id) => void this.selectProject(id));
+    this.interaction = new InteractionSystem(canvas, this.cameraRig.camera, this.hub.projectNodes, (id) => {
+      this.hub.setHoveredProject(id);
+      this.ui.hover(id);
+    }, (id) => void this.selectProject(id));
     this.input = new InputManager({
       select: (id) => void this.selectProject(id),
       back: () => void this.backToHub(),
@@ -97,6 +102,9 @@ export class Experience {
     });
     window.addEventListener('resize', this.resize, {passive: true});
     window.addEventListener('pointermove', this.pointerMove, {passive: true});
+    window.addEventListener('pointerdown', this.markActivity, {passive: true});
+    window.addEventListener('keydown', this.markActivity, {passive: true});
+    window.addEventListener('wheel', this.markActivity, {passive: true});
     window.addEventListener('hashchange', this.route);
     window.addEventListener('popstate', this.route);
     this.accessibility.reducedMotion.addEventListener('change', this.motionChange);
@@ -140,6 +148,12 @@ export class Experience {
     this.ekg.update(delta, elapsed);
     this.security.update(delta, elapsed);
     this.interaction.update();
+    const canIdle = ['hub', 'pmu', 'ekg', 'security'].includes(this.machine.state);
+    if (!this.idle && canIdle && performance.now() - this.lastActivity >= 5000) {
+      this.idle = true;
+      this.hub.setIdle(true);
+      this.ui.setIdle(true);
+    }
     this.quality.sample(delta);
     this.renderer.render();
     this.frame = requestAnimationFrame(this.tick);
@@ -147,9 +161,10 @@ export class Experience {
 
   public async selectProject(id: ProjectId, updateHash = true): Promise<void> {
     if (this.machine.isTransitioning || this.selected === id) return;
+    this.markActivity();
     this.interaction.setEnabled(false);
     this.selected = id;
-    this.hub.projectNodes.forEach((node) => node.setActive(node.projectId === id));
+    this.hub.setProjectState(id);
     this.ui.showProject(id);
     this.panel.open(id);
     if (updateHash) history.pushState({}, '', `#/project/${id}`);
@@ -160,9 +175,10 @@ export class Experience {
 
   public async backToHub(updateHash = true): Promise<void> {
     if (this.machine.isTransitioning || (!this.selected && this.machine.state === 'hub')) return;
+    this.markActivity();
     this.panel.close();
     this.selected = null;
-    this.hub.projectNodes.forEach((node) => node.setActive(false));
+    this.hub.setProjectState(null);
     if (updateHash) history.pushState({}, '', '#/hub');
     await this.machine.transition('hub');
     this.interaction.setEnabled(true);
@@ -211,7 +227,15 @@ export class Experience {
   };
 
   private readonly pointerMove = (event: PointerEvent): void => {
+    this.markActivity();
     this.cameraRig.setPointer((event.clientX / innerWidth) * 2 - 1, -((event.clientY / innerHeight) * 2 - 1));
+  };
+  private readonly markActivity = (): void => {
+    this.lastActivity = performance.now();
+    if (!this.idle) return;
+    this.idle = false;
+    this.hub.setIdle(false);
+    this.ui.setIdle(false);
   };
   private readonly resize = (): void => this.renderer.resize(innerWidth, innerHeight);
   private readonly motionChange = (event: MediaQueryListEvent): void => {
@@ -225,6 +249,9 @@ export class Experience {
     cancelAnimationFrame(this.frame);
     window.removeEventListener('resize', this.resize);
     window.removeEventListener('pointermove', this.pointerMove);
+    window.removeEventListener('pointerdown', this.markActivity);
+    window.removeEventListener('keydown', this.markActivity);
+    window.removeEventListener('wheel', this.markActivity);
     window.removeEventListener('hashchange', this.route);
     window.removeEventListener('popstate', this.route);
     this.accessibility.reducedMotion.removeEventListener('change', this.motionChange);

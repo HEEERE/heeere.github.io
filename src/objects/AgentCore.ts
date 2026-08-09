@@ -50,8 +50,13 @@ export class AgentCore extends Group {
   private readonly coreMaterial: ShaderMaterial;
   private readonly shockwave: Mesh;
   private readonly rings: Mesh[] = [];
+  private readonly baseRim = new Color('#b8ff3d');
+  private readonly accent = new Color('#b8ff3d');
+  private readonly currentRim = new Color('#b8ff3d');
   private targetEnergy = 0.7;
   private energy = 0.7;
+  private accentStrength = 0;
+  private targetAccentStrength = 0;
   private waveTime = 0;
 
   public constructor() {
@@ -99,19 +104,27 @@ export class AgentCore extends Group {
   }
 
   public setEnergy(value: number): void { this.targetEnergy = value; }
+  public setAccent(color: string | null, strength = 0): void {
+    if (color) this.accent.set(color);
+    this.targetAccentStrength = color ? strength : 0;
+  }
 
-  public update(delta: number, elapsed: number, reducedMotion: boolean): void {
+  public update(delta: number, elapsed: number, reducedMotion: boolean, motionScale = 1, idle = false): void {
     this.energy += (this.targetEnergy - this.energy) * Math.min(1, delta * 3);
+    this.accentStrength += (this.targetAccentStrength - this.accentStrength) * Math.min(1, delta * 4);
+    this.currentRim.copy(this.baseRim).lerp(this.accent, this.accentStrength);
     this.coreMaterial.uniforms.uEnergy!.value = this.energy;
+    (this.coreMaterial.uniforms.uRim!.value as Color).copy(this.currentRim);
     (this.cage.material as MeshStandardMaterial).emissiveIntensity = this.energy;
+    (this.cage.material as MeshStandardMaterial).emissive.copy(this.currentRim).multiplyScalar(0.72);
 
     if (!reducedMotion) {
       this.coreMaterial.uniforms.uTime!.value = elapsed;
-      this.rotation.y += delta * 0.12;
+      this.rotation.y += delta * 0.12 * motionScale;
       this.rotation.x = Math.sin(elapsed * 0.23) * 0.045;
-      this.cage.rotation.y -= delta * 0.19;
+      this.cage.rotation.y -= delta * 0.19 * motionScale;
       this.rings.forEach((ring, index) => {
-        ring.rotation.z += delta * (0.06 + index * 0.025) * (index % 2 ? -1 : 1);
+        ring.rotation.z += delta * (0.06 + index * 0.025) * motionScale * (index % 2 ? -1 : 1);
       });
 
       const wavePeriod = Math.max(1.2, 4.2 - this.energy * 1.4);
@@ -124,7 +137,7 @@ export class AgentCore extends Group {
       this.shockwave.visible = false;
     }
 
-    const scale = 1 + Math.sin(elapsed * 1.25) * 0.025 * this.targetEnergy;
+    const scale = 1 + Math.sin(elapsed * (idle ? 0.88 : 1.25)) * (idle ? 0.042 : 0.025) * this.targetEnergy;
     this.cage.scale.setScalar(scale);
   }
 

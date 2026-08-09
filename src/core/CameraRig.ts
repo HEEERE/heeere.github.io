@@ -27,6 +27,9 @@ export class CameraRig {
 
   public async flyTo(position: [number, number, number], target: [number, number, number], duration = 1.6): Promise<void> {
     gsap.killTweensOf([this.base, this.lookAt]);
+    const destination = new Vector3(...position);
+    const destinationLook = new Vector3(...target);
+    if (this.base.distanceToSquared(destination) < 0.0001 && this.lookAt.distanceToSquared(destinationLook) < 0.0001) return;
     const time = this.reducedMotion ? 0.18 : duration;
     await Promise.all([
       new Promise<void>((resolve) => gsap.to(this.base, {x: position[0], y: position[1], z: position[2], duration: time, ease: 'power3.inOut', onComplete: resolve})),

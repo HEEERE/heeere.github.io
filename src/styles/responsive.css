@@ -24,6 +24,7 @@
   .project-nav i { margin-right: 7px; }
   .project-nav span { font-size: 9px; }
   .interaction-prompt { display: none; }
+  .hover-context { top: 96px; right: 14px; }
   .project-panel { top: auto; bottom: 0; width: 100%; height: min(78svh, 760px); padding: 76px 22px 92px; translate: 0 100%; border-top: 1px solid var(--line); border-left: 0; border-radius: 18px 18px 0 0; }
   .project-panel.is-open { translate: 0; }
   .panel-close { top: 28px; right: 22px; }
