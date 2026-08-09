@@ -1,4 +1,4 @@
-import {Mesh, MeshBasicMaterial, PlaneGeometry} from 'three';
+import {AdditiveBlending, BoxGeometry, Group, Mesh, MeshBasicMaterial, MeshPhysicalMaterial, OctahedronGeometry, TorusGeometry} from 'three';
 import type {CameraRig} from '../core/CameraRig';
 import type {EventBus} from '../core/EventBus';
 import type {AppEvents} from '../core/types';
@@ -8,17 +8,25 @@ const DOC_SPOTS: ReadonlyArray<[number, number, number]> = [[-3.2, 1.4, -3.2], [
 
 export class EKGScene extends BaseProjectScene {
   private readonly docs: Mesh[] = [];
+  private readonly evidence = new Group();
 
   public constructor(cameraRig: CameraRig, bus: EventBus<AppEvents>, private readonly trace: (message: string) => void) {
     super('ekg', cameraRig, bus, 'archive');
-    const geometry = new PlaneGeometry(0.9, 1.2, 2, 3);
-    const material = new MeshBasicMaterial({color: '#44d9e6', wireframe: true, transparent: true, opacity: 0.07});
+    const geometry = new BoxGeometry(0.72, 1.02, 0.055, 2, 3, 1);
+    const material = new MeshPhysicalMaterial({color: '#174f53', emissive: '#0c3538', emissiveIntensity: 0.8, roughness: 0.22, transmission: 0.22, thickness: 0.24, transparent: true, opacity: 0.28});
     DOC_SPOTS.forEach((spot) => {
       const doc = new Mesh(geometry, material);
       doc.position.set(...spot);
       this.docs.push(doc);
       this.group.add(doc);
     });
+    const beaconRing = new Mesh(new TorusGeometry(0.55, 0.018, 7, 72), new MeshBasicMaterial({color: '#44d9e6', transparent: true, opacity: 0.5, blending: AdditiveBlending, depthWrite: false}));
+    const beaconCore = new Mesh(new OctahedronGeometry(0.2, 2), new MeshBasicMaterial({color: '#d8ffff', transparent: true, opacity: 0.72, blending: AdditiveBlending, depthWrite: false}));
+    beaconRing.name = 'EVIDENCE_BEACON_RING';
+    beaconCore.name = 'EVIDENCE_BEACON_CORE';
+    this.evidence.position.set(3.9, -1.65, -0.2);
+    this.evidence.add(beaconRing, beaconCore);
+    this.group.add(this.evidence);
   }
 
   public override update(delta: number, elapsed: number): void {
@@ -28,6 +36,8 @@ export class EKGScene extends BaseProjectScene {
       doc.position.y = DOC_SPOTS[index]![1] + Math.sin(elapsed * 0.3 + index * 1.7) * 0.15;
       doc.rotation.y = Math.sin(elapsed * 0.1 + index) * 0.2;
     });
+    this.evidence.rotation.z += delta * 0.18;
+    this.evidence.scale.setScalar(0.9 + Math.sin(elapsed * 1.4) * 0.05 + (this.simulationTime >= 0 ? 0.12 : 0));
   }
 
   protected override onSimulationStart(): void { this.trace('DOCUMENT INGESTED / LOCAL MOCK DATA'); }

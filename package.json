@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit && tsc -p remotion/tsconfig.json --noEmit",
-    "build": "npm run typecheck && vite build",
+    "build": "npm run models:validate && npm run typecheck && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
+    "models:generate": "node scripts/generate-models.mjs",
+    "models:validate": "node scripts/validate-models.mjs",
     "remotion:studio": "remotion studio remotion/src/index.ts --config=remotion/remotion.config.ts --no-open",
     "render:intro": "remotion render remotion/src/index.ts CinematicIntro public/video/intro-fallback.mp4 --config=remotion/remotion.config.ts --codec=h264",
     "render:teaser": "remotion render remotion/src/index.ts PortfolioTeaser public/video/portfolio-teaser.mp4 --config=remotion/remotion.config.ts --codec=h264",

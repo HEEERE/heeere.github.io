@@ -60,6 +60,7 @@ export class Experience {
     this.ekg = new EKGScene(this.cameraRig, this.bus, trace);
     this.security = new SecurityScene(this.cameraRig, this.bus, trace);
     [this.pmu, this.ekg, this.security].forEach((scene) => scene.setReducedMotion(this.accessibility.reducedMotion.matches));
+    [this.pmu, this.ekg, this.security].forEach((scene) => scene.setQuality(this.quality.profile));
     this.renderer.scene.add(this.hub.group, this.pmu.group, this.ekg.group, this.security.group);
 
     this.machine.register('intro', this.introScene);
@@ -97,6 +98,7 @@ export class Experience {
     this.assets = new AssetManager((progress) => this.intro.updateProgress(progress));
     this.bus.on('quality:change', (level) => {
       this.hub.updateQuality(this.quality.profile);
+      [this.pmu, this.ekg, this.security].forEach((scene) => scene.setQuality(this.quality.profile));
       this.renderer.updateQuality();
       this.ui.setQuality(level);
     });
@@ -117,10 +119,11 @@ export class Experience {
     const simple = initialHash === '#/simple' || ['#/profile', '#/stack', '#/contact'].includes(initialHash);
     const project = this.projectFromHash(initialHash);
     const instant = this.accessibility.reducedMotion.matches || simple || Boolean(project) || sessionStorage.getItem('jzy-intro-complete') === '1';
-    const assetsReady = this.assets.preload(instant).catch(() => this.intro.updateProgress(1));
+    const assetsReady = this.assets.preload({skip: simple, minimumDuration: instant ? 0 : 800});
     this.renderer.clock.start();
     this.frame = requestAnimationFrame(this.tick);
-    await assetsReady;
+    const modelLibrary = await assetsReady;
+    this.hub.applyModelLibrary(modelLibrary);
 
     if (this.accessibility.reducedMotion.matches || simple) {
       this.intro.hideImmediately();

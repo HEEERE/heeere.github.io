@@ -2,16 +2,19 @@ import {
   AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
+  CatmullRomCurve3,
   Color,
   DynamicDrawUsage,
   InstancedBufferAttribute,
   InstancedMesh,
+  IcosahedronGeometry,
   LineBasicMaterial,
   LineSegments,
   Matrix4,
   Mesh,
   MeshBasicMaterial,
   SphereGeometry,
+  TubeGeometry,
   Vector3,
 } from 'three';
 import type {ProjectId} from '../data/projects';
@@ -19,13 +22,14 @@ import {mulberry32} from '../utils/random';
 import {SignalPulse} from './SignalPulse';
 
 type Roamer = {mesh: Mesh; from: number; to: number; t: number; speed: number};
-type FocusPulse = {mesh: Mesh; path: Vector3[]; progress: number; delay: number};
+type FocusPulse = {mesh: Mesh; curve: CatmullRomCurve3 | null; progress: number; delay: number};
 type FocusMode = 'hover' | 'selected';
 
 const easeInOut = (t: number): number => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 export class KnowledgeGraph extends LineSegments {
   public readonly nodes: InstancedMesh;
+  public readonly conceptNodes: InstancedMesh;
   private readonly positions: Vector3[] = [];
   private readonly edges: Array<[number, number]> = [];
   private readonly adjacency = new Map<number, number[]>();
@@ -40,7 +44,9 @@ export class KnowledgeGraph extends LineSegments {
   private readonly focusPoint = new Vector3();
   private readonly focusIndices = new Set<number>();
   private readonly focusPulses: FocusPulse[] = [];
+  private readonly focusConduits: Mesh[] = [];
   private readonly focusPulseMaterial: MeshBasicMaterial;
+  private readonly conduitMaterial: MeshBasicMaterial;
   private readonly roamerMaterial: MeshBasicMaterial;
   private readonly idleSignal = new SignalPulse('#79c9bd');
   private focusId: ProjectId | null = null;
@@ -49,7 +55,7 @@ export class KnowledgeGraph extends LineSegments {
   private focusTarget = 0;
   private idlePulseClock = 2;
 
-  public constructor(count: number, roamers: number, seed = 7321) {
+  public constructor(count: number, roamers: number, private readonly curveSegments = 8, seed = 7321) {
     const random = mulberry32(seed);
     const linePositions: number[] = [];
     const edges: Array<[number, number]> = [];
@@ -72,7 +78,9 @@ export class KnowledgeGraph extends LineSegments {
     }
     const geometry = new BufferGeometry();
     geometry.setAttribute('position', new BufferAttribute(new Float32Array(linePositions), 3));
-    super(geometry, new LineBasicMaterial({color: '#35504d', transparent: true, opacity: 0.32, blending: AdditiveBlending}));
+    const backgroundMaterial = new LineBasicMaterial({color: '#35504d', transparent: true, opacity: 0.26, blending: AdditiveBlending});
+    backgroundMaterial.userData.bloom = false;
+    super(geometry, backgroundMaterial);
     this.positions = positions;
     this.edges = edges;
     this.random = mulberry32(seed + 1);
@@ -109,8 +117,20 @@ export class KnowledgeGraph extends LineSegments {
     this.nodes.instanceColor!.setUsage(DynamicDrawUsage);
     this.add(this.nodes);
 
+    const conceptPositions = positions.filter((_, index) => index % 11 === 0);
+    const conceptMaterial = new MeshBasicMaterial({color: '#a9ece1', transparent: true, opacity: 0.42, wireframe: true});
+    const conceptGeometry = new IcosahedronGeometry(0.15, 1);
+    this.conceptNodes = new InstancedMesh(conceptGeometry, conceptMaterial, conceptPositions.length);
+    conceptPositions.forEach((position, index) => {
+      this.instanceScale.setScalar(0.8 + index % 3 * 0.22);
+      this.instanceTransform.compose(position, this.quaternion, this.instanceScale);
+      this.conceptNodes.setMatrixAt(index, this.instanceTransform);
+    });
+    this.add(this.conceptNodes);
+
     const roamerGeometry = new SphereGeometry(0.045, 8, 8);
     this.roamerMaterial = new MeshBasicMaterial({color: this.baseNodeColor.clone().multiplyScalar(1.8), transparent: true, opacity: 0.9, blending: AdditiveBlending, depthWrite: false});
+    this.roamerMaterial.userData.bloom = true;
     for (let index = 0; index < roamers; index++) {
       const from = Math.floor(this.random() * count);
       const mesh = new Mesh(roamerGeometry, this.roamerMaterial);
@@ -121,11 +141,14 @@ export class KnowledgeGraph extends LineSegments {
 
     const focusGeometry = new SphereGeometry(0.072, 10, 10);
     this.focusPulseMaterial = new MeshBasicMaterial({color: this.focusColor, transparent: true, opacity: 0.95, blending: AdditiveBlending, depthWrite: false});
+    this.focusPulseMaterial.userData.bloom = true;
+    this.conduitMaterial = new MeshBasicMaterial({color: this.focusColor, transparent: true, opacity: 0, blending: AdditiveBlending, depthWrite: false});
+    this.conduitMaterial.userData.bloom = true;
     for (let index = 0; index < 6; index++) {
       const mesh = new Mesh(focusGeometry, this.focusPulseMaterial);
       mesh.visible = false;
       this.add(mesh);
-      this.focusPulses.push({mesh, path: [], progress: 0, delay: index * 0.12});
+      this.focusPulses.push({mesh, curve: null, progress: 0, delay: index * 0.12});
     }
     this.add(this.idleSignal);
   }
@@ -149,6 +172,7 @@ export class KnowledgeGraph extends LineSegments {
     this.focusPoint.copy(position);
     this.focusColor.set(color);
     this.focusPulseMaterial.color.copy(this.focusColor).multiplyScalar(1.8);
+    this.conduitMaterial.color.copy(this.focusColor).multiplyScalar(1.24);
     if (!changed) return;
 
     const nearest = this.positions
@@ -157,14 +181,28 @@ export class KnowledgeGraph extends LineSegments {
       .slice(0, Math.min(10, this.positions.length));
     this.focusIndices.clear();
     nearest.forEach(({index}) => this.focusIndices.add(index));
+    this.focusConduits.forEach((conduit) => {
+      this.remove(conduit);
+      conduit.geometry.dispose();
+    });
+    this.focusConduits.length = 0;
     this.focusPulses.forEach((pulse, index) => {
       const target = nearest[index % nearest.length]?.index ?? 0;
-      const middle = this.adjacency.get(target)?.[index % (this.adjacency.get(target)?.length ?? 1)] ?? target;
-      const outer = this.adjacency.get(middle)?.find((candidate) => candidate !== target) ?? middle;
-      pulse.path = [this.positions[outer]!, this.positions[middle]!, this.positions[target]!, position.clone()];
+      const start = this.positions[target]!.clone();
+      const midpoint = start.clone().lerp(position, 0.5);
+      const lateral = new Vector3(-(position.y - start.y), position.x - start.x, 0).normalize().multiplyScalar((index % 2 ? -1 : 1) * (0.1 + index * 0.018));
+      midpoint.add(lateral);
+      const points = [start, midpoint, position.clone()];
+      pulse.curve = new CatmullRomCurve3(points, false, 'centripetal');
       pulse.progress = 0;
       pulse.delay = index * 0.13;
       pulse.mesh.visible = false;
+      if (index < 4) {
+        const conduit = new Mesh(new TubeGeometry(pulse.curve, this.curveSegments * 2, 0.004 + index % 2 * 0.001, 5, false), this.conduitMaterial);
+        conduit.name = `FOCUS_CONDUIT_${index}`;
+        this.focusConduits.push(conduit);
+        this.add(conduit);
+      }
     });
   }
 
@@ -175,6 +213,8 @@ export class KnowledgeGraph extends LineSegments {
     const baseLineOpacity = this.focusMode === 'selected' && this.focusTarget > 0 ? 0.13 : 0.32;
     const lineTarget = baseLineOpacity * (1 - this.focusAmount * (this.focusMode === 'selected' ? 0.08 : 0.45));
     lineMaterial.opacity += (lineTarget - lineMaterial.opacity) * Math.min(1, delta * 5);
+    this.conduitMaterial.opacity += ((this.focusTarget > 0 ? 0.18 : 0) * this.focusAmount - this.conduitMaterial.opacity) * Math.min(1, delta * 5);
+    (this.conceptNodes.material as MeshBasicMaterial).opacity += ((0.42 - this.focusAmount * 0.2) - (this.conceptNodes.material as MeshBasicMaterial).opacity) * Math.min(1, delta * 4);
 
     const dimScale = this.focusMode === 'selected' ? 0.18 : 0.42;
     this.currentColors.forEach((current, index) => {
@@ -211,7 +251,7 @@ export class KnowledgeGraph extends LineSegments {
 
   private updateFocusPulses(delta: number, reducedMotion: boolean): void {
     this.focusPulses.forEach((pulse) => {
-      if (reducedMotion || this.focusAmount < 0.02 || pulse.path.length < 2) {
+      if (reducedMotion || this.focusAmount < 0.02 || !pulse.curve) {
         pulse.mesh.visible = false;
         return;
       }
@@ -226,9 +266,7 @@ export class KnowledgeGraph extends LineSegments {
         }
         return;
       }
-      const scaled = easeInOut(local) * (pulse.path.length - 1);
-      const segment = Math.min(pulse.path.length - 2, Math.floor(scaled));
-      pulse.mesh.position.lerpVectors(pulse.path[segment]!, pulse.path[segment + 1]!, scaled - segment);
+      pulse.curve.getPoint(easeInOut(local), pulse.mesh.position);
       pulse.mesh.scale.setScalar(0.7 + Math.sin(local * Math.PI) * 0.7);
       pulse.mesh.visible = true;
     });
@@ -251,11 +289,15 @@ export class KnowledgeGraph extends LineSegments {
     (this.material as LineBasicMaterial).dispose();
     this.nodes.geometry.dispose();
     (this.nodes.material as MeshBasicMaterial).dispose();
+    this.conceptNodes.geometry.dispose();
+    (this.conceptNodes.material as MeshBasicMaterial).dispose();
     const first = this.roamers[0];
     if (first) first.mesh.geometry.dispose();
     this.roamerMaterial.dispose();
     this.focusPulses[0]?.mesh.geometry.dispose();
     this.focusPulseMaterial.dispose();
+    this.focusConduits.forEach((conduit) => conduit.geometry.dispose());
+    this.conduitMaterial.dispose();
     this.idleSignal.disposePulse();
   }
 }

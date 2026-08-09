@@ -2,23 +2,29 @@ import gsap from 'gsap';
 import {
   BufferAttribute,
   BufferGeometry,
+  BoxGeometry,
   Color,
+  ConeGeometry,
+  CylinderGeometry,
+  DodecahedronGeometry,
   DoubleSide,
   Group,
+  IcosahedronGeometry,
   Line,
   LineBasicMaterial,
   LineSegments,
   Mesh,
   MeshBasicMaterial,
+  MeshPhysicalMaterial,
   OctahedronGeometry,
   Points,
   RingGeometry,
-  TorusGeometry,
   Vector3,
 } from 'three';
 import type {CameraRig} from '../core/CameraRig';
 import type {EventBus} from '../core/EventBus';
 import type {AppEvents, SceneController} from '../core/types';
+import type {QualityProfile} from '../core/QualityManager';
 import type {ProjectId} from '../data/projects';
 import {getProject} from '../data/projects';
 import {SignalPulse} from '../objects/SignalPulse';
@@ -40,6 +46,7 @@ export abstract class BaseProjectScene implements SceneController {
   private readonly lineReveal = {value: 1};
   private readonly activeColor: Color;
   private readonly inactiveColor: Color;
+  private transmissionEnabled = true;
 
   protected constructor(
     public readonly id: ProjectId,
@@ -58,10 +65,24 @@ export abstract class BaseProjectScene implements SceneController {
     const lineArray: number[] = [];
     positions.forEach((position, index) => {
       const node = new Mesh(
-        index % 2 === 0 ? new OctahedronGeometry(0.46, 1) : new TorusGeometry(0.42, 0.06, 8, 40),
-        new MeshBasicMaterial({color: this.inactiveColor, wireframe: true, transparent: true, opacity: 0.8}),
+        this.createNodeGeometry(index),
+        new MeshPhysicalMaterial({
+          color: this.inactiveColor,
+          emissive: this.inactiveColor,
+          emissiveIntensity: 0.55,
+          roughness: this.id === 'security' ? 0.34 : 0.18,
+          metalness: this.id === 'security' ? 0.42 : 0.08,
+          transmission: this.id === 'security' ? 0 : this.id === 'ekg' ? 0.34 : 0.22,
+          thickness: 0.7,
+          iridescence: this.id === 'security' ? 0 : 0.24,
+          transparent: true,
+          opacity: 0.78,
+        }),
       );
       node.position.copy(position);
+      if (this.id === 'pmu' && index % 3 !== 0) node.rotation.z = (index % 2 ? -1 : 1) * 0.34;
+      if (this.id === 'ekg' && index < 2) node.rotation.set(-0.08 + index * 0.16, 0.2 * index, -0.1 + index * 0.12);
+      if (this.id === 'security' && index % 2) node.rotation.x = Math.PI / 2;
       this.nodes.push(node);
       this.group.add(node);
       if (index > 0) {
@@ -82,6 +103,25 @@ export abstract class BaseProjectScene implements SceneController {
   }
 
   public setReducedMotion(value: boolean): void { this.reducedMotion = value; }
+
+  public setQuality(profile: QualityProfile): void {
+    this.transmissionEnabled = profile.transmission;
+    this.nodes.forEach((node) => {
+      const material = node.material as MeshPhysicalMaterial;
+      material.transmission = this.transmissionEnabled ? this.id === 'ekg' ? 0.34 : this.id === 'pmu' ? 0.22 : 0 : 0;
+      material.iridescence = this.transmissionEnabled && this.id !== 'security' ? 0.24 : 0;
+      material.needsUpdate = true;
+    });
+  }
+
+  private createNodeGeometry(index: number): BufferGeometry {
+    if (this.id === 'pmu') return index % 3 === 0 ? new IcosahedronGeometry(0.42, 2) : new ConeGeometry(0.28, 0.72, 6, 2);
+    if (this.id === 'ekg') {
+      if (index < 2) return new BoxGeometry(0.78, 0.54, 0.09, 2, 2, 1);
+      return index % 2 ? new OctahedronGeometry(0.4, 1) : new CylinderGeometry(0.34, 0.42, 0.62, 6, 2);
+    }
+    return index % 2 ? new CylinderGeometry(0.29, 0.38, 0.18, 6) : new DodecahedronGeometry(0.4, 1);
+  }
 
   private makePositions(count: number, layout: Layout): Vector3[] {
     if (layout === 'line') return Array.from({length: count}, (_, index) => new Vector3((index - (count - 1) / 2) * 1.65, Math.sin(index * 1.4) * 0.7, 0));
@@ -107,7 +147,7 @@ export abstract class BaseProjectScene implements SceneController {
       gsap.killTweensOf(this.nodes.map((node) => node.scale));
       this.nodes.forEach((node, index) => {
         const base = this.basePositions[index]!;
-        const material = node.material as MeshBasicMaterial;
+        const material = node.material as MeshPhysicalMaterial;
         node.position.copy(base);
         if (this.id === 'pmu') {
           node.scale.setScalar(0.01);
@@ -182,11 +222,11 @@ export abstract class BaseProjectScene implements SceneController {
       this.lastStep = step;
       const node = this.nodes[step]!;
       node.scale.setScalar(1.55);
-      (node.material as MeshBasicMaterial).color.set('#ffffff');
+      (node.material as MeshPhysicalMaterial).color.set('#ffffff');
     }
     this.nodes.forEach((node, index) => {
       const active = index <= step;
-      const material = node.material as MeshBasicMaterial;
+      const material = node.material as MeshPhysicalMaterial;
       material.color.lerp(active ? this.activeColor : this.inactiveColor, Math.min(1, delta * 10));
       const targetScale = active ? 1.18 : 1;
       node.scale.setScalar(node.scale.x + (targetScale - node.scale.x) * Math.min(1, delta * 8));
@@ -207,7 +247,7 @@ export abstract class BaseProjectScene implements SceneController {
 
   private resetNodes(): void {
     this.nodes.forEach((node) => {
-      (node.material as MeshBasicMaterial).color.copy(this.inactiveColor);
+      (node.material as MeshPhysicalMaterial).color.copy(this.inactiveColor);
       node.scale.setScalar(1);
     });
   }

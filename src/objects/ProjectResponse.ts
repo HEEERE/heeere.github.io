@@ -63,6 +63,7 @@ export class ProjectResponse extends Group {
       depthWrite: false,
     });
     material.userData.baseOpacity = opacity;
+    material.userData.bloom = true;
     this.materials.push(material);
     return material;
   }
@@ -140,6 +141,7 @@ export class ProjectResponse extends Group {
     geometry.setAttribute('position', new BufferAttribute(new Float32Array(linePositions), 3));
     const lineMaterial = new LineBasicMaterial({color: this.color, transparent: true, opacity: 0, blending: AdditiveBlending});
     lineMaterial.userData.baseOpacity = 0.55;
+    lineMaterial.userData.bloom = true;
     this.materials.push(lineMaterial);
     this.ekgGraph = new LineSegments(geometry, lineMaterial);
     this.add(this.ekgGraph);
@@ -167,6 +169,7 @@ export class ProjectResponse extends Group {
     ]), 3));
     const edgeMaterial = new LineBasicMaterial({color: this.color, transparent: true, opacity: 0, blending: AdditiveBlending});
     edgeMaterial.userData.baseOpacity = 0.62;
+    edgeMaterial.userData.bloom = true;
     this.materials.push(edgeMaterial);
     this.securityEdges = new LineSegments(geometry, edgeMaterial);
     this.add(this.securityEdges);

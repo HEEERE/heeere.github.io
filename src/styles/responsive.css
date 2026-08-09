@@ -18,14 +18,14 @@
   .hub-copy { bottom: 110px; }
   .hub-copy h2 { margin: 10px 0 14px; font-size: clamp(46px, 15vw, 68px); }
   .hub-copy > p:not(.micro-label) { font-size: 15px; }
-  .project-nav { right: 12px; bottom: 12px; left: 12px; width: auto; translate: 0 14px; }
+  .project-nav { right: 12px; bottom: 12px; left: 12px; width: calc(100% - 24px); max-width: none; translate: 0 14px; }
   .project-nav.is-visible { translate: 0 0; }
-  .project-nav button { min-width: 0; min-height: 54px; padding: 0 10px; flex: 1; }
+  .project-nav button { min-width: 0; min-height: 54px; padding: 0 8px; flex: 1 1 0; grid-template-columns: auto minmax(0, 1fr); }
   .project-nav i { margin-right: 7px; }
-  .project-nav span { font-size: 9px; }
+  .project-nav span { min-width: 0; overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
   .interaction-prompt { display: none; }
   .hover-context { top: 96px; right: 14px; }
-  .project-panel { top: auto; bottom: 0; width: 100%; height: min(78svh, 760px); padding: 76px 22px 92px; translate: 0 100%; border-top: 1px solid var(--line); border-left: 0; border-radius: 18px 18px 0 0; }
+  .project-panel { top: auto; bottom: 0; width: 100%; height: min(78svh, 760px); padding: 76px 22px 92px; overflow-x: hidden; overflow-wrap: anywhere; translate: 0 100%; border-top: 1px solid var(--line); border-left: 0; border-radius: 18px 18px 0 0; }
   .project-panel.is-open { translate: 0; }
   .panel-close { top: 28px; right: 22px; }
   .identity-reveal h1 { font-size: clamp(70px, 23vw, 114px); }
