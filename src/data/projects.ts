@@ -1,4 +1,5 @@
 export type ProjectId = 'pmu' | 'ekg' | 'security';
+export type SceneId = 'konbini' | 'desk' | 'archive' | 'command' | 'security' | 'workshop' | 'postbox';
 
 export type Project = {
   id: ProjectId;
@@ -7,9 +8,13 @@ export type Project = {
   type: string;
   subtitle: string;
   period: string;
+  status: string;
+  role: string;
   color: string;
-  scene: string;
+  scene: SceneId;
+  sceneName: string;
   description: string;
+  highlights: readonly string[];
   contributions: readonly string[];
   stack: readonly string[];
   flow: readonly string[];
@@ -23,10 +28,14 @@ export const projects: readonly Project[] = [
     type: 'PROCEDURAL MEMORY / SKILL GRAPH',
     subtitle: '面向 LLM Agent 的过程记忆与技能图谱系统',
     period: '2026.01 — 至今',
-    color: '#b8ff3d',
-    scene: 'MEMORY CULTIVATION CHAMBER',
+    status: '进行中',
+    role: '独立设计与开发',
+    color: '#9fc7d8',
+    scene: 'archive',
+    sceneName: '记忆档案室',
     description:
-      '面向长期运行的 LLM Agent，将任务执行轨迹抽象为可验证、可复用的过程记忆单元 PMU，通过生命周期管理、风险检测和技能图谱组织，提高经验复用能力与行为可控性。',
+      '针对长期运行的 LLM Agent，把任务执行轨迹整理成可验证、可复用的过程记忆单元（PMU）。验证过的记忆会进入技能图谱，下次遇到类似任务时可以直接调用，减少重复试错。',
+    highlights: ['过程记忆生命周期', '双图谱架构', '验证与修复闭环', 'Docker 隔离测试'],
     contributions: [
       '设计 Candidate、Verified、Active 等状态及状态流转规则，覆盖过程记忆生成、验证、激活、复用与淘汰的完整流程。',
       '构建 Metadata Knowledge Graph 与 Scenario-Mediated Skill Graph，支持来源审计、证据追踪、风险关联及“环境状态—技能—目标状态”的任务推理。',
@@ -44,10 +53,14 @@ export const projects: readonly Project[] = [
     type: 'LLM–RAG / EMERGENCY KNOWLEDGE',
     subtitle: '面向应急预案的知识图谱增强生成框架',
     period: '2025.05 — 2026.01',
-    color: '#44d9e6',
-    scene: 'KNOWLEDGE ARCHIVE',
+    status: '已完成',
+    role: '核心设计与开发',
+    color: '#8fd4c8',
+    scene: 'command',
+    sceneName: '应急指挥室',
     description:
-      '面向安全关键型应急预案文本，构建“文档解析—规则抽取—实体对齐—知识图谱—可追溯问答”的完整处理链路，解决长文本语义碎片化、实体漂移和答案依据不可追踪等问题。',
+      '把应急预案这类长文档整理成可问答的知识图谱。文档先被解析成规则和实体，对齐后写入图谱；回答问题时同时召回原文证据，方便核对依据。',
+    highlights: ['双通道信息抽取', '实体对齐', '证据追踪问答', 'Benchmark 设计'],
     contributions: [
       '结合正则、模式匹配与大模型抽取，识别组织实体、触发条件、处置动作及跨段落隐式关系。',
       '使用 Embedding 相似度与中心性锚定聚类方法，缓解不同段落中同一实体表述不一致的问题。',
@@ -64,10 +77,14 @@ export const projects: readonly Project[] = [
     type: 'MULTI-AGENT / SECURITY',
     subtitle: '多智能体污染传播检测与防御平台',
     period: '2026.04 — 至今',
-    color: '#ff6f61',
-    scene: 'CONTAMINATION ISOLATION ZONE',
+    status: '进行中',
+    role: '独立设计与开发',
+    color: '#e0877a',
+    scene: 'security',
+    sceneName: '防御实验室',
     description:
-      '面向 LLM Agent 安全，以模拟数据演示 Prompt Injection、RAG 上下文污染、工具调用污染和记忆污染在多智能体链路中的传播，并提供检测、防御、阻断与实验评估能力。',
+      '一个用于复现和防御 Agent 污染的实验平台：模拟 Prompt Injection、RAG 污染、工具调用污染和记忆污染在多智能体链路中的传播，并提供检测、投票、阻断和完整的 trace 回放。',
+    highlights: ['三级检测流水线', '多 Agent 共识决策', '动态污染阻断', 'Trace Replay'],
     contributions: [
       '以 MessageBus 为核心构建多 Agent 事件流，支持任务执行、检测事件、决策结果及污染传播过程的实时追踪。',
       '实现 L1 正则检测、L2 向量语义检测和 L3 LLM 意图检测，并通过 Fail-Fast 机制减少无效检测开销。',
@@ -80,4 +97,8 @@ export const projects: readonly Project[] = [
   },
 ] as const;
 
-export const getProject = (id: ProjectId) => projects.find((project) => project.id === id)!;
+export const getProject = (id: ProjectId): Project => {
+  const project = projects.find((item) => item.id === id);
+  if (!project) throw new Error(`Unknown project: ${id}`);
+  return project;
+};

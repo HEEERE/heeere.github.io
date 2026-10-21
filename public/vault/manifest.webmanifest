@@ -1,0 +1,66 @@
+{
+  "id": "/vault/",
+  "name": "箱庭 · 私密庭院",
+  "short_name": "庭院",
+  "description": "只在自己的设备上加密保存的日记、灵感与工作流档案。",
+  "lang": "zh-Hans",
+  "dir": "ltr",
+  "start_url": "/vault/",
+  "scope": "/vault/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0a0e0b",
+  "theme_color": "#0a0e0b",
+  "categories": ["productivity", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/vault/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/vault/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/vault/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "写一条新记录",
+      "short_name": "新记录",
+      "url": "/vault/?new=1&type=note",
+      "icons": [{"src": "/vault/icons/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "收集一个片段",
+      "short_name": "收片段",
+      "url": "/vault/?new=1&type=clip",
+      "icons": [{"src": "/vault/icons/icon-192.png", "sizes": "192x192"}]
+    }
+  ],
+  "share_target": {
+    "action": "/vault/__share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["image/*", "application/pdf", "text/plain", "text/markdown"]
+        }
+      ]
+    }
+  }
+}

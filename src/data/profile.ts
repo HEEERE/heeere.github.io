@@ -11,20 +11,28 @@ export const profile = {
   location: '海口，中国',
   email: '2401266324@qq.com',
   github: 'https://github.com/HEEERE',
+  githubHandle: 'github.com/HEEERE',
+  roles: ['AI Agent Systems', 'Knowledge Graph', 'Agent Security'],
+  availability: 'OPEN TO AI ENGINEERING INTERNSHIPS',
+  tagline: '我关心 Agent 如何记住做过的事，也关心这些记忆如何被污染。',
+  intro:
+    '我是海南大学网络空间安全学院 2023 级本科生，专业是数据科学与大数据技术。主要做 AI Agent 后端、知识图谱与多智能体安全。这个站点把它们放进七个可以旋转查看的微缩场景里。',
   summary:
-    '海南大学数据科学与大数据技术本科生，专注 AI Agent 后端系统、知识图谱、过程记忆、LLM / RAG 与多智能体安全。把复杂流程抽象成可验证、可追踪、可落地的系统。',
+    '海南大学数据科学与大数据技术本科生。做 AI Agent 后端、知识图谱、过程记忆和 RAG，也研究多智能体安全。',
   courses: ['数据结构', '分布式系统', '机器学习', '自然语言处理', '知识图谱', '数据仓库与挖掘', '大数据安全'],
   focus: ['AI Agent', 'RAG', '知识图谱', '过程记忆', '多智能体协同与安全'],
   professionalSkills: [
-    '熟悉 Python、C++，具备扎实的数据结构与面向对象编程基础，能够独立完成需求分析、系统设计、接口开发、测试与部署。',
-    '熟悉 FastAPI、Pydantic、SQLAlchemy、SQLite、WebSocket 等后端技术，具备异步任务、事件驱动架构和复杂业务状态流转开发经验。',
-    '熟悉 RAG 全链路设计与优化，掌握文档解析、文本切分、向量化、混合检索、Rerank、引用核查和 RAGAS 评测。',
-    '熟悉 AI Agent 基本原理与工程实现，掌握 Tool Calling、Memory、Planning、Reflection、多 Agent 协作与权限控制等机制。',
-    '熟悉知识图谱建模与检索增强生成，能够使用 Neo4j 进行实体关系建模、图谱构建、证据追踪与图谱推理。',
-    '熟悉 Claude Code、Codex 等 AI 编程及 Agent 工具，能够应用于代码理解、任务拆解、功能开发和问题修复。',
-    '具备 Prompt Injection、RAG 污染、工具滥用和记忆污染等 Agent 安全问题的研究与实验平台开发经验。',
-    '熟悉 Docker、Git、Linux 等开发工具，具备容器化部署、版本管理和团队协作能力。',
+    'Python、C++：数据结构和面向对象基础扎实，能独立完成需求分析、系统设计、接口开发、测试与部署。',
+    '后端：常用 FastAPI、Pydantic、SQLAlchemy、SQLite、WebSocket，做过异步任务、事件驱动和复杂状态流转。',
+    'RAG：从文档解析、切分、向量化到混合检索、Rerank、引用核查和 RAGAS 评测，整条链路都实现过。',
+    'Agent：了解 Tool Calling、Memory、Planning、Reflection 等机制，也做过多 Agent 协作与权限控制。',
+    '图谱：用 Neo4j 做实体关系建模、图谱构建、证据追踪和图谱推理。',
+    '工具：日常用 Claude Code、Codex 做代码理解、任务拆解、功能开发和问题修复。',
+    '安全：做过 Prompt Injection、RAG 污染、工具滥用和记忆污染的复现与防御实验。',
+    '工程：Docker、Git、Linux，能完成容器化部署、版本管理和多人协作。',
   ],
   personalSummary:
-    '具备扎实的 Python 编程、后端开发和系统架构基础，持续研究 AI Agent、RAG、知识图谱、过程记忆与多智能体安全方向。能够独立完成从需求分析、架构设计、接口开发到实验评估和部署的完整流程，具有较强的自主学习、问题分析和工程落地能力。',
+    '我在海南大学读数据科学与大数据技术，2023 年入学，现在主要做 AI Agent 相关的后端工作。日常写 Python 和 FastAPI，用 Neo4j 建知识图谱，也搭过完整的 RAG 检索链路和多智能体安全实验。多数时候，我要把一句模糊的需求拆成状态、接口和可复现的实验，再把它跑起来、测完、部署。',
 } as const;
+
+export type Profile = typeof profile;

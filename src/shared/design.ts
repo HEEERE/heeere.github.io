@@ -1,3 +1,8 @@
+/**
+ * Legacy design tokens kept for the optional Remotion video sub-project.
+ * The website itself uses the CSS custom properties in `src/styles/base.css`
+ * and the scene palettes in `src/data/scenes.ts`.
+ */
 export const DESIGN_TOKENS = {
   background: '#090b0d',
   surface: '#101417',

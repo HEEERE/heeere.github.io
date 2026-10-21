@@ -2,7 +2,20 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  {ignores: ['dist/**', 'node_modules/**', 'public/video/**', 'tmp/**']},
+  {
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'public/**',
+      'tmp/**',
+      'scripts/**',
+      'remotion/**',
+      'docs/**',
+      '.agents/**',
+      '.npm-cache/**',
+      'coverage/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

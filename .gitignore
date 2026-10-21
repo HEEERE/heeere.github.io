@@ -6,4 +6,5 @@ tmp/
 .agents/
 public/images/portrait.png
 remotion/public/images/portrait.png
+remotion/out/
 *.log
