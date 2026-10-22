@@ -121,7 +121,7 @@ export const glass = (color = '#c2dbe8', opacity = 0.2): MeshStandardMaterial =>
     transparent: true,
     opacity,
     roughness: 0.08,
-    metalness: 0.4,
+    metalness: 0.05,
     depthWrite: false,
     side: DoubleSide,
   });

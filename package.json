@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc --noEmit && tsc -p remotion/tsconfig.json --noEmit",
-    "build": "npm run typecheck && vite build",
+    "build": "npm run reports && npm run typecheck && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
+    "reports": "node scripts/project-reports.mjs",
+    "qa:portfolio": "node scripts/portfolio-qa.mjs",
     "posters": "node scripts/posters.mjs",
     "qa": "node scripts/e2e.mjs",
     "shots": "node scripts/shots.mjs",

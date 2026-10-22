@@ -275,7 +275,7 @@ export const photoTexture = (kind: 'night' | 'campus' | 'sea'): ReturnType<typeo
     // Frame + caption strip.
     ctx.fillStyle = '#f0ece0';
     ctx.fillRect(0, height - 46, width, 46);
-    text(ctx, kind === 'night' ? 'HAIKOU / 23:40' : kind === 'campus' ? 'HAINAN UNIV.' : 'HAIKOU BAY', 16, height - 20, {
+    text(ctx, kind === 'night' ? 'TIANJIN / 23:40' : kind === 'campus' ? 'HAINAN UNIV.' : 'HAIHE RIVER', 16, height - 20, {
       size: 11,
       weight: 600,
       font: FONT_MONO,
@@ -357,7 +357,7 @@ export const postboxFrontTexture = (): ReturnType<typeof canvasTexture> =>
     // Bottom plinth.
     ctx.fillStyle = 'rgba(20, 16, 14, 0.35)';
     ctx.fillRect(0, height - 34, width, 34);
-    text(ctx, 'HAIKOU · CHINA', width / 2, height - 12, {size: 10, weight: 600, font: FONT_MONO, color: 'rgba(246,232,216,0.55)', align: 'center', tracking: 2});
+    text(ctx, 'TIANJIN · CHINA', width / 2, height - 12, {size: 10, weight: 600, font: FONT_MONO, color: 'rgba(246,232,216,0.55)', align: 'center', tracking: 2});
     grain(ctx, width, height, {seed: 61, count: 1200, alpha: 0.05, size: 1.2});
   });
 

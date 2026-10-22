@@ -1,5 +1,6 @@
 import type {Texture} from 'three';
-import {metal, toon} from '../materials';
+import {metal} from '../materials';
+import {surface} from '../surfaces';
 import {plaqueTexture, plinthWoodTexture} from '../textures';
 import type {SceneMeta} from '../../data/scenes';
 import {Box, Panel, RBox} from './primitives';
@@ -36,7 +37,7 @@ export const DioramaBase = ({
         size={[width, height, depth]}
         radius={0.015}
         segments={2}
-        material={toon(baseColor, {map: plinthWoodTexture()})}
+        material={surface(baseColor, 'wood', plinthWoodTexture())}
         p={[0, -height / 2, 0]}
         ink={false}
         receive
@@ -51,7 +52,7 @@ export const DioramaBase = ({
       />
       {/* Soft inner shadow so props feel seated on the base. */}
       <Box size={[width - 0.02, 0.006, depth - 0.02]} color="#151a20" p={[0, -0.002, 0]} ink={false} shadow={false} />
-      {ground ? <Panel size={[width, depth]} texture={ground} lit={groundLit} r={[-Math.PI / 2, 0, 0]} p={[0, 0.002, 0]} /> : null}
+      {ground ? <Panel size={[width, depth]} texture={ground} material={groundLit ? surface('#ffffff', 'wet', ground) : undefined} lit={groundLit} r={[-Math.PI / 2, 0, 0]} p={[0, 0.002, 0]} /> : null}
       <Panel size={[width * 0.36, 0.123]} texture={plaque} p={[0, -height / 2, depth / 2 + 0.004]} />
     </group>
   );

@@ -1,7 +1,7 @@
 import {useSite} from '../app/site';
 import {profile} from '../data/profile';
 
-const nowInHaikou = (): string => {
+const nowInTianjin = (): string => {
   try {
     return new Intl.DateTimeFormat('zh-CN', {
       hour: '2-digit',
@@ -22,8 +22,8 @@ export const ContactSection = () => {
         <p className="eyebrow">
           <span>CONTACT</span> / 街角邮箱
         </p>
-        <h2>想聊项目或实习，可以直接发邮件。</h2>
-        <p className="contact__lead">目前开放 AI 工程方向的实习机会，也接受项目合作。Agent、知识图谱相关的问题都欢迎。</p>
+        <h2>一起把想法，做成可运行的系统。</h2>
+        <p className="contact__lead">欢迎交流 Agent 系统、知识图谱与安全研究。项目合作、架构讨论或演示交流，请通过邮件联系。</p>
         <div className="contact__actions">
           <a className="btn btn--primary" href={`mailto:${profile.email}`}>
             {profile.email} <span aria-hidden="true">↗</span>
@@ -33,7 +33,7 @@ export const ContactSection = () => {
           </a>
         </div>
         <p className="contact__time">
-          <span>HAIKOU</span> {nowInHaikou()} <i>·</i> {profile.availability}
+          <span>TIANJIN</span> {nowInTianjin()} <i>·</i> {profile.availability}
         </p>
       </div>
 

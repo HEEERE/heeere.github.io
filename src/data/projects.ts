@@ -18,11 +18,13 @@ export type Project = {
   contributions: readonly string[];
   stack: readonly string[];
   flow: readonly string[];
+  repository?: string;
 };
 
 export const projects: readonly Project[] = [
   {
     id: 'pmu',
+    repository: 'https://github.com/HEEERE/PMU-Graph',
     number: '01',
     title: 'PMU-Graph',
     type: 'PROCEDURAL MEMORY / SKILL GRAPH',
@@ -48,6 +50,7 @@ export const projects: readonly Project[] = [
   },
   {
     id: 'ekg',
+    repository: 'https://github.com/HEEERE/LLM4EKG',
     number: '02',
     title: 'LLM4EKG',
     type: 'LLM–RAG / EMERGENCY KNOWLEDGE',
@@ -73,27 +76,27 @@ export const projects: readonly Project[] = [
   {
     id: 'security',
     number: '03',
-    title: '多智能体污染防御策略实验平台',
-    type: 'MULTI-AGENT / SECURITY',
-    subtitle: '多智能体污染传播检测与防御平台',
+    title: 'MAJD-Guard',
+    type: 'MULTI-AGENT / PROVENANCE & DEFENSE',
+    subtitle: '多智能体级联污染与防御可视化平台',
     period: '2026.04 — 至今',
-    status: '进行中',
+    status: '持续研究与开发',
     role: '独立设计与开发',
     color: '#e0877a',
     scene: 'security',
     sceneName: '防御实验室',
     description:
-      '一个用于复现和防御 Agent 污染的实验平台：模拟 Prompt Injection、RAG 污染、工具调用污染和记忆污染在多智能体链路中的传播，并提供检测、投票、阻断和完整的 trace 回放。',
-    highlights: ['三级检测流水线', '多 Agent 共识决策', '动态污染阻断', 'Trace Replay'],
+      '围绕多智能体中的级联污染，连接来源账本、统一动作闸门、双图分析、独立检查与状态修复。用可视化事件流解释污染从哪里来、危险动作为什么被拒绝，以及如何从干净输入恢复。',
+    highlights: ['版本化来源账本', 'ActionGateway', 'RAISE 双图机制', '独立检查与干净重放'],
     contributions: [
-      '以 MessageBus 为核心构建多 Agent 事件流，支持任务执行、检测事件、决策结果及污染传播过程的实时追踪。',
-      '实现 L1 正则检测、L2 向量语义检测和 L3 LLM 意图检测，并通过 Fail-Fast 机制减少无效检测开销。',
-      '设计 7 类 Guard Agent，以及 Veto、Quorum、Weighted Vote、Fallback 四类共识机制，聚合多源检测证据。',
-      '通过 ContainmentRegistry 对污染节点、危险工具、传播边和记忆键进行动态隔离与阻断。',
-      '支持 JSON/YAML 策略配置、策略校验与编译、异步运行、WebSocket 实时推送、Benchmark、Trace Replay 和 Docker 部署。',
+      '构建 MessageBus 与版本化 ProvenanceLedger，记录消息、记忆、检索和动作参数的来源关系及追加式状态变化。',
+      '实现统一 ActionGateway，检查动作权限、参数来源、作用范围与执行模式；检测模型的证据只能否决，不能直接授权。',
+      '实现 conservative / tight 双图分工：紧图提出候选修复方案，保守图承担安全判断与独立复核。',
+      '通过独立 checker 检查残余污染路径，再提交失效、隔离和限制保留；从干净输入重放，避免重新激活已失效版本。',
+      '提供 FastAPI、WebSocket 运行投影、React 操作界面与 Trace Replay，连接策略配置、过程观察和机制验证。',
     ],
-    stack: ['FastAPI', 'Pydantic v2', 'SQLite WAL', 'ChromaDB', 'WebSocket', 'Docker'],
-    flow: ['Inject (Simulation)', 'L1', 'L2', 'L3', 'Guard Consensus', 'Contain', 'Trace'],
+    stack: ['FastAPI', 'Python', 'SQLite', 'React', 'TypeScript', 'WebSocket', 'Docker'],
+    flow: ['Provenance', 'ActionGateway', 'Dual Graph', 'Independent Check', 'Repair', 'Clean Replay'],
   },
 ] as const;
 

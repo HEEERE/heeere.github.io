@@ -163,6 +163,7 @@ type PanelProps = CommonProps & {
 };
 
 export const Panel = ({size, texture, lit = false, opacity, additive, doubleSide, color = '#ffffff', material, ...props}: PanelProps) => {
+  const quality = useQuality();
   const materialRef = useMemo(() => {
     if (material) return material;
     if (lit) {
@@ -191,7 +192,7 @@ export const Panel = ({size, texture, lit = false, opacity, additive, doubleSide
       position={props.p}
       rotation={props.r}
       scale={props.s}
-      receiveShadow={false}
+      receiveShadow={(props.receive ?? lit) && quality.shadows}
       userData={props.bounds === false ? {ignoreBounds: true} : undefined}
     />
   );

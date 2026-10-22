@@ -2,6 +2,8 @@ import type {CSSProperties} from 'react';
 import {useSite} from '../app/site';
 import {projects} from '../data/projects';
 import {getScene} from '../data/scenes';
+import {ProjectOutcomes} from './ProjectDossier';
+import {projectEvidence} from '../data/projectEvidence';
 
 export const WorksSection = () => {
   const {openScene} = useSite();
@@ -38,7 +40,9 @@ export const WorksSection = () => {
                 <p className="work__type">{project.type}</p>
                 <h3 className="work__title">{project.title}</h3>
                 <p className="work__subtitle">{project.subtitle}</p>
+                <p className="work__question">{projectEvidence[project.id].question}</p>
                 <p className="work__desc">{project.description}</p>
+                <ProjectOutcomes project={project} />
 
                 <ul className="work__highlights">
                   {project.highlights.map((highlight) => (
@@ -46,11 +50,16 @@ export const WorksSection = () => {
                   ))}
                 </ul>
 
-                <ol className="work__contributions">
+                <details className="work__implementation"><summary>实现细节与个人贡献</summary><ol className="work__contributions">
                   {project.contributions.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
-                </ol>
+                </ol></details>
+                <div className="project-links">
+                  <button type="button" onClick={() => openScene(project.scene)}>交互演示与技术报告 ↗</button>
+                  <a href={`/reports/${project.id}.md`} download>下载报告 ↓</a>
+                  {project.repository ? <a href={project.repository} target="_blank" rel="noreferrer">项目源码 ↗</a> : null}
+                </div>
 
                 <div className="work__flow" aria-label="系统流程">
                   {project.flow.map((step, index) => (

@@ -1,3 +1,4 @@
+import {surface} from '../../three/surfaces';
 import {useMemo, useRef} from 'react';
 import {useFrame} from '@react-three/fiber';
 import {CatmullRomCurve3, MeshBasicMaterial, Vector3, type Group, type Mesh} from 'three';
@@ -399,27 +400,27 @@ const Shell = () => (
   <group>
     <Box
       size={[3.44, 0.06, 3.44]}
-      material={toon('#ffffff', {map: archiveFloorTexture()})}
+      material={surface('#ffffff', 'tile', archiveFloorTexture())}
       p={[0, 0.03, 0]}
       ink={false}
     />
 
     <Box
       size={[3.46, 1.74, 0.07]}
-      material={toon('#ffffff', {map: archiveWallTexture()})}
+      material={surface('#ffffff', 'plaster', archiveWallTexture())}
       p={[0, 0.87, -1.655]}
       ink
       inkWidth={0.009}
     />
     <Box
       size={[0.07, 1.74, 3.46]}
-      material={toon('#ffffff', {map: archiveWallTexture()})}
+      material={surface('#ffffff', 'plaster', archiveWallTexture())}
       p={[-1.655, 0.87, 0]}
       ink
       inkWidth={0.009}
     />
-    <Box size={[3.5, 0.03, 0.1]} color="#5c6b70" p={[0, 1.755, -1.655]} ink={false} />
-    <Box size={[0.1, 0.03, 3.5]} color="#5c6b70" p={[-1.655, 1.755, 0]} ink={false} />
+    <Box size={[3.5, 0.03, 0.1]} material={surface('#5c6b70', 'paint')} p={[0, 1.755, -1.655]} ink={false} />
+    <Box size={[0.1, 0.03, 3.5]} material={surface('#5c6b70', 'paint')} p={[-1.655, 1.755, 0]} ink={false} />
 
     <Box size={[3.42, 0.1, 0.03]} color="#4a585d" p={[0, 0.11, -1.6]} ink={false} />
     <Box size={[0.03, 0.1, 3.42]} color="#4a585d" p={[-1.6, 0.11, 0]} ink={false} />
@@ -556,11 +557,11 @@ const FlowConsole = () => (
     <Panel size={[0.9, 0.36]} texture={posterTexture('console', 'INDEX', 'drawer → card → trace', '#6f8a94', 'notice')} r={[-Math.PI / 2, 0, 0]} p={[0.01, 0.718, -1.5]} />
     {[-0.41, 0.43].map((x) => (
       <group key={x}>
-        <Box size={[0.036, 0.63, 0.036]} color="#4d5c61" p={[x, 0.375, -1.57]} ink={false} />
-        <Box size={[0.036, 0.63, 0.036]} color="#4d5c61" p={[x, 0.375, -1.23]} ink={false} />
+        <Box size={[0.036, 0.63, 0.036]} material={surface('#4d5c61', 'paint')} p={[x, 0.375, -1.57]} ink={false} />
+        <Box size={[0.036, 0.63, 0.036]} material={surface('#4d5c61', 'paint')} p={[x, 0.375, -1.23]} ink={false} />
       </group>
     ))}
-    <Box size={[0.86, 0.022, 0.32]} color="#4d5c61" p={[0.01, 0.18, -1.4]} ink={false} />
+    <Box size={[0.86, 0.022, 0.32]} material={surface('#4d5c61', 'paint')} p={[0.01, 0.18, -1.4]} ink={false} />
     <Box size={[0.24, 0.16, 0.22]} color="#b9b09a" p={[0.01, 0.27, -1.4]} ink={false} />
 
     <ArchiveMonitor p={[0.02, 0.718, -1.46]} width={0.36} height={0.235} texture={lifecycleScreenTexture()} yaw={0.05} />

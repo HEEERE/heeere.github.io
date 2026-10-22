@@ -1,3 +1,4 @@
+import {surface} from '../../three/surfaces';
 import {useMemo, useRef} from 'react';
 import {useFrame} from '@react-three/fiber';
 import {CatmullRomCurve3, Vector3, type Group, type Mesh, type MeshToonMaterial, type PointLight} from 'three';
@@ -24,6 +25,9 @@ import {
   zoneSignTexture,
 } from '../../three/textures';
 import {getScene} from '../../data/scenes';
+import {useQuality} from '../../three/quality';
+
+type SceneDemo = {step: number; variant: number};
 
 /* ------------------------------------------------------------------ */
 /* Room metrics                                                        */
@@ -705,13 +709,13 @@ function listDots(ctx: CanvasRenderingContext2D, x: number, y: number): void {
 /* ------------------------------------------------------------------ */
 
 const LabShell = () => {
-  const wall = toon('#ffffff', {map: labWallTexture()});
-  const sideWall = toon('#b3bfc8', {map: labWallTexture()});
+  const wall = surface('#ffffff', 'paint', labWallTexture());
+  const sideWall = surface('#b3bfc8', 'paint', labWallTexture());
   return (
     <group>
       {/* Raised technical floor. */}
       <Box size={[3.56, 0.06, 3.56]} color="#252c32" p={[0, 0.03, 0]} ink={false} />
-      <Panel size={[3.54, 3.54]} texture={labFloorTexture()} lit r={[-Math.PI / 2, 0, 0]} p={[0, FLOOR_Y + 0.002, 0]} />
+      <Panel size={[3.54, 3.54]} material={surface('#ffffff', 'tile', labFloorTexture())} lit r={[-Math.PI / 2, 0, 0]} p={[0, FLOOR_Y + 0.002, 0]} />
 
       {/* Back wall. */}
       <Box size={[3.56, WALL_H, WALL_T]} material={wall} p={[0, FLOOR_Y + WALL_H / 2, BACK_Z]} ink inkWidth={0.01} />
@@ -1044,7 +1048,7 @@ const ContainmentCell = () => {
 const SecurityTerminal = () => (
   <group position={[0.2, FLOOR_Y, -0.98]} rotation={[0, -0.16, 0]}>
     <RBox size={[0.26, 0.04, 0.26]} radius={0.008} color="#2c353b" p={[0, 0.02, 0]} ink={false} />
-    <RBox size={[0.16, 0.86, 0.16]} radius={0.008} color="#3a444b" p={[0, 0.47, 0]} ink={false} />
+    <RBox size={[0.16, 0.86, 0.16]} radius={0.008} material={surface('#3a444b', 'paint')} p={[0, 0.47, 0]} ink={false} />
     <Panel size={[0.12, 0.085]} texture={keypadTexture()} p={[0, 0.8, 0.081]} />
     <Torus radius={0.036} tube={0.006} color="#8a939a" r={[0, 0, 0]} p={[0, 0.69, 0.084]} />
     <Cyl radius={0.027} height={0.026} color="#b23c2b" r={[Math.PI / 2, 0, 0]} p={[0, 0.69, 0.086]} ink={false} />
@@ -1145,8 +1149,8 @@ const ToolCart = () => (
 
 const QuarantineShelf = () => (
   <group position={[1.26, FLOOR_Y, 0.34]} rotation={[0, -0.26, 0]}>
-    <Box size={[0.035, 0.94, 0.28]} color="#414c54" p={[-0.32, 0.47, 0]} ink={false} />
-    <Box size={[0.035, 0.94, 0.28]} color="#414c54" p={[0.32, 0.47, 0]} ink={false} />
+    <Box size={[0.035, 0.94, 0.28]} material={surface('#414c54', 'paint')} p={[-0.32, 0.47, 0]} ink={false} />
+    <Box size={[0.035, 0.94, 0.28]} material={surface('#414c54', 'paint')} p={[0.32, 0.47, 0]} ink={false} />
     {[0.22, 0.54, 0.86].map((y) => (
       <Box key={y} size={[0.68, 0.022, 0.28]} color="#4c575f" p={[0, y, 0]} ink={false} />
     ))}
@@ -1190,7 +1194,7 @@ const FloorProps = () => (
     />
 
     {/* Cable ramp where the trace line crosses the aisle. */}
-    <RBox size={[0.34, 0.028, 0.16]} radius={0.008} color="#3a444b" p={[0.04, FLOOR_Y + 0.014, -0.62]} r={[0, -0.25, 0]} ink={false} />
+    <RBox size={[0.34, 0.028, 0.16]} radius={0.008} material={surface('#3a444b', 'paint')} p={[0.04, FLOOR_Y + 0.014, -0.62]} r={[0, -0.25, 0]} ink={false} />
     <Panel size={[0.3, 0.032]} texture={hazardStripeTexture()} p={[0.04, FLOOR_Y + 0.029, -0.62]} r={[-Math.PI / 2, 0, -0.25]} />
 
     {/* Loose floor cables and a coil. */}
@@ -1243,7 +1247,7 @@ const CeilingServices = () => (
     {/* Ceiling cable drop to the cell roof. */}
     <Cable points={[[1.2, 1.58, -1.57], [1.16, 1.42, -1.2], [1.08, 1.2, -1.0], [1.02, 1.13, -0.94]]} radius={0.011} color="#1e252a" />
     <Cable points={[[1.35, 1.58, -1.57], [1.3, 1.36, -1.1], [1.24, 1.15, -0.86]]} radius={0.008} color="#2a3238" />
-    <Box size={[0.1, 0.05, 0.13]} color="#3a444b" p={[1.14, 1.15, -0.9]} ink={false} />
+    <Box size={[0.1, 0.05, 0.13]} material={surface('#3a444b', 'paint')} p={[1.14, 1.15, -0.9]} ink={false} />
 
   </group>
 );
@@ -1267,24 +1271,27 @@ const TRACE_POINTS: Vec3[] = [
 const TRACE_CURVE = new CatmullRomCurve3(TRACE_POINTS.map((point) => new Vector3(point[0], point[1], point[2])));
 const TRACE_DOTS = 5;
 
-const ContaminationTrace = () => {
+const ContaminationTrace = ({demo}: {demo?: SceneDemo}) => {
+  const quality = useQuality();
+  const clean = demo?.variant === 1;
+  const traceColor = clean ? '#8fd4c8' : '#ff6a44';
   const dots = useRef<Array<Mesh | null>>([]);
   const gateLight = useRef<PointLight>(null);
   const gateGlow = useRef<Group>(null);
   useFrame(({clock}) => {
-    const cycle = clock.elapsedTime % 14;
-    const travel = Math.min(1, Math.max(0, (cycle - 0.8) / 7.4));
+    const cycle = quality.reducedMotion ? 9 : clock.elapsedTime % 14;
+    const travel = demo ? (demo.step + 1) / 3 : Math.min(1, Math.max(0, (cycle - 0.8) / 7.4));
     const appear = Math.min(1, cycle / 0.9) * (cycle > 12.2 ? Math.max(0, 1 - (cycle - 12.2) / 1.4) : 1);
     const arrived = travel >= 1;
     dots.current.forEach((node, index) => {
       if (!node) return;
       const local = Math.min(1, Math.max(0, travel * 1.3 - index * 0.052));
       TRACE_CURVE.getPointAt(local, node.position);
-      const pulse = arrived ? 0.82 + Math.sin(clock.elapsedTime * 7 + index * 1.1) * 0.3 : 1;
+      const pulse = arrived && !quality.reducedMotion ? 0.82 + Math.sin(clock.elapsedTime * 3 + index * 1.1) * 0.18 : 1;
       node.scale.setScalar(appear * pulse);
       node.visible = appear > 0.02;
     });
-    if (gateLight.current) gateLight.current.intensity = arrived ? 0.55 + Math.sin(clock.elapsedTime * 5) * 0.2 : 0.14;
+    if (gateLight.current) gateLight.current.intensity = arrived ? 0.7 : 0.14;
     if (gateGlow.current) gateGlow.current.scale.setScalar(arrived ? 1.4 : 0.7);
   });
   return (
@@ -1298,12 +1305,12 @@ const ContaminationTrace = () => {
             dots.current[index] = node;
           }}
           geometry={sphereGeometry(0.019, 10, 8)}
-          material={flat(index % 2 === 0 ? '#ff6a44' : '#ffb060')}
+          material={flat(traceColor)}
         />
       ))}
       <group ref={gateGlow} position={[0.74, 0.78, -0.45]}>
-        <Glow color="#ff5a34" size={0.34} opacity={0.28} p={[0, 0, 0.02]} />
-        <pointLight ref={gateLight} color="#ff6a44" intensity={0.2} distance={0.85} decay={2} />
+        <Glow color={traceColor} size={0.34} opacity={0.28} p={[0, 0, 0.02]} />
+        <pointLight ref={gateLight} color={traceColor} intensity={0.2} distance={0.85} decay={2} />
       </group>
     </group>
   );
@@ -1320,7 +1327,7 @@ const ContaminationTrace = () => {
  * quarantine crates and the red trace that crawls along the floor cable until
  * the gate blocks it.
  */
-export const SecurityScene = () => {
+export const SecurityScene = ({demo}: {demo?: SceneDemo}) => {
   const meta = getScene('security');
   return (
     <group>
@@ -1338,7 +1345,7 @@ export const SecurityScene = () => {
       <ToolCart />
       <QuarantineShelf />
       <FloorProps />
-      <ContaminationTrace />
+      <ContaminationTrace demo={demo} />
     </group>
   );
 };

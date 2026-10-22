@@ -1,3 +1,4 @@
+import {surface} from '../../three/surfaces';
 import {useRef} from 'react';
 import {useFrame} from '@react-three/fiber';
 import type {Mesh, MeshBasicMaterial, PointLight} from 'three';
@@ -547,7 +548,7 @@ const RoomShell = () => (
       size={[3.34, WALL_TOP, 0.12]}
       radius={0.006}
       segments={2}
-      material={toon('#d7e2e1', {map: commandWall()})}
+      material={surface('#d7e2e1', 'plaster', commandWall())}
       p={[0, WALL_TOP / 2, -1.66]}
       ink
       inkWidth={0.012}
@@ -557,7 +558,7 @@ const RoomShell = () => (
       size={[0.12, WALL_TOP, 3.34]}
       radius={0.006}
       segments={2}
-      material={toon('#cfdcda', {map: commandWall()})}
+      material={surface('#cfdcda', 'plaster', commandWall())}
       p={[-1.66, WALL_TOP / 2, 0]}
       ink
       inkWidth={0.012}
@@ -600,9 +601,9 @@ const RoomShell = () => (
     <Panel size={[0.5, 0.36]} texture={binderSpinesTexture()} r={[0, Math.PI / 2, 0]} p={[-1.59, 0.62, -0.52]} lit />
 
     {/* Small server / comms indicator cabinet tucked in the right corner. */}
-    <RBox size={[0.24, 0.62, 0.42]} radius={0.008} color="#dfe7e5" p={[1.5, 0.31, -1.24]} ink inkWidth={0.006} />
+    <RBox size={[0.24, 0.62, 0.42]} radius={0.008} material={surface('#dfe7e5', 'paint')} p={[1.5, 0.31, -1.24]} ink inkWidth={0.006} />
     <Panel size={[0.16, 0.4]} texture={terminalScreenTexture()} r={[0, -Math.PI / 2, 0]} p={[1.375, 0.38, -1.24]} />
-    <Box size={[0.02, 0.02, 0.34]} color="#8f9f9d" p={[1.37, 0.62, -1.24]} ink={false} shadow={false} />
+    <Box size={[0.02, 0.02, 0.34]} material={surface('#8f9f9d', 'paint')} p={[1.37, 0.62, -1.24]} ink={false} shadow={false} />
   </group>
 );
 

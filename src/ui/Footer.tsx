@@ -17,7 +17,7 @@ export const Footer = () => {
         <span>
           © 2026 {profile.name} / {profile.englishName}
         </span>
-        <span>海口 · 中国</span>
+        <span>天津 · 中国</span>
         <span>Built with React Three Fiber</span>
       </div>
       <div className="footer__links">

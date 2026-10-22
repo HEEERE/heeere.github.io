@@ -4,12 +4,14 @@
 
 - **首页主场景**：雨夜便利店街角（可旋转、缩放、持续降雨、自动门开合）
 - **场景入口**：学习工作台 / 记忆档案室 / 应急指挥室 / 防御实验室 / 工具工坊 / 街角邮箱
-- **项目入口**：PMU-Graph、LLM4EKG、多智能体污染防御策略实验平台
+- **项目入口**：PMU-Graph、LLM4EKG、MAJD-Guard
+- **职业定位**：AI Agent 系统开发 · 知识工程与安全；所在地天津。
+- **项目档案**：实现成果、箱庭流程演示、可下载技术报告，以及源码 / 项目交流入口。防御项目使用当前名称 MAJD-Guard。
 - 每个场景都是真实搭在博物馆式底座上的三维立体模型，而不是“加了 3D 倾斜的卡片”。
 
 ## 视觉与实现方向
 
-- 三渲二 / toon-NPR：`MeshToonMaterial` + 阶梯 ramp + 局部反向外扩描边
+- 三渲二 / toon-NPR：保留阶梯 ramp 与局部反向外扩描边；木材、喷漆金属、墙面、地砖、湿路面加入程序化凹凸与物理材质响应。
 - 微缩模型感：统一深色木质底座、黄铜名牌、明确的边界与构图
 - 日式夜景氛围：冷暖对比、湿路面反射、灯箱与屏光、轻量动效
 - 全部场景由代码程序化搭建（R3F 组件 + Canvas 程序纹理），无需 Blender / GLB 资产
@@ -63,6 +65,9 @@ vault/index.html          庭院的独立多页入口（noindex）
 - 点击后进入左右分栏的「展陈详情层」（`#/scene/<id>`）：左侧大场景可旋转缩放，右侧是该场景承载的内容。
 - `Esc` 关闭，`←/→` 切换上一个 / 下一个场景。
 - 键盘可 Tab 到任意场景卡片，`Enter` / `Space` 进入。
+- 三个项目场景的装置标记与流程步骤联动，场景内可查看输出、前进及重看。分支分别展示验证失败、证据缺失与污染阻断；不展示具体实验数据。
+- 顶部资料导航可直接查看流程、技术报告和公开源码。报告下载由 `npm run reports` 从 `src/data/projectEvidence.ts` 生成，生产构建自动同步。
+- 验收路径、资料来源与视觉规则见 [docs/portfolio-acceptance.md](docs/portfolio-acceptance.md)。
 
 ## 内容映射
 
@@ -120,7 +125,8 @@ npm test
 npm run build       # typecheck + 生产构建
 npm run preview     # 预览 dist
 
-npm run qa          # 无头浏览器交互回归（Playwright + 本机 Chrome）
+npm run qa -- http://127.0.0.1:5173/ # 原有导航回归（开发预览）
+npm run qa:portfolio # 箱庭流程、资料入口、移动端及静态回退验收
 npm run shots       # 截取桌面各区块到 tmp/shots/
 npm run posters     # 重新生成 public/images/scenes/*.jpg（场景海报 / 静态回退）
 npm run og          # 重新生成 public/images/og-cover.png

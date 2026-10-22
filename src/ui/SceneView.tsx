@@ -1,5 +1,8 @@
 import {lazy, Suspense} from 'react';
 import type {SceneId} from '../data/scenes';
+import {getScene} from '../data/scenes';
+import type {DemoControl} from './ProjectDossier';
+import {ProjectStory} from '../three/ProjectStory';
 
 /**
  * Each diorama is its own chunk: the hero only downloads the rainy konbini,
@@ -23,11 +26,13 @@ const sceneComponents = {
   postbox: PostboxScene,
 } as const;
 
-export const SceneView = ({id}: {id: SceneId}) => {
+export const SceneView = ({id, story}: {id: SceneId; story?: DemoControl}) => {
   const Component = sceneComponents[id];
+  const projectId = getScene(id).projectId;
   return (
     <Suspense fallback={null}>
-      <Component />
+      {id === 'security' ? <SecurityScene demo={story} /> : <Component />}
+      {projectId && story ? <ProjectStory projectId={projectId} control={story} /> : null}
     </Suspense>
   );
 };

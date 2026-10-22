@@ -32,11 +32,11 @@ export const NightExteriorLights = ({
   const quality = useQuality();
   return (
     <>
-      <ambientLight intensity={0.42} color="#64799a" />
-      <hemisphereLight intensity={0.5} color="#7f9cc4" groundColor="#161a20" />
-      <directionalLight position={[-3.6, 5.4, 4.2]} color={color} intensity={intensity} {...shadowProps(shadowMapSize)} />
-      <directionalLight position={[4.6, 2.6, -2.4]} color="#8fb0d4" intensity={0.9} />
-      <pointLight position={[0, 2.2, 2.4]} color="#8fa8c8" intensity={2.4} distance={6} decay={2} visible={!quality.simplified} />
+      <ambientLight intensity={0.22} color="#64799a" />
+      <hemisphereLight intensity={0.48} color="#7f9cc4" groundColor="#27201b" />
+      <directionalLight position={[-3.6, 5.4, 4.2]} color={color} intensity={intensity} {...shadowProps(Math.min(shadowMapSize, quality.shadowMapSize))} castShadow={quality.shadows} />
+      <directionalLight position={[4.6, 2.6, -2.4]} color="#8fb0d4" intensity={1.25} />
+      <pointLight position={[-0.6, 0.9, 0.65]} color="#ffb56b" intensity={2.2} distance={3.2} decay={2} visible={!quality.simplified} />
     </>
   );
 };
@@ -54,11 +54,11 @@ export const RoomLights = ({
   const quality = useQuality();
   return (
     <>
-      <ambientLight intensity={0.55} color={fill} />
-      <hemisphereLight intensity={0.5} color="#c8d8e8" groundColor="#3a3430" />
-      <directionalLight position={[2.4, 4.6, 4.4]} color={color} intensity={intensity} {...shadowProps(shadowMapSize)} />
-      <directionalLight position={[-3.6, 2.8, 1.2]} color={fill} intensity={0.7} />
-      <pointLight position={[0, 2.4, 1.8]} color={color} intensity={3.5} distance={7} decay={2} visible={!quality.simplified} />
+      <ambientLight intensity={0.28} color={fill} />
+      <hemisphereLight intensity={0.45} color="#c8d8e8" groundColor="#443329" />
+      <directionalLight position={[2.4, 4.6, 4.4]} color={color} intensity={intensity} {...shadowProps(Math.min(shadowMapSize, quality.shadowMapSize))} castShadow={quality.shadows} />
+      <directionalLight position={[-3.6, 2.8, -1.6]} color={fill} intensity={1.1} />
+      <pointLight position={[-0.8, 1.4, 1.1]} color="#f4c593" intensity={1.3} distance={3.5} decay={2} visible={!quality.simplified} />
     </>
   );
 };

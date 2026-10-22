@@ -3,6 +3,7 @@ import {scrollToSection} from '../app/useRoute';
 import {useSite} from '../app/site';
 import {konbiniScene} from '../data/scenes';
 import {profile} from '../data/profile';
+import {projects} from '../data/projects';
 import {SceneCanvas} from '../three/SceneCanvas';
 import {SceneBoundary} from './SceneBoundary';
 import {SceneArt} from './SceneArt';
@@ -11,7 +12,7 @@ import {SceneView} from './SceneView';
 const meta = konbiniScene;
 
 export const Hero = () => {
-  const {rich, reducedMotion, overlayOpen} = useSite();
+  const {rich, reducedMotion, overlayOpen, openScene} = useSite();
   const scroll = (id: string) => (event: React.MouseEvent) => {
     event.preventDefault();
     scrollToSection(id);
@@ -31,16 +32,17 @@ export const Hero = () => {
           纪喆元
           <span className="hero__name-en">JI ZHEYUAN</span>
         </h1>
+        <p className="hero__positioning">{profile.positioning}</p>
         <p className="hero__roles">
           AI Agent Systems <i>·</i> Knowledge Graph <i>·</i> Agent Security
         </p>
         <p className="hero__intro">{profile.intro}</p>
         <div className="hero__actions">
-          <a className="btn btn--primary" href="#scenes" onClick={scroll('scenes')}>
-            浏览场景 <span aria-hidden="true">↘</span>
+          <a className="btn btn--primary" href="#works" onClick={scroll('works')}>
+            查看项目与成果 <span aria-hidden="true">↘</span>
           </a>
-          <a className="btn" href="#works" onClick={scroll('works')}>
-            查看项目
+          <a className="btn" href="#contact" onClick={scroll('contact')}>
+            联系我
           </a>
           <a className="btn btn--quiet" href={profile.github} target="_blank" rel="noreferrer">
             GitHub <span aria-hidden="true">↗</span>
@@ -56,8 +58,8 @@ export const Hero = () => {
             <dd>{profile.major}</dd>
           </div>
           <div>
-            <dt>状态</dt>
-            <dd>{profile.availability}</dd>
+            <dt>所在地</dt>
+            <dd>{profile.location}</dd>
           </div>
         </dl>
       </div>
@@ -81,6 +83,14 @@ export const Hero = () => {
           </span>
         </div>
         {rich ? <p className="hero__drag-hint">{reducedMotion ? '静态展示' : '拖拽旋转 · 鼠标查看'}</p> : null}
+        <nav className="hero__directory" aria-label="项目场景直达">
+          <p>一座微缩街区，三条研究线索 <span>EXPLORE THE SYSTEMS</span></p>
+          <div>{projects.map((project) => (
+            <button key={project.id} onClick={() => openScene(project.scene)} type="button">
+              <span>{project.number}</span><b>{project.sceneName}</b><i aria-hidden="true">↗</i>
+            </button>
+          ))}</div>
+        </nav>
         <span className="hero__ghost" aria-hidden="true">
           01
         </span>

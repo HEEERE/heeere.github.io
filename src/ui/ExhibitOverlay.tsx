@@ -8,8 +8,10 @@ import {SceneCanvas} from '../three/SceneCanvas';
 import {SceneBoundary} from './SceneBoundary';
 import {SceneArt} from './SceneArt';
 import {SceneView} from './SceneView';
+import {ProjectDossier, type DemoControl} from './ProjectDossier';
+import {projectEvidence} from '../data/projectEvidence';
 
-const ProjectBody = ({projectId}: {projectId: NonNullable<ReturnType<typeof getScene>['projectId']>}) => {
+const ProjectBody = ({projectId, control}: {projectId: NonNullable<ReturnType<typeof getScene>['projectId']>; control: DemoControl}) => {
   const project = getProject(projectId);
   return (
     <div className="exhibit-body">
@@ -30,6 +32,7 @@ const ProjectBody = ({projectId}: {projectId: NonNullable<ReturnType<typeof getS
         </div>
       </dl>
 
+      <ProjectDossier project={project} control={control} />
       <section className="exhibit-block">
         <h3>核心亮点</h3>
         <ul className="exhibit-chiprow">
@@ -173,7 +176,7 @@ const StackBody = () => (
 const ContactBody = () => (
   <div className="exhibit-body">
     <p className="exhibit-body__lead">
-      红色邮筒、绿色电话亭和一盏路灯。想聊项目或实习，直接发邮件。
+      红色邮筒、绿色电话亭和一盏路灯。项目合作、技术交流或演示沟通，直接发邮件。
     </p>
 
     <dl className="exhibit-facts">
@@ -253,9 +256,9 @@ const KonbiniBody = ({onNavigate}: {onNavigate: (id: SceneId) => void}) => (
   </div>
 );
 
-const bodyFor = (sceneId: SceneId, onNavigate: (id: SceneId) => void) => {
+const bodyFor = (sceneId: SceneId, onNavigate: (id: SceneId) => void, control: DemoControl) => {
   const meta = getScene(sceneId);
-  if (meta.projectId) return <ProjectBody projectId={meta.projectId} />;
+  if (meta.projectId) return <ProjectBody projectId={meta.projectId} control={control} />;
   if (sceneId === 'desk') return <AboutBody />;
   if (sceneId === 'workshop') return <StackBody />;
   if (sceneId === 'postbox') return <ContactBody />;
@@ -273,9 +276,16 @@ export const ExhibitOverlay = ({
 }) => {
   const {rich, reducedMotion} = useSite();
   const meta = getScene(sceneId);
+  const [demo, setDemo] = useState({scene: sceneId, step: 0, variant: 0});
+  const demoStep = demo.scene === sceneId ? demo.step : 0;
+  const demoVariant = demo.scene === sceneId ? demo.variant : 0;
+  const control: DemoControl = {
+    step: demoStep, variant: demoVariant,
+    onStep: (value) => setDemo({scene: sceneId, step: value, variant: demoVariant}),
+    onVariant: (value) => setDemo({scene: sceneId, step: demoStep, variant: value}),
+  };
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [shiftX, setShiftX] = useState(0);
   const [posterMode] = useState(() => new URLSearchParams(window.location.search).has('poster'));
   const closeRef = useRef<HTMLButtonElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
@@ -291,20 +301,6 @@ export const ExhibitOverlay = ({
       previousFocus.current?.focus({preventScroll: true});
     };
   }, []);
-
-  useEffect(() => {
-    const update = () => {
-      if (posterMode || window.innerWidth <= 980) {
-        setShiftX(0);
-        return;
-      }
-      const panelWidth = Math.min(540, window.innerWidth * 0.42);
-      setShiftX(Math.min(0.18, panelWidth / window.innerWidth / 2));
-    };
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, [posterMode]);
 
   const requestClose = useCallback(() => {
     if (closing) return;
@@ -323,6 +319,15 @@ export const ExhibitOverlay = ({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        const dialog = closeRef.current?.closest('[role="dialog"]');
+        const focusable = Array.from(dialog?.querySelectorAll<HTMLElement>('button, a[href], summary, [tabindex="0"]') ?? []).filter((node) => node.getClientRects().length > 0);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+        return;
+      }
       if (event.key === 'Escape') {
         event.preventDefault();
         requestClose();
@@ -349,8 +354,8 @@ export const ExhibitOverlay = ({
       <div className="exhibit__stage">
         {rich ? (
           <SceneBoundary fallback={<SceneArt meta={meta} variant="exhibit" />} label={sceneId}>
-            <SceneCanvas meta={meta} tier="exhibit" interactive sway shiftX={shiftX}>
-              <SceneView id={sceneId} />
+            <SceneCanvas meta={meta} tier="exhibit" interactive sway>
+              <SceneView id={sceneId} story={posterMode ? undefined : control} />
             </SceneCanvas>
           </SceneBoundary>
         ) : (
@@ -363,6 +368,11 @@ export const ExhibitOverlay = ({
           </span>
         </div>
         {rich ? <p className="exhibit__hint">{reducedMotion ? '静态展示' : '拖拽旋转 · 滚轮缩放'}</p> : null}
+        {meta.projectId && !posterMode ? <div className="scene-story-caption" aria-live="polite">
+          <div><span>0{demoStep + 1} / 03 · 流程示意</span><b>{projectEvidence[meta.projectId].steps[demoStep]!.label}</b>
+            <button type="button" onClick={() => control.onStep((demoStep + 1) % 3)}>{demoStep === 2 ? '重看 ↺' : '下一步 →'}</button></div>
+          <p>{demoVariant === 1 ? projectEvidence[meta.projectId].steps[demoStep]!.alternateOutput ?? projectEvidence[meta.projectId].steps[demoStep]!.output : projectEvidence[meta.projectId].steps[demoStep]!.output}</p>
+        </div> : null}
       </div>
 
       <aside className="exhibit__panel">
@@ -371,14 +381,20 @@ export const ExhibitOverlay = ({
             <span>{meta.kindLabel}</span> / SCENE {meta.index}
           </p>
           <h2 id="exhibit-title">{meta.nameZh}</h2>
+          {meta.projectId ? <p className="exhibit__project-title">{getProject(meta.projectId).title}</p> : null}
           <p className="exhibit__en">
             {meta.nameEn} <i>/</i> {meta.nameJp}
           </p>
           <p className="exhibit__tagline">{meta.tagline}</p>
           <p className="exhibit__description">{meta.description}</p>
+          {meta.projectId ? <nav className="exhibit__quicklinks" aria-label="项目资料">
+            <button type="button" onClick={() => document.querySelector('.project-demo')?.scrollIntoView({block: 'start', behavior: reducedMotion ? 'instant' : 'smooth'})}>流程演示 ↓</button>
+            <button type="button" onClick={() => document.querySelector('.project-report')?.scrollIntoView({block: 'start', behavior: reducedMotion ? 'instant' : 'smooth'})}>技术报告 ↓</button>
+            {getProject(meta.projectId).repository ? <a href={getProject(meta.projectId).repository} target="_blank" rel="noreferrer">源码 ↗</a> : null}
+          </nav> : null}
         </header>
 
-        <div className="exhibit__body">{bodyFor(sceneId, onNavigate)}</div>
+        <div className="exhibit__body">{bodyFor(sceneId, onNavigate, control)}</div>
 
         <footer className="exhibit__foot">
           <button type="button" onClick={() => step(-1)}>
