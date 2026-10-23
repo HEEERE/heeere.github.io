@@ -80,11 +80,20 @@ try {
     check(`${width}px home has no horizontal overflow`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await shot(`home-${width}`);
     await page.locator('.hero__directory button').nth(2).click();
+    await page.locator('.exhibit.is-open').waitFor();
     await page.locator('.project-demo').waitFor();
     await page.locator('.project-demo__variants button').nth(1).click();
     await page.locator('.project-demo__steps button').nth(2).click();
     check(`${width}px static project controls work`, (await page.locator('.scene-story-caption p').innerText()).includes('ALLOW'));
-    check(`${width}px dialog fits the viewport`, await page.locator('.exhibit').evaluate(node => node.scrollWidth <= innerWidth));
+    const layout = await page.locator('.exhibit').evaluate(node => ({
+      width: innerWidth,
+      scrollWidth: node.scrollWidth,
+      overflow: [...node.querySelectorAll('*')].filter(element => element.getBoundingClientRect().right > innerWidth + 1).slice(0, 8).map(element => ({
+        class: element.className, right: element.getBoundingClientRect().right, transform: getComputedStyle(element).transform,
+      })),
+    }));
+    if (layout.scrollWidth > layout.width) console.error('Dialog overflow:', JSON.stringify(layout));
+    check(`${width}px dialog fits the viewport`, layout.scrollWidth <= layout.width);
     await shot(`project-${width}`);
     await page.keyboard.press('Escape');
     await page.locator('.exhibit').waitFor({state: 'detached'});
@@ -169,6 +178,9 @@ try {
   await noJs.close();
   check('release paths have no failed HTTP responses', badResponses.length === 0);
   check('release paths have no uncaught browser errors', errors.length === 0);
+} catch (error) {
+  await page.screenshot({path: `${out}/failure.png`}).catch(() => {});
+  throw error;
 } finally {
   await writeFile(`${out}/results.json`, JSON.stringify({checks, errors, badResponses}, null, 2));
   await browser.close();
