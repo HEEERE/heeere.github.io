@@ -1,4 +1,14 @@
 export const downloadBlob = (filename: string, blob: Blob): void => {
+  if (window.GardenNative) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = String(reader.result).split(',')[1];
+      if (data) window.GardenNative?.saveFile(filename, blob.type || 'application/octet-stream', data);
+    };
+    reader.onerror = () => window.alert('文件读取失败，请重试导出。');
+    reader.readAsDataURL(blob);
+    return;
+  }
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;

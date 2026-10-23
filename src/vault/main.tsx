@@ -7,15 +7,22 @@ import '@fontsource/ibm-plex-mono/500.css';
 import './vault.css';
 import './vault-layout.css';
 import './vault-components.css';
+import './garden.css';
 
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import {VaultProvider} from './VaultProvider';
 import {VaultApp} from './VaultApp';
 import {captureInstallPrompt, registerVaultServiceWorker} from './pwa';
+import {isNativeGarden, gardenName} from './lib/native';
 
-captureInstallPrompt();
-registerVaultServiceWorker();
+if (isNativeGarden()) {
+  document.documentElement.classList.add('garden-native');
+  document.title = gardenName;
+} else {
+  captureInstallPrompt();
+  registerVaultServiceWorker();
+}
 
 const container = document.getElementById('vault-root');
 if (!container) throw new Error('vault root missing');

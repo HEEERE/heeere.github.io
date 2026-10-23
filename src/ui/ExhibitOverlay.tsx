@@ -4,10 +4,7 @@ import {profile} from '../data/profile';
 import {getProject} from '../data/projects';
 import {getScene, scenes, type SceneId} from '../data/scenes';
 import {stackGroups} from '../data/stack';
-import {SceneCanvas} from '../three/SceneCanvas';
-import {SceneBoundary} from './SceneBoundary';
-import {SceneArt} from './SceneArt';
-import {SceneView} from './SceneView';
+import {SceneViewport} from './SceneViewport';
 import {ProjectDossier, type DemoControl} from './ProjectDossier';
 import {projectEvidence} from '../data/projectEvidence';
 
@@ -289,6 +286,9 @@ export const ExhibitOverlay = ({
   const [posterMode] = useState(() => new URLSearchParams(window.location.search).has('poster'));
   const closeRef = useRef<HTMLButtonElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
+  const closeTimer = useRef<number | undefined>(undefined);
+  const panelRef = useRef<HTMLElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     previousFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -298,15 +298,27 @@ export const ExhibitOverlay = ({
     });
     return () => {
       cancelAnimationFrame(frame);
-      previousFocus.current?.focus({preventScroll: true});
+      window.clearTimeout(closeTimer.current);
+      const opener = previousFocus.current;
+      // The parent removes inert during the same commit.
+      queueMicrotask(() => {
+        if (opener?.isConnected) opener.focus({preventScroll: true});
+      });
     };
   }, []);
 
   const requestClose = useCallback(() => {
-    if (closing) return;
+    if (closeTimer.current !== undefined) return;
+    if (reducedMotion) { onClose(); return; }
     setClosing(true);
-    window.setTimeout(onClose, 220);
-  }, [closing, onClose]);
+    closeTimer.current = window.setTimeout(onClose, 220);
+  }, [reducedMotion, onClose]);
+
+  useEffect(() => {
+    panelRef.current?.scrollTo({top: 0, behavior: 'instant'});
+    bodyRef.current?.scrollTo({top: 0, behavior: 'instant'});
+    closeRef.current?.focus({preventScroll: true});
+  }, [sceneId]);
 
   const step = useCallback(
     (direction: 1 | -1) => {
@@ -319,9 +331,10 @@ export const ExhibitOverlay = ({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
       if (event.key === 'Tab') {
         const dialog = closeRef.current?.closest('[role="dialog"]');
-        const focusable = Array.from(dialog?.querySelectorAll<HTMLElement>('button, a[href], summary, [tabindex="0"]') ?? []).filter((node) => node.getClientRects().length > 0);
+        const focusable = Array.from(dialog?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], summary, [tabindex="0"]') ?? []).filter((node) => node.getClientRects().length > 0);
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
@@ -332,8 +345,10 @@ export const ExhibitOverlay = ({
         event.preventDefault();
         requestClose();
       } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
         step(-1);
       } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
         step(1);
       }
     };
@@ -352,15 +367,7 @@ export const ExhibitOverlay = ({
       aria-labelledby="exhibit-title"
     >
       <div className="exhibit__stage">
-        {rich ? (
-          <SceneBoundary fallback={<SceneArt meta={meta} variant="exhibit" />} label={sceneId}>
-            <SceneCanvas meta={meta} tier="exhibit" interactive sway>
-              <SceneView id={sceneId} story={posterMode ? undefined : control} />
-            </SceneCanvas>
-          </SceneBoundary>
-        ) : (
-          <SceneArt meta={meta} variant="exhibit" />
-        )}
+        <SceneViewport meta={meta} tier="exhibit" story={posterMode ? undefined : control} />
         <div className="exhibit__stage-label">
           <span className="exhibit__stage-index">SCENE {meta.index}</span>
           <span className="exhibit__stage-name">
@@ -375,7 +382,7 @@ export const ExhibitOverlay = ({
         </div> : null}
       </div>
 
-      <aside className="exhibit__panel">
+      <aside ref={panelRef} className="exhibit__panel">
         <header className="exhibit__head">
           <p className="eyebrow">
             <span>{meta.kindLabel}</span> / SCENE {meta.index}
@@ -394,7 +401,7 @@ export const ExhibitOverlay = ({
           </nav> : null}
         </header>
 
-        <div className="exhibit__body">{bodyFor(sceneId, onNavigate, control)}</div>
+        <div ref={bodyRef} className="exhibit__body">{bodyFor(sceneId, onNavigate, control)}</div>
 
         <footer className="exhibit__foot">
           <button type="button" onClick={() => step(-1)}>

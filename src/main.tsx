@@ -11,6 +11,7 @@ import './styles/sections.css';
 import './styles/overlay.css';
 import './styles/responsive.css';
 import './styles/dossier.css';
+import './styles/details.css';
 import {App} from './app/App';
 
 const container = document.getElementById('root');

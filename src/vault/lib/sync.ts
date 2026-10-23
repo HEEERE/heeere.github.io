@@ -113,6 +113,7 @@ export type MergeResult = {
   remotePayload: SnapshotPayload;
   mergedPayload: SnapshotPayload;
   localChanged: boolean;
+  remoteChanged: boolean;
 };
 
 export const mergeRemote = (
@@ -135,7 +136,14 @@ export const mergeRemote = (
     files,
     remotePayload: remote,
     mergedPayload,
-    localChanged: !payloadsEqual(mergedPayload, remote),
+    localChanged: !payloadsEqual(mergedPayload, {
+      v: 1,
+      check: SNAPSHOT_CHECK,
+      updatedAt: maxUpdatedAt(localEntries, localFiles),
+      entries: localEntries,
+      files: serializeFiles(localFiles),
+    }),
+    remoteChanged: !payloadsEqual(mergedPayload, remote),
   };
 };
 
@@ -192,11 +200,12 @@ export const testConnection = async (config: SyncConfig): Promise<SyncTestResult
     );
     if (!repoResponse.ok) return {ok: false, message: `无法访问仓库：${await readError(repoResponse)}`};
     const repo = (await repoResponse.json()) as {private?: boolean; full_name?: string};
+    if (!repo.private) return {ok: false, isPrivate: false, message: '请选择私有仓库，庭院不向公开仓库同步。'};
     const fileResponse = await fetch(fileUrl(normalized), {headers: authHeaders(normalized)});
     if (fileResponse.status === 404) {
       return {
         ok: true,
-        message: `仓库 ${repo.full_name ?? normalized.repo} 可写，同步文件将在首次同步时创建`,
+        message: `已访问私有仓库 ${repo.full_name ?? normalized.repo}，首次同步将创建文件并验证写入权限`,
         isPrivate: repo.private,
         warning: repo.private ? undefined : '这个仓库是公开的。内容虽然已加密，仍建议改为私有仓库。',
       };

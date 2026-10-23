@@ -127,6 +127,7 @@ npm run preview     # 预览 dist
 
 npm run qa -- http://127.0.0.1:5173/ # 原有导航回归（开发预览）
 npm run qa:portfolio # 箱庭流程、资料入口、移动端及静态回退验收
+npm run qa:release   # 先 build；自动启动生产预览并运行全部浏览器验收
 npm run shots       # 截取桌面各区块到 tmp/shots/
 npm run posters     # 重新生成 public/images/scenes/*.jpg（场景海报 / 静态回退）
 npm run og          # 重新生成 public/images/og-cover.png
@@ -153,9 +154,11 @@ node scripts/vault-icons.mjs   # 重新生成 PWA 图标
 在公开页依次输入 `garden` 或长按左上角「箱」字即可进入；它支持装成手机 PWA、系统分享收集、以及同步到你自己的私有 GitHub 仓库。
 它不依赖后端，也不会把任何明文内容放进这个公开仓库。设计与安全说明见 [docs/vault.md](docs/vault.md)。
 
-## GitHub Pages
+## GitHub Pages 部署
 
-仓库名为 `heeere.github.io`，Vite 使用根路径 `base: '/'`。推送到 `main` 后，`.github/workflows/deploy.yml` 会执行 `npm ci` → typecheck → lint → test → build → 部署 `dist`。
+仓库名为 `heeere.github.io`，Vite 使用根路径 `base: '/'`。推送到 `main` 后，`.github/workflows/deploy.yml` 会执行 `npm ci` → typecheck → lint → test → build → 依赖安全审计 → 生产浏览器验收 → 部署 `dist`。Pull Request 执行相同检查，不发布。
+
+浏览器验收覆盖手机布局、项目分支与报告下载、静态版往返切换、浏览器历史、键盘焦点、无 WebGL / 无 JavaScript / 3D 下载失败的回退、PWA 分享及发布资源。CI 自动安装对应 Chromium 并保留 7 天验收截图，本地使用 Chrome。完整验收说明见 [上线验收记录](docs/release-readiness.md)。
 
 目标地址：<https://heeere.github.io/>
 

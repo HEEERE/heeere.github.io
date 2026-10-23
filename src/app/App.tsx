@@ -25,7 +25,7 @@ export const App = () => {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const staticMode = forceStatic || capabilities.simple;
+  const staticMode = forceStatic || !capabilities.webgl;
   const rich = capabilities.webgl && !staticMode;
 
   const toggleMode = useCallback(() => {
@@ -40,8 +40,8 @@ export const App = () => {
   }, [staticMode]);
 
   const siteValue = useMemo(
-    () => ({rich, staticMode, overlayOpen: route.kind === 'scene', reducedMotion: capabilities.reducedMotion, openScene, toggleMode}),
-    [rich, staticMode, route.kind, capabilities.reducedMotion, openScene, toggleMode],
+    () => ({rich, webglAvailable: capabilities.webgl, staticMode, overlayOpen: route.kind === 'scene', reducedMotion: capabilities.reducedMotion, openScene, toggleMode}),
+    [rich, capabilities.webgl, staticMode, route.kind, capabilities.reducedMotion, openScene, toggleMode],
   );
 
   useEffect(() => {
@@ -62,19 +62,21 @@ export const App = () => {
 
   return (
     <SiteContext.Provider value={siteValue}>
-      <a className="skip-link" href="#scenes">
-        跳到场景列表
-      </a>
-      <Nav />
-      <main className="site">
-        <Hero />
-        <SceneGrid />
-        <WorksSection />
-        <AboutSection />
-        <StackSection />
-        <ContactSection />
-      </main>
-      <Footer />
+      <div inert={route.kind === 'scene'}>
+        <a className="skip-link" href="#scenes">
+          跳到场景列表
+        </a>
+        <Nav />
+        <main className="site">
+          <Hero />
+          <SceneGrid />
+          <WorksSection />
+          <AboutSection />
+          <StackSection />
+          <ContactSection />
+        </main>
+        <Footer />
+      </div>
       {route.kind === 'scene' ? <ExhibitOverlay sceneId={route.scene} onClose={closeScene} onNavigate={navigateScene} /> : null}
       {!capabilities.webgl ? (
         <p className="webgl-note" role="status">

@@ -21,7 +21,8 @@
     backdrop-filter 0.45s var(--ease-out);
 }
 
-.nav.is-scrolled {
+.nav.is-scrolled,
+.nav.is-open {
   border-bottom-color: var(--line);
   background: rgba(10, 11, 13, 0.74);
   backdrop-filter: blur(18px) saturate(120%);
@@ -129,8 +130,8 @@
   display: none;
   flex-direction: column;
   gap: 5px;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--line);
@@ -155,6 +156,9 @@
 .nav__drawer {
   position: fixed;
   top: var(--nav-height);
+  max-height: calc(100dvh - var(--nav-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   right: 0;
   left: 0;
   display: none;

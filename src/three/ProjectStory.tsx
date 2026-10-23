@@ -38,7 +38,7 @@ export const ProjectStory = ({projectId, control}: {projectId: ProjectId; contro
         <pointLight color={color} intensity={1.1} distance={1.3} decay={2} />
       </group>
       {evidence.steps.map((item, index) => (
-        <Html key={item.label} position={item.position} center zIndexRange={[4, 1]} style={{pointerEvents: 'none'}}>
+        <Html key={item.label} position={item.position} center wrapperClass="story-marker-anchor" zIndexRange={[4, 2]} style={{pointerEvents: 'none'}}>
           <button type="button" className={`story-marker${control.step === index ? ' is-active' : ''}`} aria-pressed={control.step === index}
             aria-label={`${item.object}：${item.label}`} onPointerDown={(event) => event.stopPropagation()} onClick={(event) => {event.stopPropagation(); control.onStep(index);}}>
             <span>0{index + 1}</span><b>{item.label}</b>

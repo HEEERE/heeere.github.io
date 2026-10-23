@@ -20,6 +20,7 @@ export const SceneArt = ({meta, variant = 'card'}: {meta: SceneMeta; variant?: '
           alt=""
           loading={variant === 'card' ? 'lazy' : 'eager'}
           decoding="async"
+          fetchPriority={variant === 'hero' ? 'high' : 'auto'}
           onError={() => setImageFailed(true)}
         />
       ) : null}

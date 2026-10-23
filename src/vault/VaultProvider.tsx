@@ -56,6 +56,7 @@ import {
   normalizeConfig,
   openEnvelope,
   readRemoteSnapshot,
+  testConnection,
   writeRemoteSnapshot,
 } from './lib/sync';
 import {downloadText} from './lib/download';
@@ -429,7 +430,7 @@ export const VaultProvider = ({children}: {children: ReactNode}) => {
           if (merged.localChanged) await applyMerged(merged.entries, merged.files);
           records = merged.entries;
           files = merged.files;
-          shouldPush = merged.localChanged;
+          shouldPush = merged.remoteChanged;
         }
 
         if (shouldPush) {
@@ -463,6 +464,7 @@ export const VaultProvider = ({children}: {children: ReactNode}) => {
         const message = error instanceof Error ? error.message : String(error);
         setSyncState({status: 'error', message, at: Date.now()});
         noteError(message);
+        if (reason === 'connect') throw error;
       } finally {
         syncBusyRef.current = false;
       }
@@ -578,6 +580,12 @@ export const VaultProvider = ({children}: {children: ReactNode}) => {
     }
     setSyncState({status: settingsRef.current.sync?.enabled ? 'idle' : 'off', message: '', at: 0});
   }, [revokeAttachmentUrls]);
+
+  useEffect(() => {
+    const backgroundLock = () => { if (status === 'unlocked') lock(); };
+    window.addEventListener('garden-lock', backgroundLock);
+    return () => window.removeEventListener('garden-lock', backgroundLock);
+  }, [status, lock]);
 
   const resetDevice = useCallback(async () => {
     lock();
@@ -803,6 +811,8 @@ export const VaultProvider = ({children}: {children: ReactNode}) => {
     async (config: SyncConfig) => {
       const normalized = normalizeConfig(config);
       if (!normalized.owner || !normalized.repo || !normalized.token) throw new Error('仓库与令牌不能为空');
+      const connection = await testConnection(normalized);
+      if (!connection.ok) throw new Error(connection.message);
       await updateSettings({sync: {...normalized, enabled: true}});
       await performSync('connect');
     },

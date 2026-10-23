@@ -440,11 +440,11 @@ export const plaqueTexture = (index: string, nameZh: string, nameEn: string, sub
   canvasTexture(`plaque/${index}/${nameEn}`, 768, 120, (ctx, width, height) => {
     // Brushed brass.
     verticalGradient(ctx, 0, 0, width, height, [
-      [0, '#e3cd9a'],
-      [0.16, '#c2a76a'],
-      [0.5, '#d8bd85'],
-      [0.86, '#b0945a'],
-      [1, '#8f7440'],
+      [0, '#d8c397'],
+      [0.16, '#ad9364'],
+      [0.5, '#c4ad7d'],
+      [0.86, '#a38b60'],
+      [1, '#796443'],
     ]);
     horizontalGradient(ctx, 0, 0, width, height, [
       [0, 'rgba(255, 250, 232, 0.32)'],
@@ -464,6 +464,18 @@ export const plaqueTexture = (index: string, nameZh: string, nameEn: string, sub
     ctx.strokeStyle = 'rgba(255, 246, 220, 0.35)';
     ctx.lineWidth = 1;
     ctx.strokeRect(13.5, 13.5, width - 27, height - 27);
+
+    // Recessed fixing heads, with a highlight along the upper edge.
+    for (const x of [24, width - 24]) {
+      for (const y of [24, height - 24]) {
+        ctx.fillStyle = '#786445';
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ddc99e'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(x, y, 4, Math.PI, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = '#4d4030';
+        ctx.beginPath(); ctx.moveTo(x - 2, y + 1); ctx.lineTo(x + 2, y - 1); ctx.stroke();
+      }
+    }
 
     // Engraved index.
     text(ctx, index, 34, 74, {size: 52, weight: 700, font: FONT_SERIF, color: 'rgba(58, 40, 14, 0.82)', tracking: 1});

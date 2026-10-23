@@ -1,10 +1,11 @@
-import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode} from 'react';
+import {Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {Canvas, useFrame, useThree} from '@react-three/fiber';
 import {OrbitControls, Preload} from '@react-three/drei';
 import {ACESFilmicToneMapping, Box3, MathUtils, Mesh, PCFSoftShadowMap, PerspectiveCamera, Vector3, type Group} from 'three';
 import type {OrbitControls as OrbitControlsImpl} from 'three-stdlib';
 import type {SceneMeta} from '../data/scenes';
-import {detectLowPower, detectReducedMotion, QualityProvider, qualityFor, useQuality, type QualityTier} from './quality';
+import {detectLowPower, QualityProvider, qualityFor, useQuality, type QualityTier} from './quality';
+import {useSite} from '../app/site';
 
 const DEG = Math.PI / 180;
 const FOV = 30;
@@ -224,11 +225,18 @@ export const SceneCanvas = ({meta, tier, className, interactive = true, sway = f
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [ready, setReady] = useState(false);
+  const [pageVisible, setPageVisible] = useState(() => !document.hidden);
+  const {reducedMotion} = useSite();
 
   const lowPower = useMemo(detectLowPower, []);
-  const reducedMotion = useMemo(detectReducedMotion, []);
   const quality = useMemo(() => qualityFor(tier, reducedMotion, lowPower), [tier, reducedMotion, lowPower]);
   const canOrbit = interactive && !lowPower;
+
+  useEffect(() => {
+    const onVisibility = () => setPageVisible(!document.hidden);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, []);
 
   useEffect(() => {
     const element = holder.current;
@@ -259,21 +267,24 @@ export const SceneCanvas = ({meta, tier, className, interactive = true, sway = f
       ref={holder}
       className={`scene-canvas${ready ? ' is-ready' : ''}${className ? ` ${className}` : ''}`}
       data-tier={tier}
+      data-motion={reducedMotion ? 'reduced' : 'full'}
     >
       <img
         className="scene-canvas__poster"
         src={`/images/scenes/${meta.id}.jpg`}
         alt=""
         aria-hidden="true"
+        loading={tier === 'card' ? 'lazy' : 'eager'}
+        fetchPriority={tier === 'hero' ? 'high' : 'auto'}
         decoding="async"
         onError={(event) => {
           event.currentTarget.style.display = 'none';
         }}
       />
-      <Canvas
+      {mounted ? <Canvas
         dpr={quality.dpr as unknown as [number, number]}
         shadows={quality.shadows ? 'soft' : false}
-        frameloop={visible && !paused ? 'always' : 'demand'}
+        frameloop={visible && pageVisible && !paused && !reducedMotion ? 'always' : 'demand'}
         camera={{fov: FOV, near: 0.05, far: 90, position: [6, 4.2, 6.5]}}
         gl={{alpha: true, antialias: true, powerPreference: 'high-performance', stencil: false}}
         onCreated={({gl}) => {
@@ -284,13 +295,13 @@ export const SceneCanvas = ({meta, tier, className, interactive = true, sway = f
         }}
       >
         <QualityProvider value={quality}>
-          {mounted ? (
+          <Suspense fallback={null}>
             <FramedScene meta={meta} tier={tier} hovered={hovered} interactive={canOrbit} sway={sway} shiftX={shiftX} onReady={handleReady}>
               {children}
             </FramedScene>
-          ) : null}
+          </Suspense>
         </QualityProvider>
-      </Canvas>
+      </Canvas> : null}
     </div>
   );
 };

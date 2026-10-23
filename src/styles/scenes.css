@@ -217,6 +217,11 @@
 /* Static scene artwork (poster render / no-WebGL fallback)            */
 /* ------------------------------------------------------------------ */
 
+.scene-viewport {
+  position: absolute;
+  inset: 0;
+}
+
 .scene-art {
   position: relative;
   display: grid;

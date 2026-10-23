@@ -1,10 +1,10 @@
-import {chromium} from 'playwright-core';
+import {launchBrowser} from './browser.mjs';
 import {mkdirSync} from 'node:fs';
 import assert from 'node:assert/strict';
 
 const base = process.argv[2] ?? 'http://127.0.0.1:5173/';
 mkdirSync('tmp/portfolio-qa', {recursive: true});
-const browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--enable-unsafe-swiftshader', '--hide-scrollbars']});
+const browser = await launchBrowser();
 const page = await browser.newPage({viewport: {width: 1440, height: 1000}, deviceScaleFactor: 1});
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
@@ -67,6 +67,8 @@ try {
   await page.keyboard.press('Escape');
   await page.locator('.exhibit').waitFor({state: 'detached'});
   await page.getByRole('button', {name: '进入 3D 版本'}).click();
+  await page.waitForFunction(() => document.documentElement.dataset.view === 'rich');
+  check('static entry can return to 3D', await page.locator('.scene-viewport').count() > 0);
   await page.setViewportSize({width: 390, height: 844});
   await page.emulateMedia({reducedMotion: 'reduce'});
   await page.goto(base);
@@ -83,6 +85,15 @@ try {
   await shot('mobile-defense');
   check('no runtime exceptions', errors.length === 0);
   console.log(`${passed} acceptance checks passed`);
+} catch (error) {
+  await page.screenshot({path: 'tmp/portfolio-qa/failure.png'}).catch(() => {});
+  console.error('Browser errors:', errors);
+  console.error('Marker hit targets:', await page.locator('.story-marker').evaluateAll(nodes => nodes.map(node => {
+    const box = node.getBoundingClientRect();
+    const hit = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+    return {text: node.textContent, zIndex: node.parentElement?.parentElement?.style.zIndex, hit: hit?.outerHTML.slice(0, 200)};
+  })).catch(() => []));
+  throw error;
 } finally {
   await browser.close();
 }

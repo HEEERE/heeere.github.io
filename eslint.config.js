@@ -5,6 +5,8 @@ export default tseslint.config(
   {
     ignores: [
       'dist/**',
+      'android/build/**',
+      'deliverables/**',
       'node_modules/**',
       'public/**',
       'tmp/**',

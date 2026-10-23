@@ -27,16 +27,16 @@ const shadowProps = (size: number) => ({
 export const NightExteriorLights = ({
   shadowMapSize = 2048,
   color = '#b7cfe8',
-  intensity = 2.1,
+  intensity = 1.75,
 }: LightProps) => {
   const quality = useQuality();
   return (
     <>
-      <ambientLight intensity={0.22} color="#64799a" />
-      <hemisphereLight intensity={0.48} color="#7f9cc4" groundColor="#27201b" />
+      <ambientLight intensity={0.18} color="#64799a" />
+      <hemisphereLight intensity={0.4} color="#849fbd" groundColor="#30251e" />
       <directionalLight position={[-3.6, 5.4, 4.2]} color={color} intensity={intensity} {...shadowProps(Math.min(shadowMapSize, quality.shadowMapSize))} castShadow={quality.shadows} />
-      <directionalLight position={[4.6, 2.6, -2.4]} color="#8fb0d4" intensity={1.25} />
-      <pointLight position={[-0.6, 0.9, 0.65]} color="#ffb56b" intensity={2.2} distance={3.2} decay={2} visible={!quality.simplified} />
+      <directionalLight position={[4.6, 2.6, -2.4]} color="#8fb0d4" intensity={1.05} />
+      <pointLight position={[-0.6, 0.9, 0.65]} color="#ffbd82" intensity={1.35} distance={3.2} decay={2} visible={!quality.simplified} />
     </>
   );
 };
@@ -54,8 +54,8 @@ export const RoomLights = ({
   const quality = useQuality();
   return (
     <>
-      <ambientLight intensity={0.28} color={fill} />
-      <hemisphereLight intensity={0.45} color="#c8d8e8" groundColor="#443329" />
+      <ambientLight intensity={0.24} color={fill} />
+      <hemisphereLight intensity={0.4} color="#c8d8e8" groundColor="#443329" />
       <directionalLight position={[2.4, 4.6, 4.4]} color={color} intensity={intensity} {...shadowProps(Math.min(shadowMapSize, quality.shadowMapSize))} castShadow={quality.shadows} />
       <directionalLight position={[-3.6, 2.8, -1.6]} color={fill} intensity={1.1} />
       <pointLight position={[-0.8, 1.4, 1.1]} color="#f4c593" intensity={1.3} distance={3.5} decay={2} visible={!quality.simplified} />

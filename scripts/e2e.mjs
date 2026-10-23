@@ -1,7 +1,7 @@
-import {chromium} from 'playwright-core';
+import {launchBrowser} from './browser.mjs';
 
 const baseUrl = process.argv[2] ?? 'http://localhost:4173';
-const browser = await chromium.launch({channel: 'chrome', headless: true, args: ['--enable-unsafe-swiftshader', '--hide-scrollbars']});
+const browser = await launchBrowser();
 const page = await browser.newPage({viewport: {width: 1440, height: 900}, deviceScaleFactor: 1});
 const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
@@ -50,6 +50,8 @@ await page.waitForTimeout(800);
 check('static mode hides live canvases', (await page.locator('.scene-canvas canvas').count()) === 0);
 check('static mode shows posters', (await page.locator('.scene-art__image').count()) > 0);
 await page.getByRole('button', {name: '进入 3D 版本'}).click();
+await page.evaluate(() => window.scrollTo({top: 0, behavior: 'instant'}));
+await page.locator('.hero .scene-canvas.is-ready').waitFor();
 await page.waitForTimeout(800);
 check('3D mode restores canvases', (await page.locator('.hero .scene-canvas canvas').count()) === 1);
 

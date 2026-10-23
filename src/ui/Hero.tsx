@@ -4,10 +4,7 @@ import {useSite} from '../app/site';
 import {konbiniScene} from '../data/scenes';
 import {profile} from '../data/profile';
 import {projects} from '../data/projects';
-import {SceneCanvas} from '../three/SceneCanvas';
-import {SceneBoundary} from './SceneBoundary';
-import {SceneArt} from './SceneArt';
-import {SceneView} from './SceneView';
+import {SceneViewport} from './SceneViewport';
 
 const meta = konbiniScene;
 
@@ -66,15 +63,7 @@ export const Hero = () => {
 
       <div className="hero__stage">
         <div className="hero__stage-inner">
-          {rich ? (
-            <SceneBoundary fallback={<SceneArt meta={meta} variant="hero" />} label="konbini">
-              <SceneCanvas meta={meta} tier="hero" interactive sway paused={overlayOpen}>
-                <SceneView id="konbini" />
-              </SceneCanvas>
-            </SceneBoundary>
-          ) : (
-            <SceneArt meta={meta} variant="hero" />
-          )}
+          <SceneViewport meta={meta} tier="hero" paused={overlayOpen} />
         </div>
         <div className="hero__stage-caption">
           <span className="hero__stage-index">SCENE {meta.index}</span>

@@ -62,6 +62,9 @@
 .story-marker span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid currentColor; font: 9px var(--font-mono); }
 .story-marker b { font-weight: 400; }
 .story-marker.is-active { color: #fff0d7; background: #30271dec; border-color: #e9bb7b; box-shadow: 0 0 22px #e9bb7b22; }
+/* Html resets inline styles when its portal reconnects. Keep controls above
+   the canvas even when a stationary camera does not trigger another update. */
+.story-marker-anchor { z-index: 4; }
 .story-marker:hover { border-color: #fff0d7; }
 .exhibit__head { padding-bottom: 16px; }
 .exhibit__description { display: none; }

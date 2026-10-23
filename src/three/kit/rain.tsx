@@ -81,7 +81,7 @@ export const Rain = ({
       const y = random() * height;
       const fallSpeed = speed * (0.75 + random() * 0.7);
       const phase = random() * height;
-      const length = 0.12 + random() * 0.22;
+      const length = 0.07 + random() * 0.16;
       for (let vertex = 0; vertex < 2; vertex += 1) {
         const offset = (index * 2 + vertex) * 3;
         positions[offset] = x;

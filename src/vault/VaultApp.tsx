@@ -21,6 +21,7 @@ import {EntryDetail} from './components/EntryDetail';
 import {Composer} from './components/Composer';
 import {Settings} from './components/Settings';
 import {ShareLanding} from './components/ShareLanding';
+import {ResearchHome} from './components/ResearchHome';
 import {
   IconClock,
   IconClose,
@@ -80,6 +81,41 @@ export const VaultApp = () => {
   const [shareLanding, setShareLanding] = useState(isShareLanding);
   const searchRef = useRef<HTMLInputElement>(null);
   const composerIntentRef = useRef(0);
+
+  useEffect(() => {
+    if (status !== 'unlocked') return;
+    const receive = () => {
+      // Do not consume another share while a draft is being edited.
+      if (composer) return;
+      const raw = window.GardenNative?.takeShare();
+      if (!raw) return;
+      try {
+        const shared = JSON.parse(raw) as {title?: string; text?: string};
+        const entry = makeEntry('clip');
+        entry.title = typeof shared.title === 'string' ? shared.title : '';
+        entry.body = typeof shared.text === 'string' ? shared.text : '';
+        entry.url = entry.body.match(/https?:\/\/[^\s<>]+/)?.[0] ?? '';
+        setComposer({entry, isNew: true});
+      } catch { vault.notify('无法读取分享内容', 'bad'); }
+    };
+    receive();
+    window.addEventListener('garden-share', receive);
+    return () => window.removeEventListener('garden-share', receive);
+  }, [status, composer, vault]);
+
+  useEffect(() => {
+    const back = () => {
+      if (status !== 'unlocked') window.GardenNative?.minimize();
+      else if (composer) {
+        document.querySelector<HTMLButtonElement>('.vault-composer__head-actions button')?.click();
+      } else if (settingsOpen) setSettingsOpen(false);
+      else if (drawerOpen) setDrawerOpen(false);
+      else if (selectedId) setSelectedId(null);
+      else window.GardenNative?.minimize();
+    };
+    window.addEventListener('garden-back', back);
+    return () => window.removeEventListener('garden-back', back);
+  }, [status, composer, settingsOpen, drawerOpen, selectedId]);
 
   const openNew = useCallback((nextKind: EntryKind = 'note') => {
     setComposer({entry: makeEntry(nextKind), isNew: true});
@@ -308,7 +344,12 @@ export const VaultApp = () => {
               spellCheck={false}
               onChange={(event) => {
                 setQuery(event.target.value);
-                if (event.target.value) setSelectedId(null);
+                  if (event.target.value) {
+                    setSelectedId(null);
+                    setView('all');
+                    setKind(undefined);
+                    setTag(undefined);
+                  }
               }}
             />
             {query && (
@@ -361,6 +402,7 @@ export const VaultApp = () => {
 
         <div className="vault-workspace">
           <section className="vault-listpane">
+            {view === 'today' && !query && <ResearchHome entries={entries} onCreate={(entry) => setComposer({entry, isNew: true})} />}
             <EntryList
               title={viewLabel(view, kind, tag)}
               view={view}
@@ -430,6 +472,7 @@ export const VaultApp = () => {
         <button
           type="button"
           onClick={() => {
+            selectView('all');
             setSelectedId(null);
             setSettingsOpen(false);
             window.requestAnimationFrame(() => searchRef.current?.focus());

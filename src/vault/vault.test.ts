@@ -27,7 +27,7 @@ import {
   type EntryRecord,
 } from './lib/model';
 import {renderMarkdown, extractVaultImages} from './lib/markdown';
-import {SNAPSHOT_CHECK, buildEnvelope, mergeRemote, openEnvelope} from './lib/sync';
+import {SNAPSHOT_CHECK, buildEnvelope, mergeRemote, openEnvelope, type SnapshotPayload} from './lib/sync';
 
 const PASSPHRASE = 'hakoniwa-test-passphrase';
 
@@ -143,6 +143,32 @@ describe('vault sync merge', () => {
     const remote = mergeRemote([record('a', 10)], [], payload);
     expect(remote.localChanged).toBe(false);
     expect(remote.entries).toHaveLength(1);
+  });
+
+  it('pulls remote-only changes without pushing an identical snapshot', () => {
+    const payload: SnapshotPayload = {v: 1, check: SNAPSHOT_CHECK, updatedAt: 20, entries: [record('a', 20), record('b', 20)], files: []};
+    const merged = mergeRemote([record('a', 10)], [], payload);
+    expect(merged.localChanged).toBe(true);
+    expect(merged.remoteChanged).toBe(false);
+    expect(merged.entries).toHaveLength(2);
+  });
+
+  it('pushes local-only changes without rewriting unchanged local storage', () => {
+    const payload: SnapshotPayload = {v: 1, check: SNAPSHOT_CHECK, updatedAt: 10, entries: [record('a', 10)], files: []};
+    const merged = mergeRemote([record('a', 20)], [], payload);
+    expect(merged.localChanged).toBe(false);
+    expect(merged.remoteChanged).toBe(true);
+  });
+
+  it('applies a remote deletion and a remote attachment on a pull', () => {
+    const payload: SnapshotPayload = {v: 1, check: SNAPSHOT_CHECK, updatedAt: 20,
+      entries: [{...record('a', 20), deletedAt: 20}],
+      files: [{id: 'file', name: 'note.txt', mime: 'text/plain', size: 1, createdAt: 20, iv: 'iv', ct: 'YQ=='}]};
+    const merged = mergeRemote([record('a', 10)], [], payload);
+    expect(merged.localChanged).toBe(true);
+    expect(merged.remoteChanged).toBe(false);
+    expect(merged.entries[0]?.deletedAt).toBe(20);
+    expect(merged.files).toHaveLength(1);
   });
 });
 

@@ -69,7 +69,7 @@ const handleShare = async (request) => {
   } catch {
     /* 分享内容读不出来也照样把用户带到庭院，页面会给出提示 */
   }
-  return Response.redirect(SHARE_REDIRECT, 303);
+  return Response.redirect(new URL(SHARE_REDIRECT, self.location.origin).href, 303);
 };
 
 self.addEventListener('fetch', (event) => {

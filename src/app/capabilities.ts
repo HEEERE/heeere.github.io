@@ -17,7 +17,6 @@ const detectWebGL = (): boolean => {
 export type Capabilities = {
   webgl: boolean;
   reducedMotion: boolean;
-  simple: boolean;
 };
 
 export const useCapabilities = (): Capabilities => {
@@ -25,21 +24,15 @@ export const useCapabilities = (): Capabilities => {
   const [reducedMotion, setReducedMotion] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
-  const [simple, setSimple] = useState(() => window.location.hash === '#/simple');
 
   useEffect(() => {
     const query = window.matchMedia('(prefers-reduced-motion: reduce)');
     const onChange = (event: MediaQueryListEvent) => setReducedMotion(event.matches);
     query.addEventListener('change', onChange);
-    const onHash = () => {
-      if (window.location.hash === '#/simple') setSimple(true);
-    };
-    window.addEventListener('hashchange', onHash);
     return () => {
       query.removeEventListener('change', onChange);
-      window.removeEventListener('hashchange', onHash);
     };
   }, []);
 
-  return {webgl, reducedMotion, simple};
+  return {webgl, reducedMotion};
 };

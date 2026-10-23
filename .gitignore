@@ -8,3 +8,6 @@ public/images/portrait.png
 remotion/public/images/portrait.png
 remotion/out/
 *.log
+android/build/
+android/signing/
+deliverables/

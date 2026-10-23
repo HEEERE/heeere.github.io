@@ -23,7 +23,7 @@ export const KonbiniScene = () => {
       <NightExteriorLights shadowMapSize={2048} />
       <fog attach="fog" args={['#0a1018', 11, 30]} />
 
-      <DioramaBase meta={meta} footprint={[4.6, 4.6]} ground={konbiniRoadGround()} subtitle="1:24 · RAIN / 24H" />
+      <DioramaBase meta={meta} footprint={[4.6, 4.6]} ground={konbiniRoadGround()} groundFinish="wet" subtitle="1:24 · RAIN / 24H" />
 
       {/* Raised pavement block that both buildings sit on. */}
       <RBox size={[4.6, SIDEWALK, 0.88]} radius={0.006} color="#878d90" p={[0, SIDEWALK / 2, -0.08]} ink={false} />
@@ -82,7 +82,7 @@ export const KonbiniScene = () => {
       <Ripples count={26} area={[3.6, 1.3]} center={[0.2, 1.1]} y={0.014} size={0.075} speed={0.6} seed={11} color="#8fb8d8" />
       <Ripples count={12} area={[3.4, 0.5]} center={[-0.3, 0.0]} y={0.062} size={0.08} speed={0.5} seed={23} color="#9fc4dc" />
       <Ripples count={8} area={[0.4, 0.9]} center={[0.82, -1.4]} y={0.062} size={0.1} speed={0.45} seed={41} />
-      <Rain count={1250} width={4.5} depth={4.5} height={2.9} opacity={0.26} speed={3.6} />
+      <Rain count={950} width={4.5} depth={4.5} height={2.9} opacity={0.2} speed={3.2} />
     </group>
   );
 };

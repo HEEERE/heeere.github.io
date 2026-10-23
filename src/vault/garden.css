@@ -1,0 +1,28 @@
+.garden-home { padding: 28px 24px 20px; border-bottom: 1px solid var(--vg-line); background: radial-gradient(ellipse at 100% 0, #c9a76a13, transparent 70%); }
+.garden-home__heading { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+.garden-eyebrow { color:var(--vg-brass); font:8px var(--vg-mono); letter-spacing:.16em; }
+.garden-home h1 { font-size:25px; font-weight:500; margin:12px 0; letter-spacing:.05em; }
+.garden-home p { color:var(--vg-muted); font-size:11px; line-height:1.8; }
+.garden-seal { border:1px solid #c9a76a55; color:var(--vg-brass); padding:10px; font-size:26px; border-radius:16px 4px 16px 4px; }
+.garden-stats { display:flex; align-items:end; gap:30px; margin:24px 0; }
+.garden-stats > div:not(.garden-week) { display:flex; flex-direction:column; gap:5px; }
+.garden-stats strong { font:30px var(--vg-serif); color:var(--vg-ink); }
+.garden-stats span { font-size:10px; color:var(--vg-muted); }
+.garden-week { display:flex; gap:5px; align-items:end; margin-left:auto; padding-bottom:4px; }
+.garden-week span { width:6px; background:#c9a76a22; border-radius:3px; }
+.garden-week span[data-active='true'] { background:var(--vg-brass); }
+.garden-templates { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.garden-templates button { text-align:left; border:1px solid var(--vg-line); border-radius:7px; padding:14px 12px; position:relative; background:#ffffff03; color:var(--vg-ink); min-height:98px; }
+.garden-templates button:hover { border-color:var(--vg-brass); background:#c9a76a0a; }
+.garden-templates strong,.garden-templates small { display:block; }
+.garden-template-no { font:9px var(--vg-mono); color:var(--vg-brass); }
+.garden-templates strong { font-size:12px; font-weight:500; margin:9px 0 5px; }
+.garden-templates small { color:var(--vg-muted); font-size:9px; }
+.garden-template-arrow { position:absolute; right:12px; top:12px; color:var(--vg-brass); }
+.garden-home .garden-home__foot { font-size:9px; margin:16px 0 0; }
+.vault-listpane { overflow-y:auto; }
+.garden-home + .vault-list { height:auto; min-height:300px; }
+.garden-home + .vault-list .vault-list__body { overflow:visible; }
+.garden-native .vault-back { display:none; }
+.garden-native .vault-lock__panel { padding-top:28px; }
+@media(max-width:600px) { .garden-home { padding:24px 20px 18px; } .garden-home h1 { font-size:24px; } }

@@ -86,7 +86,7 @@ export const LockScreen = () => {
 
         <div className="vault-lock__head">
           <span className="vault-lock__eyebrow">HAKONIWA / PRIVATE GARDEN</span>
-          <h1>{creating ? '建一座私人庭院' : '私人庭院'}</h1>
+          <h1>{creating ? '开启喆元的庭院' : '喆元的庭院'}</h1>
           <p>
             {creating
               ? '这里的内容会用这串密码加密，只保存在你的设备和你指定的私有仓库里。没有服务器，也没有找回密码的入口。'

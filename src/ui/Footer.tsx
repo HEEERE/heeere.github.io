@@ -3,7 +3,7 @@ import {useSite} from '../app/site';
 import {profile} from '../data/profile';
 
 export const Footer = () => {
-  const {staticMode, toggleMode} = useSite();
+  const {staticMode, toggleMode, webglAvailable} = useSite();
   return (
     <footer className="footer">
       <div className="footer__brand">
@@ -25,8 +25,8 @@ export const Footer = () => {
         <a href={profile.github} target="_blank" rel="noreferrer">
           GitHub ↗
         </a>
-        <button type="button" onClick={toggleMode}>
-          {staticMode ? '进入 3D 版本' : '静态版'}
+        <button type="button" onClick={toggleMode} disabled={!webglAvailable}>
+          {!webglAvailable ? '当前为静态版' : staticMode ? '进入 3D 版本' : '静态版'}
         </button>
         <button type="button" onClick={() => scrollToSection('top')}>
           回到顶部 ↑

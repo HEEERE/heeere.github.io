@@ -64,7 +64,7 @@ export const Sidebar = ({
           箱
         </a>
         <div className="vault-brand__text">
-          <strong>箱庭</strong>
+          <strong>喆元的庭院</strong>
           <span>PRIVATE GARDEN</span>
         </div>
         <button type="button" className="vault-iconbtn vault-brand__close" aria-label="关闭菜单" onClick={onCloseDrawer}>

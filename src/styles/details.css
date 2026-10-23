@@ -1,0 +1,100 @@
+/* Exhibition details: warm paper, restrained brass, fine engraved rules. */
+.nav__mark {
+  border-color: #9a805844;
+  box-shadow: inset 0 0 0 3px var(--ink), inset 0 0 0 4px #b79a6730;
+  background: linear-gradient(145deg, #c6a7740c, transparent);
+}
+
+.nav__links a {
+  position: relative;
+  padding-block: 10px;
+}
+
+.nav__links a::after {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 12px;
+  height: 1px;
+  content: '';
+  background: var(--scene-accent);
+  opacity: 0;
+  transition: opacity 200ms ease, width 200ms ease;
+}
+
+.nav__links a:hover::after,
+.nav__links a:focus-visible::after { width: 100%; opacity: .8; }
+
+.hero__name { text-shadow: 0 2px 24px #f6d4a410; }
+.hero__intro { max-width: 43ch; }
+.hero__meta dt { letter-spacing: .14em; }
+.hero__stage-caption { padding-right: 12px; border-right: 1px solid #d4b27a66; }
+.hero__stage-index { letter-spacing: .25em; }
+.hero__directory { border-top-color: #bca07142; }
+.hero__directory > p { color: #b7afa1; }
+.hero__directory button {
+  min-height: 48px;
+  padding-inline: 8px;
+  border-bottom: 1px solid #d0b38528;
+  background: linear-gradient(110deg, #d2ae7110, transparent 80%);
+  transition: border-color 250ms ease, background-color 250ms ease;
+}
+.hero__directory button:hover,
+.hero__directory button:focus-visible {
+  border-bottom-color: var(--scene-accent);
+  background-color: #d2ae7109;
+}
+.hero__directory button i { opacity: .6; }
+
+.scene-card__stage {
+  box-shadow: inset 0 0 0 1px #e1d2b807, 0 20px 40px -24px #000b;
+  background: radial-gradient(100% 90% at 50% 82%, color-mix(in srgb, var(--scene-glow) 10%, transparent), transparent 70%), linear-gradient(155deg, #eee7d406, #0003);
+}
+.scene-card__frame::before,
+.scene-card__frame::after { opacity: .3; width: 9px; height: 9px; }
+.scene-card:focus-visible .scene-card__frame { border-color: var(--scene-accent); }
+.scene-card__caption { align-items: center; gap: 16px; padding-bottom: 16px; }
+.scene-card__no {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -.03em;
+  font-variant-numeric: lining-nums;
+}
+.scene-card__names h3 { letter-spacing: .08em; }
+.scene-card__kind { padding: 4px 6px; border: 1px solid var(--line); font-size: 8px; }
+.scene-card__tagline { max-width: 35ch; }
+
+.project-demo {
+  box-shadow: inset 0 1px 0 #e9dbbd0a;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--scene-accent) 5%, #0e1115), #0b0e12);
+}
+.project-demo__steps button[aria-pressed='true'] {
+  background: linear-gradient(0deg, color-mix(in srgb, var(--scene-accent) 6%, transparent), transparent 75%);
+}
+.scene-story-caption {
+  border-top: 1px solid #e5d9c516;
+  box-shadow: 0 8px 26px #0003;
+  background: linear-gradient(105deg, #151c20f0, #11171be8);
+}
+.story-marker {
+  box-shadow: 0 3px 12px #0007, inset 0 1px 0 #e8f1ef12;
+  border-color: #9fb0b56b;
+}
+.story-marker.is-active {
+  border-color: #d7b985;
+  background: #2b251ded;
+  box-shadow: 0 3px 14px #0007, inset 0 1px 0 #fce7bb24;
+}
+.exhibit__close { border-color: #d1bf9d38; }
+.exhibit__close:hover { border-color: var(--scene-accent); color: var(--scene-accent); }
+
+@media (max-width: 720px) {
+  .hero__directory button { padding-inline: 3px; gap: 5px; font-size: 10px; }
+  .hero__directory > div { gap: 8px; }
+  .scene-card__caption { gap: 12px; }
+  .scene-card__no { font-size: 30px; }
+  .hero__drag-hint { display: none; }
+  .exhibit__stage-name { font-size: 8px; }
+  .scene-story-caption { box-shadow: none; }
+}

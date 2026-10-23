@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useSecretEntry} from '../app/secretEntry';
 import {scrollToSection} from '../app/useRoute';
 import {profile} from '../data/profile';
@@ -14,6 +14,8 @@ const links = [
 export const Nav = () => {
   const [scrolled, setScrolled] = useState(false);
   const [drawer, setDrawer] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLButtonElement>(null);
   const {onClick: onSecretClick, ...secretHandlers} = useSecretEntry();
 
   useEffect(() => {
@@ -23,13 +25,41 @@ export const Nav = () => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!drawer) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setDrawer(false);
+        menuRef.current?.focus();
+      }
+    };
+    const onPointer = (event: PointerEvent) => {
+      if (event.target instanceof Node && !headerRef.current?.contains(event.target)) setDrawer(false);
+    };
+    const onFocus = (event: FocusEvent) => {
+      if (event.target instanceof Node && !headerRef.current?.contains(event.target)) setDrawer(false);
+    };
+    const desktop = window.matchMedia('(min-width: 981px)');
+    const onResize = () => { if (desktop.matches) setDrawer(false); };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('focusin', onFocus);
+    desktop.addEventListener('change', onResize);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPointer);
+      document.removeEventListener('focusin', onFocus);
+      desktop.removeEventListener('change', onResize);
+    };
+  }, [drawer]);
+
   const go = (id: string) => {
     setDrawer(false);
     scrollToSection(id);
   };
 
   return (
-    <header className={`nav${scrolled ? ' is-scrolled' : ''}${drawer ? ' is-open' : ''}`}>
+    <header ref={headerRef} className={`nav${scrolled ? ' is-scrolled' : ''}${drawer ? ' is-open' : ''}`}>
       <a
         className="nav__brand"
         href="#top"
@@ -72,6 +102,7 @@ export const Nav = () => {
           GITHUB <span aria-hidden="true">↗</span>
         </a>
         <button
+          ref={menuRef}
           className="nav__menu"
           type="button"
           aria-expanded={drawer}
@@ -84,7 +115,7 @@ export const Nav = () => {
         </button>
       </div>
 
-      <div className="nav__drawer" id="nav-drawer">
+      <nav className="nav__drawer" id="nav-drawer" aria-label="移动端导航" inert={!drawer}>
         {links.map((link) => (
           <a
             key={link.id}
@@ -101,7 +132,7 @@ export const Nav = () => {
         <a href={profile.github} target="_blank" rel="noreferrer">
           <em>GITHUB</em>代码仓库 ↗
         </a>
-      </div>
+      </nav>
     </header>
   );
 };

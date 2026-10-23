@@ -47,17 +47,23 @@ export const useRoute = (): RouteState => {
   }, []);
 
   const openScene = useCallback((id: SceneId) => {
-    window.history.pushState({scene: id}, '', `#/scene/${id}`);
+    window.history.pushState({hakoniwaScene: true}, '', `#/scene/${id}`);
     setRoute({kind: 'scene', scene: id});
     document.body.classList.add('is-locked');
   }, []);
 
   const navigateScene = useCallback((id: SceneId) => {
-    window.history.replaceState({scene: id}, '', `#/scene/${id}`);
+    window.history.replaceState(window.history.state, '', `#/scene/${id}`);
     setRoute({kind: 'scene', scene: id});
   }, []);
 
   const closeScene = useCallback(() => {
+    // A scene opened here owns one history entry. Return to the actual opener
+    // so Back does not leave visitors stuck on duplicate home entries.
+    if (window.history.state?.hakoniwaScene) {
+      window.history.back();
+      return;
+    }
     window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
     setRoute({kind: 'home'});
     document.body.classList.remove('is-locked');
@@ -69,5 +75,6 @@ export const useRoute = (): RouteState => {
 export const scrollToSection = (id: string): void => {
   const element = document.getElementById(id);
   if (!element) return;
-  element.scrollIntoView({behavior: 'smooth', block: 'start'});
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  element.scrollIntoView({behavior: reducedMotion ? 'instant' : 'smooth', block: 'start'});
 };

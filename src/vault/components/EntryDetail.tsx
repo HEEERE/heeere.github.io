@@ -11,6 +11,7 @@ import {
   type Entry,
 } from '../lib/model';
 import {renderMarkdown} from '../lib/markdown';
+import {downloadBlob} from '../lib/download';
 import {
   IconArrowLeft,
   IconEdit,
@@ -81,7 +82,8 @@ export const EntryDetail = ({
 
   const copyMarkdown = async () => {
     try {
-      await navigator.clipboard.writeText(entry.body);
+      if (window.GardenNative) window.GardenNative.copyText(entry.body);
+      else await navigator.clipboard.writeText(entry.body);
       notify('正文已复制', 'good');
     } catch {
       notify('浏览器没有允许复制', 'bad');
@@ -184,7 +186,11 @@ export const EntryDetail = ({
             {images.map((item) => {
               const url = attachmentUrls[item.id];
               return url ? (
-                <a key={item.id} href={url} target="_blank" rel="noreferrer" className="vault-thumb" title={item.name}>
+                <a key={item.id} href={url} target="_blank" rel="noreferrer" className="vault-thumb" title={item.name} onClick={(event) => {
+                  if (!window.GardenNative) return;
+                  event.preventDefault();
+                  void fetch(url).then((response) => response.blob()).then((blob) => downloadBlob(item.name, blob)).catch(() => notify('无法导出图片', 'bad'));
+                }}>
                   <img src={url} alt={item.name} loading="lazy" />
                   <span>
                     <IconImage size={13} /> {item.name}
@@ -211,7 +217,11 @@ export const EntryDetail = ({
                   <span className="vault-file__name">{item.name}</span>
                   <em>{formatBytes(item.size)}</em>
                   {url ? (
-                    <a className="vault-textbtn" href={url} download={item.name}>
+                    <a className="vault-textbtn" href={url} download={item.name} onClick={(event) => {
+                      if (!window.GardenNative) return;
+                      event.preventDefault();
+                      void fetch(url).then((response) => response.blob()).then((blob) => downloadBlob(item.name, blob)).catch(() => notify('无法导出附件', 'bad'));
+                    }}>
                       下载
                     </a>
                   ) : (

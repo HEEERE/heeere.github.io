@@ -1,10 +1,7 @@
 import {useRef, useState, type CSSProperties} from 'react';
 import {useSite} from '../app/site';
 import {mainScenes, type SceneMeta} from '../data/scenes';
-import {SceneCanvas} from '../three/SceneCanvas';
-import {SceneBoundary} from './SceneBoundary';
-import {SceneArt} from './SceneArt';
-import {SceneView} from './SceneView';
+import {SceneViewport} from './SceneViewport';
 
 const SceneCard = ({meta}: {meta: SceneMeta}) => {
   const {rich, openScene, reducedMotion, overlayOpen} = useSite();
@@ -23,8 +20,10 @@ const SceneCard = ({meta}: {meta: SceneMeta}) => {
         press.current = null;
       }}
       onPointerDown={(event) => {
+        if (!event.isPrimary || event.button !== 0) return;
         press.current = {x: event.clientX, y: event.clientY, time: performance.now()};
       }}
+      onPointerCancel={() => { press.current = null; }}
       onPointerUp={(event) => {
         const start = press.current;
         press.current = null;
@@ -44,15 +43,7 @@ const SceneCard = ({meta}: {meta: SceneMeta}) => {
     >
       <div className="scene-card__stage">
         <div className="scene-card__canvas">
-          {rich ? (
-            <SceneBoundary fallback={<SceneArt meta={meta} />} label={meta.id}>
-              <SceneCanvas meta={meta} tier="card" hovered={hovered} interactive sway={false} paused={overlayOpen}>
-                <SceneView id={meta.id} />
-              </SceneCanvas>
-            </SceneBoundary>
-          ) : (
-            <SceneArt meta={meta} />
-          )}
+          <SceneViewport meta={meta} tier="card" hovered={hovered} paused={overlayOpen} />
         </div>
         <span className="scene-card__frame" aria-hidden="true" />
         {rich ? (
@@ -87,16 +78,16 @@ export const SceneGrid = () => (
         <span>SCENES</span> / 箱庭コレクション
       </p>
       <div className="section__head-row">
-        <h2>七个可以拖拽旋转的微缩场景</h2>
+        <h2>七个微缩场景，一份研究档案</h2>
         <p className="section__lead">
-          每张卡片都是一个单独搭建的三维场景，有底座、边界和灯光。按住拖动可以旋转，点击进入它对应的项目或页面。
+          从一个场景，走进一个项目。点击查看交互流程、技术报告与个人经历；支持的设备上，还可以拖拽模型，换个角度观察。
           <br />
           首屏的雨夜便利店是第一个，下面六个都能点开。
         </p>
       </div>
       <div className="section__meta">
         <span>01 雨夜便利店 已在首屏</span>
-        <span>拖拽旋转</span>
+        <span>项目 · 关于 · 技能 · 联系</span>
         <span>点击进入</span>
       </div>
     </header>

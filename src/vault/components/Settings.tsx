@@ -62,6 +62,9 @@ export const Settings = ({onClose}: Props) => {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const syncConfigured = Boolean(settings.sync?.enabled && settings.sync.token);
+  const tokenLink = `https://github.com/settings/personal-access-tokens/new?${new URLSearchParams({
+    name: 'Zheyuan Garden Sync', target_name: syncForm.owner.trim(), expires_in: '90', contents: 'write',
+  }).toString()}`;
   const totalBytes = useMemo(
     () => (meta ? `${meta.iterations.toLocaleString('en-US')} 次 PBKDF2 迭代` : ''),
     [meta],
@@ -140,7 +143,7 @@ export const Settings = ({onClose}: Props) => {
       notify('输入这份备份的密码', 'bad');
       return;
     }
-    if (!window.confirm('导入会合并备份里的记录。确定继续？')) return;
+    if (!window.confirm('恢复备份会替换本机全部记录和同步设置。请先导出当前备份，再继续。确定恢复？')) return;
     setImportBusy(true);
     try {
       await importEncryptedBackup(importFile, importPass);
@@ -255,6 +258,11 @@ export const Settings = ({onClose}: Props) => {
                 </button>
               </div>
             </label>
+
+            <p className="vault-settings__message">
+              <a className="vault-textbtn" href={tokenLink} target="_blank" rel="noreferrer">创建庭院专用令牌 ↗</a>
+              <br />在 GitHub 选择 Only select repositories，仅勾选 {syncForm.repo || 'hakoniwa-vault'}，保留 Contents 读写权限。生成后粘贴到上方，令牌只会加密保存在此设备。
+            </p>
 
             {testMessage && <p className="vault-settings__message">{testMessage}</p>}
 
