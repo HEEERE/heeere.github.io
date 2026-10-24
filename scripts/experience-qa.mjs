@@ -108,8 +108,24 @@ try {
   check('navigation marks the current section', await page.locator('.nav__links a[href="#works"]').getAttribute('aria-current') === 'location');
   await page.locator('.work__implementation summary').first().click();
   check('implementation details remain native and expandable', await page.locator('.work__implementation').first().getAttribute('open') !== null);
-  const [download] = await Promise.all([page.waitForEvent('download'), page.locator('.work .report-download').first().click()]);
-  check('report download has an honest inline acknowledgement', download.suggestedFilename() === 'pmu.md' && (await page.locator('.work .report-download').first().innerText()).includes('已开始下载'));
+  const reportLink = page.locator('.work .report-download').first();
+  // Observe the transient text before clicking. Software-rendered CI can return
+  // the download event after the acknowledgement has already reset.
+  await reportLink.evaluate(node => {
+    const original = node.textContent;
+    window.__reportFeedback = {started: false, reset: false};
+    const observer = new MutationObserver(() => {
+      if (node.textContent.includes('已开始下载')) window.__reportFeedback.started = true;
+      if (window.__reportFeedback.started && node.textContent === original) {
+        window.__reportFeedback.reset = true;
+        observer.disconnect();
+      }
+    });
+    observer.observe(node, {subtree: true, childList: true, characterData: true});
+  });
+  const [download] = await Promise.all([page.waitForEvent('download'), reportLink.click()]);
+  await page.waitForFunction(() => window.__reportFeedback.started && window.__reportFeedback.reset);
+  check('report download has an honest inline acknowledgement', download.suggestedFilename() === 'pmu.md' && await page.evaluate(() => window.__reportFeedback.started && window.__reportFeedback.reset));
   for (const id of ['command', 'security', 'workshop', 'postbox', 'desk']) {
     await page.goto(`${base}#/scene/${id}`);
     await page.locator('.exhibit .scene-viewport[data-load="ready"]').waitFor();
