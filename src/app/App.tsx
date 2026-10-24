@@ -11,6 +11,8 @@ import {StackSection} from '../ui/StackSection';
 import {ContactSection} from '../ui/ContactSection';
 import {Footer} from '../ui/Footer';
 import {ExhibitOverlay} from '../ui/ExhibitOverlay';
+import {ExperienceProvider} from '../experience/Experience';
+import {Opening} from '../ui/Opening';
 
 export const App = () => {
   const {route, openScene, navigateScene, closeScene} = useRoute();
@@ -62,6 +64,7 @@ export const App = () => {
 
   return (
     <SiteContext.Provider value={siteValue}>
+      <ExperienceProvider scene={route.kind === 'scene' ? route.scene : null}>
       <div inert={route.kind === 'scene'}>
         <a className="skip-link" href="#scenes">
           跳到场景列表
@@ -83,6 +86,8 @@ export const App = () => {
           当前浏览器未启用 WebGL，已切换为静态展示版本。
         </p>
       ) : null}
+      <Opening />
+      </ExperienceProvider>
     </SiteContext.Provider>
   );
 };

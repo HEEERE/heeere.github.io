@@ -166,6 +166,8 @@ try {
   const degraded = await interrupted.newPage();
   await degraded.goto(base.href);
   await degraded.locator('.hero .scene-art').waitFor();
+  await degraded.locator('.hero .scene-viewport[data-load="failed"]').waitFor();
+  check('failed 3D load replaces its waiting lamp with a static fallback', await degraded.locator('.hero .scene-load--failed').count() === 1);
   await degraded.locator('.hero__directory button').nth(2).click();
   await degraded.locator('.project-demo__steps button').nth(2).click();
   check('failed 3D downloads preserve the project content and controls', (await degraded.locator('.scene-story-caption p').innerText()).includes('BLOCK'));

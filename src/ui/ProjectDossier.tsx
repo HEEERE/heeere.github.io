@@ -1,6 +1,7 @@
 import type {Project} from '../data/projects';
 import {projectEvidence} from '../data/projectEvidence';
 import {profile} from '../data/profile';
+import {ReportDownload} from './ReportDownload';
 
 export type DemoControl = {step: number; variant: number; onStep: (step: number) => void; onVariant: (variant: number) => void};
 
@@ -50,7 +51,7 @@ export const ProjectDossier = ({project, control}: {project: Project; control: D
         {project.repository ? <div className="project-sources"><a href={project.repository} target="_blank" rel="noreferrer">项目源码 ↗</a><a href={`${project.repository}#readme`} target="_blank" rel="noreferrer">仓库说明 ↗</a></div> : null}
       </section>
       <section className="exhibit-block project-report">
-        <div className="project-report__head"><h3>技术报告</h3><a href={`/reports/${project.id}.md`} download>下载 Markdown ↓</a></div>
+        <div className="project-report__head"><h3>技术报告</h3><ReportDownload id={project.id} label="下载 Markdown" /></div>
         <p className="project-note">设计与实现说明 · 根据项目文档整理</p>
         {evidence.report.map((section) => <details key={section.title}><summary>{section.title}</summary><p>{section.text}</p></details>)}
         <details><summary>验证方法与结果边界</summary><ul>{evidence.verification.map((item) => <li key={item}>{item}</li>)}</ul><p>{evidence.limitation}</p></details>

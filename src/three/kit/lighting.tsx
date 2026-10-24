@@ -50,15 +50,16 @@ export const RoomLights = ({
   color = '#ffe7c4',
   intensity = 2.6,
   fill = '#8fa8c4',
-}: LightProps & {fill?: string}) => {
+  focused = false,
+}: LightProps & {fill?: string; focused?: boolean}) => {
   const quality = useQuality();
   return (
     <>
-      <ambientLight intensity={0.24} color={fill} />
-      <hemisphereLight intensity={0.4} color="#c8d8e8" groundColor="#443329" />
-      <directionalLight position={[2.4, 4.6, 4.4]} color={color} intensity={intensity} {...shadowProps(Math.min(shadowMapSize, quality.shadowMapSize))} castShadow={quality.shadows} />
-      <directionalLight position={[-3.6, 2.8, -1.6]} color={fill} intensity={1.1} />
-      <pointLight position={[-0.8, 1.4, 1.1]} color="#f4c593" intensity={1.3} distance={3.5} decay={2} visible={!quality.simplified} />
+      <ambientLight intensity={focused ? 0.16 : 0.24} color={fill} />
+      <hemisphereLight intensity={focused ? 0.28 : 0.4} color="#c8d8e8" groundColor="#443329" />
+      <directionalLight position={focused ? [-3.2, 4.8, 2.6] : [2.4, 4.6, 4.4]} color={color} intensity={intensity} {...shadowProps(Math.min(shadowMapSize, quality.shadowMapSize))} castShadow={quality.shadows} />
+      <directionalLight position={[-3.6, 2.8, -1.6]} color={fill} intensity={focused ? 0.55 : 1.1} />
+      <pointLight position={[-0.8, 1.4, 1.1]} color="#f4c593" intensity={focused ? 0.75 : 1.3} distance={3.5} decay={2} visible={!quality.simplified} />
     </>
   );
 };

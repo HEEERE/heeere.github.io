@@ -1,5 +1,8 @@
 import {useSite} from '../app/site';
 import {profile} from '../data/profile';
+import {getScene} from '../data/scenes';
+import {SceneViewport} from './SceneViewport';
+import {useExperience} from '../experience/Experience';
 
 const nowInTianjin = (): string => {
   try {
@@ -15,14 +18,15 @@ const nowInTianjin = (): string => {
 };
 
 export const ContactSection = () => {
-  const {openScene} = useSite();
+  const {openScene, overlayOpen} = useSite();
+  const {contactWarm, setContactWarm} = useExperience();
   return (
-    <section id="contact" className="section section--contact">
+    <section id="contact" className={`section section--contact${contactWarm ? ' is-warm' : ''}`} onPointerEnter={() => setContactWarm(true)} onPointerLeave={() => setContactWarm(false)} onFocus={() => setContactWarm(true)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setContactWarm(false); }}>
       <div className="contact__copy">
         <p className="eyebrow">
           <span>CONTACT</span> / 街角邮箱
         </p>
-        <h2>一起把想法，做成可运行的系统。</h2>
+        <h2>雨还在下，<br />欢迎留一封信。</h2>
         <p className="contact__lead">欢迎交流 Agent 系统、知识图谱与安全研究。项目合作、架构讨论或演示交流，请通过邮件联系。</p>
         <div className="contact__actions">
           <a className="btn btn--primary" href={`mailto:${profile.email}`}>
@@ -37,10 +41,8 @@ export const ContactSection = () => {
         </p>
       </div>
 
-      <div className="contact__scene">
-        <p className="eyebrow">SCENE 07</p>
-        <h3>街角邮箱</h3>
-        <p>红色邮筒、绿色电话亭和一盏路灯。</p>
+      <div className="contact__scene contact__scene--living">
+        <div className="contact__miniature"><SceneViewport meta={getScene('postbox')} tier="card" hovered={contactWarm} paused={overlayOpen} /></div>
         <button className="scene-link" type="button" onClick={() => openScene('postbox')}>
           <span className="scene-link__index">07</span>
           <span className="scene-link__label">
@@ -48,20 +50,6 @@ export const ContactSection = () => {
           </span>
           <span aria-hidden="true">↗</span>
         </button>
-        <dl>
-          <div>
-            <dt>邮箱</dt>
-            <dd>{profile.email}</dd>
-          </div>
-          <div>
-            <dt>GitHub</dt>
-            <dd>{profile.githubHandle}</dd>
-          </div>
-          <div>
-            <dt>地点</dt>
-            <dd>{profile.location}</dd>
-          </div>
-        </dl>
       </div>
     </section>
   );

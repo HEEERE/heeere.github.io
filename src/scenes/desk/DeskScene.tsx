@@ -660,12 +660,18 @@ const WindowNook = () => {
 /* Desk                                                                */
 /* ------------------------------------------------------------------ */
 
+const researchSpine = () => canvasTexture('desk/research-spine', 512, 80, ctx => {
+  ctx.fillStyle = '#3f5f6a'; ctx.fillRect(0, 0, 512, 80);
+  text(ctx, 'AGENT / MEMORY / GRAPH', 256, 52, {size: 28, font: FONT_MONO, align: 'center', color: '#e6d7ae'});
+});
+
 const BookStack = ({origin}: {origin: Vec3}) => (
   <group position={origin}>
     <Box size={[0.18, 0.03, 0.24]} color="#7c4f3c" ink={false} r={[0, 0.1, 0]} />
     <Box size={[0.168, 0.019, 0.232]} color="#e8dfc8" p={[0, 0, 0.006]} ink={false} shadow={false} r={[0, 0.1, 0]} />
     <Box size={[0.165, 0.026, 0.225]} color="#3f5f6a" p={[0.012, 0.032, 0]} r={[0, -0.05, 0]} ink={false} />
     <Box size={[0.155, 0.016, 0.216]} color="#ddd4bc" p={[0.012, 0.032, 0.005]} ink={false} shadow={false} r={[0, -0.05, 0]} />
+    <Panel size={[.15, .022]} texture={researchSpine()} p={[.006, .032, .114]} r={[0, -.05, 0]} />
     <Box size={[0.155, 0.022, 0.205]} color="#c4a05a" p={[-0.008, 0.058, 0.004]} r={[0, 0.2, 0]} ink={false} />
     <Box size={[0.145, 0.014, 0.196]} color="#e8dfc8" p={[-0.008, 0.058, 0.012]} ink={false} shadow={false} r={[0, 0.2, 0]} />
     {/* Empty cup on the stack. */}

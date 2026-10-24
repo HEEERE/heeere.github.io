@@ -1,13 +1,14 @@
 import {scrollToSection} from '../app/useRoute';
 import {useSite} from '../app/site';
 import {profile} from '../data/profile';
+import {IdentityMark} from './IdentityMark';
 
 export const Footer = () => {
   const {staticMode, toggleMode, webglAvailable} = useSite();
   return (
     <footer className="footer">
       <div className="footer__brand">
-        <span className="footer__mark">箱</span>
+        <span className="footer__mark"><IdentityMark /></span>
         <div>
           <b>箱庭 HAKONIWA</b>
           <p>一组微缩场景构成的个人作品集。</p>

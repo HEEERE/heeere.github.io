@@ -14,6 +14,7 @@ import {Box, Cyl, Glow, Panel, Pipe, RBox} from '../../three/kit/primitives';
 import {flat, glass, toon} from '../../three/materials';
 import {Drips, GlassDrops, SlidingDrops} from '../../three/kit/rain';
 import {StoreInterior} from './Interior';
+import {useQuality} from '../../three/quality';
 
 const B = KONBINI.building;
 const S = KONBINI.storefront;
@@ -35,13 +36,14 @@ const DOOR_TOP = 1.03;
 /* ------------------------------------------------------------------ */
 
 const AutoDoor = () => {
+  const quality = useQuality();
   const left = useRef<Group>(null);
   const right = useRef<Group>(null);
   const spill = useRef<PointLight>(null);
 
   useFrame(({clock}) => {
     const cycle = 17;
-    const time = clock.elapsedTime % cycle;
+    const time = quality.reducedMotion ? 0 : clock.elapsedTime % cycle;
     let open = 0;
     if (time > 10 && time < 11.1) open = (time - 10) / 1.1;
     else if (time >= 11.1 && time < 13.6) open = 1;
@@ -89,10 +91,11 @@ const AutoDoor = () => {
 /* ------------------------------------------------------------------ */
 
 const SignBand = () => {
+  const quality = useQuality();
   const glow = useRef<Mesh>(null);
   useFrame(({clock}) => {
     const time = clock.elapsedTime;
-    const flicker = Math.sin(time * 2.7) * 0.03 + Math.sin(time * 11.3) * 0.012;
+    const flicker = quality.reducedMotion ? 0 : Math.sin(time * .7) * 0.02;
     const material = glow.current?.material as MeshBasicMaterial | undefined;
     if (material) material.opacity = 0.24 + flicker;
   });

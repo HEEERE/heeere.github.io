@@ -7,6 +7,8 @@ import {stackGroups} from '../data/stack';
 import {SceneViewport} from './SceneViewport';
 import {ProjectDossier, type DemoControl} from './ProjectDossier';
 import {projectEvidence} from '../data/projectEvidence';
+import {useExperience} from '../experience/Experience';
+import {SoundControls} from './SoundControls';
 
 const ProjectBody = ({projectId, control}: {projectId: NonNullable<ReturnType<typeof getScene>['projectId']>; control: DemoControl}) => {
   const project = getProject(projectId);
@@ -145,10 +147,26 @@ const StackBody = () => (
       常用的技术按后端、AI / 数据、图谱与基础设施分三组。
     </p>
     {stackGroups.map((group) => (
-      <section key={group.index} className="exhibit-block">
-        <h3>
+      <WorkshopGroup key={group.index} group={group} />
+    ))}
+    <section className="exhibit-block">
+      <h3>能力清单</h3>
+      <ol className="exhibit-list">
+        {profile.professionalSkills.map((item) => <li key={item}>{item}</li>)}
+      </ol>
+    </section>
+  </div>
+);
+
+const WorkshopGroup = ({group}: {group: typeof stackGroups[number]}) => {
+  const {workshopGroup, setWorkshopGroup} = useExperience();
+  return <section className="exhibit-block workshop-group" onPointerEnter={() => setWorkshopGroup(group.index)} onPointerLeave={() => setWorkshopGroup(null)}>
+        <button type="button" className="workshop-group__select" aria-pressed={workshopGroup === group.index} onFocus={() => setWorkshopGroup(group.index)} onBlur={() => setWorkshopGroup(null)} onClick={() => setWorkshopGroup(group.index)}>
+        <span>
           {group.index} / {group.title}
-        </h3>
+        </span>
+        <span>查看对应工具 ↗</span>
+        </button>
         <p className="exhibit-body__note">{group.subtitle}</p>
         <ul className="tag-row">
           {group.items.map((item) => (
@@ -157,18 +175,8 @@ const StackBody = () => (
             </li>
           ))}
         </ul>
-      </section>
-    ))}
-    <section className="exhibit-block">
-      <h3>能力清单</h3>
-      <ol className="exhibit-list">
-        {profile.professionalSkills.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ol>
-    </section>
-  </div>
-);
+      </section>;
+};
 
 const ContactBody = () => (
   <div className="exhibit-body">
@@ -272,14 +280,15 @@ export const ExhibitOverlay = ({
   onNavigate: (id: SceneId) => void;
 }) => {
   const {rich, reducedMotion} = useSite();
+  const {cue} = useExperience();
   const meta = getScene(sceneId);
   const [demo, setDemo] = useState({scene: sceneId, step: 0, variant: 0});
   const demoStep = demo.scene === sceneId ? demo.step : 0;
   const demoVariant = demo.scene === sceneId ? demo.variant : 0;
   const control: DemoControl = {
     step: demoStep, variant: demoVariant,
-    onStep: (value) => setDemo({scene: sceneId, step: value, variant: demoVariant}),
-    onVariant: (value) => setDemo({scene: sceneId, step: demoStep, variant: value}),
+    onStep: (value) => { cue('step'); setDemo({scene: sceneId, step: value, variant: demoVariant}); },
+    onVariant: (value) => { cue('step'); setDemo({scene: sceneId, step: demoStep, variant: value}); },
   };
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -302,7 +311,11 @@ export const ExhibitOverlay = ({
       const opener = previousFocus.current;
       // The parent removes inert during the same commit.
       queueMicrotask(() => {
-        if (opener?.isConnected) opener.focus({preventScroll: true});
+        if (opener?.isConnected) {
+          opener.focus({preventScroll: true});
+          opener.classList.add('is-returned');
+          window.setTimeout(() => opener.classList.remove('is-returned'), 1500);
+        }
       });
     };
   }, []);
@@ -334,7 +347,7 @@ export const ExhibitOverlay = ({
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
       if (event.key === 'Tab') {
         const dialog = closeRef.current?.closest('[role="dialog"]');
-        const focusable = Array.from(dialog?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], summary, [tabindex="0"]') ?? []).filter((node) => node.getClientRects().length > 0);
+        const focusable = Array.from(dialog?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), a[href], summary, [tabindex="0"]') ?? []).filter((node) => node.getClientRects().length > 0);
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
@@ -367,7 +380,7 @@ export const ExhibitOverlay = ({
       aria-labelledby="exhibit-title"
     >
       <div className="exhibit__stage">
-        <SceneViewport meta={meta} tier="exhibit" story={posterMode ? undefined : control} />
+        <SceneViewport key={sceneId} meta={meta} tier="exhibit" story={posterMode ? undefined : control} />
         <div className="exhibit__stage-label">
           <span className="exhibit__stage-index">SCENE {meta.index}</span>
           <span className="exhibit__stage-name">
@@ -383,7 +396,7 @@ export const ExhibitOverlay = ({
       </div>
 
       <aside ref={panelRef} className="exhibit__panel">
-        <header className="exhibit__head">
+        <header key={sceneId} className="exhibit__head">
           <p className="eyebrow">
             <span>{meta.kindLabel}</span> / SCENE {meta.index}
           </p>
@@ -420,6 +433,7 @@ export const ExhibitOverlay = ({
         <span aria-hidden="true">×</span>
         <em>关闭 / ESC</em>
       </button>
+      {!posterMode ? <div className="exhibit__sound"><SoundControls /></div> : null}
     </div>
   );
 };

@@ -24,7 +24,7 @@ const cardCount = await page.locator('.scene-card').count();
 check('six scene cards', cardCount === 6);
 
 // Click the desk card (scene 02)
-await page.locator('.scene-card').first().click();
+await page.getByRole('button', {name: '进入场景 02：学习工作台（ABOUT / PROFILE）', exact: true}).click();
 await page.waitForTimeout(2500);
 check('overlay opens', await page.locator('.exhibit[role="dialog"]').isVisible());
 check('overlay title is 学习工作台', (await page.locator('#exhibit-title').innerText()) === '学习工作台');
@@ -38,7 +38,7 @@ check('arrow key changes scene', (await page.locator('#exhibit-title').innerText
 
 // Close with escape
 await page.keyboard.press('Escape');
-await page.waitForTimeout(800);
+await page.locator('.exhibit').waitFor({state: 'detached'});
 check('escape closes overlay', (await page.locator('.exhibit').count()) === 0);
 check('hash cleared', (await page.evaluate(() => window.location.hash)) === '');
 

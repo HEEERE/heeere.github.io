@@ -1,6 +1,10 @@
 import {useRef} from 'react';
 import {useFrame} from '@react-three/fiber';
-import type {PointLight} from 'three';
+import {Color, MathUtils, type Group, type PointLight} from 'three';
+import {Html} from '@react-three/drei';
+import {useExperience} from '../../experience/Experience';
+import {useQuality} from '../../three/quality';
+import {profile} from '../../data/profile';
 import {DioramaBase} from '../../three/kit/DioramaBase';
 import {
   Box,
@@ -379,8 +383,16 @@ const directionPlate = (label: string, sub: string, color: string, icon: 'mail' 
 /* Postbox                                                             */
 /* ------------------------------------------------------------------ */
 
-const Postbox = () => (
-  <group position={[-0.5, 0, 0.45]} rotation={[0, 0.34, 0]}>
+const Postbox = () => {
+  const {contactWarm, setContactWarm} = useExperience();
+  const quality = useQuality();
+  const flap = useRef<Group>(null);
+  useFrame((_, delta) => {
+    if (flap.current) flap.current.rotation.x = quality.reducedMotion ? (contactWarm ? -.4 : 0) : MathUtils.damp(flap.current.rotation.x, contactWarm ? -.4 : 0, 5, delta);
+  });
+  return <group name="street-mailbox" position={[-0.5, 0, 0.45]} rotation={[0, 0.34, 0]}
+    onPointerOver={() => setContactWarm(true)} onPointerOut={() => setContactWarm(false)}
+    onClick={event => { if (quality.tier === 'exhibit' && event.delta < 6) { event.stopPropagation(); window.location.href = `mailto:${profile.email}`; } }}>
     <ContactShadow p={[0, 0, 0]} radius={0.4} opacity={0.4} />
     <Cyl radius={0.27} height={0.04} segments={24} color="#7f8a8d" p={[0, 0.02, 0]} ink={false} />
     <Cyl radius={0.21} height={0.17} segments={24} color="#7f2a20" p={[0, 0.105, 0]} ink={false} />
@@ -394,11 +406,13 @@ const Postbox = () => (
     <Panel size={[0.31, 0.6]} texture={postboxFrontTexture()} lit p={[0, 0.57, 0.189]} />
     <Box size={[0.19, 0.022, 0.028]} color="#6f2a20" p={[0, 0.688, 0.194]} ink={false} shadow={false} />
     <Box size={[0.16, 0.008, 0.012]} color="#3a2018" p={[0, 0.682, 0.207]} ink={false} shadow={false} />
+    <group ref={flap} name="mail-slot-flap" position={[0, .7, .215]}><Box size={[.18, .035, .008]} color="#a85437" p={[0, -.017, 0]} ink={false} /></group>
+    {quality.tier === 'exhibit' ? <Html position={[0, 1.16, .12]} center wrapperClass="scene-detail-anchor" zIndexRange={[4, 2]}><a className="scene-mail" href={`mailto:${profile.email}`} onFocus={() => setContactWarm(true)} onBlur={() => setContactWarm(false)} onPointerDown={event => event.stopPropagation()} onClick={event => event.stopPropagation()}>写一封信 ↗</a></Html> : null}
     {/* Side bolt heads. */}
     <Cyl radius={0.012} height={0.012} color="#d8b070" r={[0, 0, Math.PI / 2]} p={[0.2, 0.44, 0.02]} ink={false} shadow={false} />
     <Cyl radius={0.012} height={0.012} color="#d8b070" r={[0, 0, Math.PI / 2]} p={[0.2, 0.44, -0.05]} ink={false} shadow={false} />
-  </group>
-);
+  </group>;
+};
 
 const DroppedMail = () => (
   <group>
@@ -490,11 +504,17 @@ const PhoneBooth = () => {
 
 const StreetLamp = () => {
   const light = useRef<PointLight>(null);
-  useFrame(({clock}) => {
+  const {contactWarm} = useExperience();
+  const quality = useQuality();
+  const colors = useRef([new Color('#ffd6a0'), new Color('#ffc078')]);
+  const warmth = useRef(0);
+  useFrame(({clock}, delta) => {
     if (!light.current) return;
     const time = clock.elapsedTime;
-    const flicker = Math.sin(time * 2.1) * 0.05 + Math.sin(time * 9.7) * 0.02;
-    light.current.intensity = 3.5 + flicker;
+    const flicker = quality.reducedMotion ? 0 : Math.sin(time * 1.1) * 0.03;
+    warmth.current = quality.reducedMotion ? Number(contactWarm) : MathUtils.damp(warmth.current, Number(contactWarm), 3, delta);
+    light.current.intensity = 3.5 + warmth.current * .65 + flicker;
+    light.current.color.lerpColors(colors.current[0]!, colors.current[1]!, warmth.current);
   });
   return (
     <group position={[1.5, 0, -0.4]}>

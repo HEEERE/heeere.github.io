@@ -1,7 +1,8 @@
 import type {Texture} from 'three';
 import {metal} from '../materials';
 import {surface, type Finish} from '../surfaces';
-import {plaqueTexture, plinthWoodTexture} from '../textures';
+import {plaqueTexture, plinthWoodTexture, labelTagTexture} from '../textures';
+import {getProject} from '../../data/projects';
 import type {SceneMeta} from '../../data/scenes';
 import {Box, Panel, RBox} from './primitives';
 
@@ -59,6 +60,7 @@ export const DioramaBase = ({
       <Box size={[width - 0.02, 0.006, depth - 0.02]} color="#151a20" p={[0, -0.002, 0]} ink={false} shadow={false} />
       {ground ? <Panel size={[width, depth]} texture={ground} material={groundLit ? surface('#ffffff', groundFinish, ground) : undefined} lit={groundLit} r={[-Math.PI / 2, 0, 0]} p={[0, 0.002, 0]} /> : null}
       <Panel size={[width * 0.36, 0.123]} texture={plaque} p={[0, -height / 2, depth / 2 + 0.004]} />
+      {meta.projectId ? <Panel size={[.65, .085]} texture={labelTagTexture(getProject(meta.projectId).title, '#b9995e', `RESEARCH ${getProject(meta.projectId).number}`)} r={[0, Math.PI / 2, 0]} p={[width / 2 + .004, -height / 2, depth * .22]} /> : null}
     </group>
   );
 };

@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {useEffect, useRef} from 'react';
 import {Html, Line} from '@react-three/drei';
 import {useFrame} from '@react-three/fiber';
 import type {Mesh} from 'three';
@@ -15,20 +15,23 @@ export const ProjectStory = ({projectId, control}: {projectId: ProjectId; contro
   const quality = useQuality();
   const pulse = useRef<Mesh>(null);
   const signal = useRef<Mesh>(null);
+  const started = useRef<number | null>(null);
+  useEffect(() => { started.current = null; }, [control.step, control.variant]);
   const active = evidence.steps[control.step] ?? evidence.steps[0]!;
   const color = control.variant === 1 ? (projectId === 'security' ? '#8fd4c8' : '#eab77a') : project.color;
   useFrame(({clock}) => {
+    started.current ??= clock.elapsedTime;
     if (pulse.current) pulse.current.scale.setScalar(quality.reducedMotion ? 1 : 1 + Math.sin(clock.elapsedTime * 2) * 0.12);
     if (signal.current) {
       const from = evidence.steps[Math.max(0, control.step - 1)]!.position;
       const to = active.position;
-      const t = quality.reducedMotion ? 1 : (clock.elapsedTime * 0.35) % 1;
+      const t = quality.reducedMotion ? 1 : Math.min(1, (clock.elapsedTime - started.current) / 1.2);
       signal.current.position.set(from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t, from[2] + (to[2] - from[2]) * t);
     }
   });
   return (
     <group>
-      <Line points={evidence.steps.map((step) => step.position)} color={color} transparent opacity={0.24} lineWidth={1} dashed dashSize={0.06} gapSize={0.06} />
+      {control.step > 0 ? <Line points={evidence.steps.slice(0, control.step + 1).map((step) => step.position)} color={color} transparent opacity={0.24} lineWidth={1} dashed dashSize={0.06} gapSize={0.06} /> : null}
       <mesh ref={signal} userData={{ignoreBounds: true}}><sphereGeometry args={[0.027, 10, 8]} /><meshBasicMaterial color={color} toneMapped={false} /></mesh>
       <group position={active.position}>
         <mesh ref={pulse} rotation={[-Math.PI / 2, 0, 0]} userData={{ignoreBounds: true}}>

@@ -2,17 +2,31 @@ import {useRef, useState, type CSSProperties} from 'react';
 import {useSite} from '../app/site';
 import {mainScenes, type SceneMeta} from '../data/scenes';
 import {SceneViewport} from './SceneViewport';
+import {projects} from '../data/projects';
+import {projectEvidence} from '../data/projectEvidence';
+import {useExperience} from '../experience/Experience';
+
+const collection = [...mainScenes].sort((a, b) => {
+  const order = ['archive', 'command', 'security', 'desk', 'workshop', 'postbox'];
+  return order.indexOf(a.id) - order.indexOf(b.id);
+});
 
 const SceneCard = ({meta}: {meta: SceneMeta}) => {
   const {rich, openScene, reducedMotion, overlayOpen} = useSite();
+  const {visited} = useExperience();
+  const card = useRef<HTMLElement>(null);
   const [hovered, setHovered] = useState(false);
   const press = useRef<{x: number; y: number; time: number} | null>(null);
+  const featured = meta.id === 'archive';
+  const project = featured ? projects.find((item) => item.scene === meta.id) : undefined;
 
-  const open = () => openScene(meta.id);
+  const open = () => { card.current?.focus({preventScroll: true}); openScene(meta.id); };
 
   return (
     <article
-      className={`scene-card${hovered ? ' is-hovered' : ''}`}
+      ref={card}
+      data-scene={meta.id}
+      className={`scene-card${featured ? ' scene-card--featured' : ''}${meta.kind === 'project' ? ' scene-card--project' : ''}${hovered ? ' is-hovered' : ''}`}
       style={{'--scene-accent': meta.accent, '--scene-glow': meta.glow} as CSSProperties}
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => {
@@ -56,17 +70,25 @@ const SceneCard = ({meta}: {meta: SceneMeta}) => {
         </span>
       </div>
 
-      <div className="scene-card__caption">
-        <span className="scene-card__no">{meta.index}</span>
-        <div className="scene-card__names">
-          <h3>{meta.nameZh}</h3>
-          <p>
-            {meta.nameEn} <i>·</i> {meta.nameJp}
-          </p>
+      <div className="scene-card__body">
+        {featured ? <p className="scene-card__edition">主展 / SELECTED PROJECT</p> : null}
+        <div className="scene-card__caption">
+          <span className="scene-card__no">{meta.index}</span>
+          <div className="scene-card__names">
+            <h3>{meta.nameZh}{visited.has(meta.id) ? <span className="scene-visited" aria-label="本次已到访" title="本次已到访" /> : null}</h3>
+            <p>{meta.nameEn}</p>
+          </div>
+          <span className="scene-card__kind">{meta.kindLabel}</span>
         </div>
-        <span className="scene-card__kind">{meta.kindLabel}</span>
+        <p className="scene-card__tagline">{meta.tagline}</p>
+        {project ? (
+          <div className="scene-card__feature-copy">
+            <p>{projectEvidence[project.id].question}</p>
+            <span>{project.title} · 过程记忆与技能图谱</span>
+            <div className="scene-card__invitation">走进档案室 <span aria-hidden="true">↗</span></div>
+          </div>
+        ) : null}
       </div>
-      <p className="scene-card__tagline">{meta.tagline}</p>
     </article>
   );
 };
@@ -75,7 +97,7 @@ export const SceneGrid = () => (
   <section id="scenes" className="section section--scenes">
     <header className="section__head">
       <p className="eyebrow">
-        <span>SCENES</span> / 箱庭コレクション
+        <span>SCENES</span> / 箱庭藏集
       </p>
       <div className="section__head-row">
         <h2>七个微缩场景，一份研究档案</h2>
@@ -93,7 +115,7 @@ export const SceneGrid = () => (
     </header>
 
     <div className="scene-grid">
-      {mainScenes.map((scene) => (
+      {collection.map((scene) => (
         <SceneCard key={scene.id} meta={scene} />
       ))}
     </div>

@@ -704,7 +704,7 @@ const WorkTable = () => {
   return (
     <group>
       <ContactShadow p={[-0.68, 0.062, -0.02]} radius={0.85} opacity={0.5} />
-      <Box size={[1.3, 0.05, 0.7]} color="#8a7259" p={[-0.68, 0.525, -0.03]} ink inkWidth={0.005} />
+      <Box size={[1.3, 0.05, 0.7]} material={surface('#8a7259', 'wood')} p={[-0.68, 0.525, -0.03]} ink inkWidth={0.005} />
       {(
         [
           [-1.29, -0.33],
@@ -776,7 +776,7 @@ const Pendant = () => (
     <Sphere radius={0.022} color="#fff5e4" material={flat('#fff5e4')} p={[-0.72, 1.53, -0.18]} ink={false} shadow={false} />
     <Glow color="#ffeccf" size={0.58} opacity={0.26} p={[-0.72, 1.525, -0.18]} />
     <LightCone color="#ffeccf" height={1.0} radiusTop={0.03} radiusBottom={0.32} opacity={0.09} p={[-0.72, 1.525, -0.18]} />
-    <LampLight position={[-0.72, 1.52, -0.18]} color="#fff0d8" intensity={2.1} distance={2.8} />
+    <LampLight position={[-0.72, 1.52, -0.18]} color="#ffdcaa" intensity={3} distance={2.5} />
   </group>
 );
 
@@ -884,7 +884,7 @@ export const ArchiveScene = () => {
   const meta = getScene('archive');
   return (
     <group>
-      <RoomLights shadowMapSize={2048} color="#eef4f4" intensity={2.55} fill="#7f97aa" />
+      <RoomLights focused shadowMapSize={2048} color="#f2e5ce" intensity={2.15} fill="#7f97aa" />
       <DioramaBase meta={meta} footprint={[3.6, 3.6]} subtitle="1:18 / ARCHIVE" />
 
       <Shell />

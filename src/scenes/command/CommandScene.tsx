@@ -1052,7 +1052,7 @@ export const CommandScene = () => {
   const meta = getScene('command');
   return (
     <group>
-      <RoomLights color="#e6f2f4" intensity={2.1} fill="#8faab4" shadowMapSize={2048} />
+      <RoomLights focused color="#e6f2f4" intensity={1.95} fill="#8faab4" shadowMapSize={2048} />
       <fog attach="fog" args={['#0c1216', 12, 34]} />
 
       <DioramaBase meta={meta} footprint={[3.6, 3.6]} ground={commandFloor()} subtitle="1:18 / COMMAND" />

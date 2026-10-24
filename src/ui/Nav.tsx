@@ -2,6 +2,9 @@ import {useEffect, useRef, useState} from 'react';
 import {useSecretEntry} from '../app/secretEntry';
 import {scrollToSection} from '../app/useRoute';
 import {profile} from '../data/profile';
+import {IdentityMark} from './IdentityMark';
+import {SoundControls} from './SoundControls';
+import {useExperience} from '../experience/Experience';
 
 const links = [
   {id: 'scenes', label: '场景', en: 'SCENES'},
@@ -12,6 +15,7 @@ const links = [
 ] as const;
 
 export const Nav = () => {
+  const {section, setSection} = useExperience();
   const [scrolled, setScrolled] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -19,11 +23,21 @@ export const Nav = () => {
   const {onClick: onSecretClick, ...secretHandlers} = useSecretEntry();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
+    let frame = 0;
+    const update = () => {
+      setScrolled(window.scrollY > 30);
+      let active = 'top';
+      for (const link of links) {
+        if ((document.getElementById(link.id)?.getBoundingClientRect().top ?? Infinity) <= innerHeight * .35) active = link.id;
+      }
+      setSection(active);
+    };
+    const onScroll = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); };
     onScroll();
     window.addEventListener('scroll', onScroll, {passive: true});
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    window.addEventListener('resize', onScroll);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); };
+  }, [setSection]);
 
   useEffect(() => {
     if (!drawer) return;
@@ -73,7 +87,7 @@ export const Nav = () => {
         }}
       >
         <span className="nav__mark" aria-hidden="true">
-          箱
+          <IdentityMark />
         </span>
         <span className="nav__brand-text">
           <b>箱庭</b>
@@ -86,6 +100,7 @@ export const Nav = () => {
           <a
             key={link.id}
             href={`#${link.id}`}
+            aria-current={section === link.id ? 'location' : undefined}
             onClick={(event) => {
               event.preventDefault();
               go(link.id);
@@ -98,6 +113,7 @@ export const Nav = () => {
       </nav>
 
       <div className="nav__actions">
+        <SoundControls />
         <a className="nav__github" href={profile.github} target="_blank" rel="noreferrer">
           GITHUB <span aria-hidden="true">↗</span>
         </a>
@@ -120,6 +136,7 @@ export const Nav = () => {
           <a
             key={link.id}
             href={`#${link.id}`}
+            aria-current={section === link.id ? 'location' : undefined}
             onClick={(event) => {
               event.preventDefault();
               go(link.id);

@@ -4,6 +4,7 @@ type Props = {
   fallback: ReactNode;
   children: ReactNode;
   label?: string;
+  onFailure?: () => void;
 };
 
 type State = {failed: boolean};
@@ -20,6 +21,7 @@ export class SceneBoundary extends Component<Props, State> {
   }
 
   public override componentDidCatch(error: Error, info: ErrorInfo): void {
+    this.props.onFailure?.();
     console.warn(`[scene] ${this.props.label ?? 'scene'} failed to render`, error, info.componentStack);
   }
 

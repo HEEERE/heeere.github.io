@@ -4,6 +4,8 @@ import {projects} from '../data/projects';
 import {getScene} from '../data/scenes';
 import {ProjectOutcomes} from './ProjectDossier';
 import {projectEvidence} from '../data/projectEvidence';
+import {IdentityMark} from './IdentityMark';
+import {ReportDownload} from './ReportDownload';
 
 export const WorksSection = () => {
   const {openScene} = useSite();
@@ -14,7 +16,7 @@ export const WorksSection = () => {
           <span>WORKS</span> / 项目档案
         </p>
         <div className="section__head-row">
-          <h2>三个项目：过程记忆、知识图谱与 Agent 安全</h2>
+          <h2>从场景，走进系统。</h2>
           <p className="section__lead">
             三个项目分别对应 Agent 的过程记忆、应急预案的知识图谱问答，以及多智能体链路里的污染检测与阻断。
           </p>
@@ -27,10 +29,11 @@ export const WorksSection = () => {
           return (
             <article
               key={project.id}
-              className="work"
-              style={{'--accent': project.color, '--scene-glow': scene.glow} as CSSProperties}
+              className={`work${project.id === 'pmu' ? ' work--featured' : ''}`}
+              style={{'--accent': project.color, '--scene-accent': project.color, '--scene-glow': scene.glow} as CSSProperties}
             >
               <div className="work__aside">
+                <IdentityMark />
                 <span className="work__no">{project.number}</span>
                 <span className="work__status">{project.status}</span>
                 <span className="work__period">{project.period}</span>
@@ -57,7 +60,7 @@ export const WorksSection = () => {
                 </ol></details>
                 <div className="project-links">
                   <button type="button" onClick={() => openScene(project.scene)}>交互演示与技术报告 ↗</button>
-                  <a href={`/reports/${project.id}.md`} download>下载报告 ↓</a>
+                  <ReportDownload id={project.id} />
                   {project.repository ? <a href={project.repository} target="_blank" rel="noreferrer">项目源码 ↗</a> : null}
                 </div>
 
@@ -89,6 +92,10 @@ export const WorksSection = () => {
               </div>
 
               <div className="work__meta">
+                <button className="work__specimen" type="button" onClick={() => openScene(project.scene)} aria-label={`查看${scene.nameZh}交互演示`}>
+                  <img src={`/images/scenes/${scene.id}.jpg`} alt={`${scene.nameZh}微缩场景`} loading="lazy" width="800" height="600" />
+                  <span><b>SCENE {scene.index}</b> {scene.nameZh} <i aria-hidden="true">↗</i></span>
+                </button>
                 <dl>
                   <div>
                     <dt>角色</dt>

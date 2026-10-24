@@ -1,7 +1,7 @@
 import {surface} from '../../three/surfaces';
 import {useMemo, useRef} from 'react';
 import {useFrame} from '@react-three/fiber';
-import {CatmullRomCurve3, Vector3, type Group, type Mesh, type MeshToonMaterial, type PointLight} from 'three';
+import {CatmullRomCurve3, MathUtils, Vector3, type Group, type Mesh, type MeshToonMaterial, type PointLight} from 'three';
 import {DioramaBase} from '../../three/kit/DioramaBase';
 import {Box, Cable, Cone, ContactShadow, Cyl, Glow, Panel, Pipe, RBox, Torus, type Vec3} from '../../three/kit/primitives';
 import {RoomLights} from '../../three/kit/lighting';
@@ -872,7 +872,7 @@ const Console = () => {
   return (
     <group>
       {/* Bench. */}
-      <Box size={[1.54, 0.05, 0.66]} color="#5f6a72" p={[-0.9, DESK_TOP - 0.025, DESK_Z]} ink inkWidth={0.006} />
+      <Box size={[1.54, 0.05, 0.66]} material={surface('#5f6a72', 'paint')} p={[-0.9, DESK_TOP - 0.025, DESK_Z]} ink inkWidth={0.006} />
       <Box size={[1.54, 0.018, 0.66]} color="#2f383f" p={[-0.9, DESK_TOP - 0.062, DESK_Z]} ink={false} shadow={false} />
       {[-1.64, -0.16].map((x) => (
         <Box key={x} size={[0.04, 0.69, 0.64]} color="#333c43" p={[x, 0.405, -1.31]} ink={false} />
@@ -941,10 +941,15 @@ const AgentPod = ({p, seed, tint, tag}: {p: Vec3; seed: number; tint: string; ta
   </group>
 );
 
-const ContainmentCell = () => {
+const ContainmentCell = ({demo}: {demo?: SceneDemo}) => {
   const scan = useRef<Group>(null);
-  useFrame(({clock}) => {
-    const cycle = (clock.elapsedTime * 0.22) % 1;
+  const shutter = useRef<Group>(null);
+  const quality = useQuality();
+  const blocked = demo?.step === 2 && demo.variant === 0;
+  const gateColor = demo?.variant === 1 ? '#8fbca6' : '#e0877a';
+  useFrame(({clock}, delta) => {
+    const cycle = quality.reducedMotion ? .5 : (clock.elapsedTime * 0.12) % 1;
+    if (shutter.current) shutter.current.scale.y = quality.reducedMotion ? (blocked ? 1 : .015) : MathUtils.damp(shutter.current.scale.y, blocked ? 1 : .015, 5, delta);
     if (scan.current) {
       scan.current.position.y = 0.2 + cycle * 0.68;
       scan.current.scale.y = 0.6 + Math.sin(cycle * Math.PI) * 0.5;
@@ -1012,11 +1017,15 @@ const ContainmentCell = () => {
       <Panel size={[0.3, 0.056]} texture={gatePlateTexture()} p={[GATE_CX, 1.062, GATE_Z + 0.067]} />
 
       {/* Gate lamps and scanner. */}
-      <Panel size={[0.5, 0.028]} material={flat('#ff6a48')} p={[GATE_CX, 1.0, GATE_Z + 0.062]} />
-      <Glow color="#ff5a3a" size={0.52} opacity={0.24} p={[GATE_CX, 0.99, GATE_Z + 0.13]} />
-      <Panel size={[0.012, 0.56]} material={flat('#e0877a')} p={[GATE_X0 + 0.006, 0.64, GATE_Z + 0.061]} />
+      <Panel size={[0.5, 0.028]} material={flat(gateColor)} p={[GATE_CX, 1.0, GATE_Z + 0.062]} />
+      <Glow color={gateColor} size={0.52} opacity={0.24} p={[GATE_CX, 0.99, GATE_Z + 0.13]} />
+      <Panel size={[0.012, 0.56]} material={flat(gateColor)} p={[GATE_X0 + 0.006, 0.64, GATE_Z + 0.061]} />
+      <group ref={shutter} name="action-gateway-shutter" position={[GATE_CX, .97, GATE_Z + .035]} scale={[1, .015, 1]}>
+        <Box size={[.48, .8, .018]} material={surface('#344249', 'paint')} p={[0, -.4, 0]} ink={false} />
+        {[1, 2, 3, 4, 5, 6, 7].map(index => <Box key={index} size={[.48, .008, .022]} color="#617276" p={[0, -index * .1, .008]} ink={false} />)}
+      </group>
       <group ref={scan} position={[GATE_CX, 0.3, GATE_Z + 0.058]}>
-        <Panel size={[0.5, 0.012]} color="#ffb28a" additive opacity={0.45} />
+        <Panel size={[0.5, 0.012]} color={gateColor} additive opacity={0.35} />
       </group>
       <Panel size={[0.5, 0.05]} texture={hazardStripeTexture()} p={[GATE_CX, 0.075, GATE_Z + 0.065]} />
 
@@ -1278,16 +1287,19 @@ const ContaminationTrace = ({demo}: {demo?: SceneDemo}) => {
   const dots = useRef<Array<Mesh | null>>([]);
   const gateLight = useRef<PointLight>(null);
   const gateGlow = useRef<Group>(null);
-  useFrame(({clock}) => {
+  const progress = useRef(0);
+  useFrame(({clock}, delta) => {
     const cycle = quality.reducedMotion ? 9 : clock.elapsedTime % 14;
-    const travel = demo ? (demo.step + 1) / 3 : Math.min(1, Math.max(0, (cycle - 0.8) / 7.4));
-    const appear = Math.min(1, cycle / 0.9) * (cycle > 12.2 ? Math.max(0, 1 - (cycle - 12.2) / 1.4) : 1);
-    const arrived = travel >= 1;
+    const target = demo ? (demo.step + 1) / 3 : Math.min(1, Math.max(0, (cycle - 0.8) / 7.4));
+    progress.current = quality.reducedMotion ? target : MathUtils.damp(progress.current, target, 4, delta);
+    const travel = progress.current;
+    const appear = demo ? 1 : Math.min(1, cycle / 0.9) * (cycle > 12.2 ? Math.max(0, 1 - (cycle - 12.2) / 1.4) : 1);
+    const arrived = travel >= .995;
     dots.current.forEach((node, index) => {
       if (!node) return;
       const local = Math.min(1, Math.max(0, travel * 1.3 - index * 0.052));
       TRACE_CURVE.getPointAt(local, node.position);
-      const pulse = arrived && !quality.reducedMotion ? 0.82 + Math.sin(clock.elapsedTime * 3 + index * 1.1) * 0.18 : 1;
+      const pulse = arrived && !quality.reducedMotion && !demo ? 0.9 + Math.sin(clock.elapsedTime + index * 1.1) * 0.1 : 1;
       node.scale.setScalar(appear * pulse);
       node.visible = appear > 0.02;
     });
@@ -1331,13 +1343,13 @@ export const SecurityScene = ({demo}: {demo?: SceneDemo}) => {
   const meta = getScene('security');
   return (
     <group>
-      <RoomLights shadowMapSize={2048} color="#d9e6f0" intensity={1.8} fill="#546b80" />
+      <RoomLights focused shadowMapSize={2048} color="#d9e6f0" intensity={1.8} fill="#546b80" />
       <DioramaBase meta={meta} footprint={[3.6, 3.6]} subtitle="1:18 / SECURITY LAB" />
       <LabShell />
       <CeilingServices />
       <WallServices />
       <Console />
-      <ContainmentCell />
+      <ContainmentCell demo={demo} />
       <SecurityTerminal />
       <Chair />
       <Stool />
