@@ -5,6 +5,7 @@ import {profile} from '../data/profile';
 import {IdentityMark} from './IdentityMark';
 import {SoundControls} from './SoundControls';
 import {useExperience} from '../experience/Experience';
+import {KineticText} from './KineticText';
 
 const links = [
   {id: 'scenes', label: '场景', en: 'SCENES'},
@@ -106,7 +107,7 @@ export const Nav = () => {
               go(link.id);
             }}
           >
-            <span>{link.label}</span>
+            <span><KineticText text={link.label} /></span>
             <em>{link.en}</em>
           </a>
         ))}

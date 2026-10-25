@@ -4,7 +4,7 @@
 
 - PMU-Graph：[公开仓库与 README](https://github.com/HEEERE/PMU-Graph)。过程记忆、双图谱、验证与激活门控。
 - LLM4EKG：[公开仓库与 README](https://github.com/HEEERE/LLM4EKG)。规则结构化、混合抽取、实体对齐、本体锚定与图谱构建。
-- MAJD-Guard：用户指定本地项目的 README、actions/gateway.py、provenance、verification 和 state 模块。只整理机制，不复制运行数据、私有研究文件或凭据。
+- RAISE：用户指定本地项目的 README、actions/gateway.py、provenance、verification 和 state 模块。只整理机制，不复制运行数据、私有研究文件或凭据。
 
 页面展示工程实现和设计流程，不加入具体实验数据。演示完全在浏览器内使用固定样例，不连接研究后端，也不暗示真实运行结果。技术报告由同一份内容数据生成，避免页面和下载版本不一致。
 

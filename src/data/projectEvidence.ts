@@ -37,7 +37,7 @@ export const projectEvidence: Record<ProjectId, ProjectEvidence> = {
       {label: '激活复用', object: '状态控制台', position: [0.92, 1.35, -1.35], input: '验证状态 + 环境前置条件', action: '激活需结构、风险、来源与执行证据同时满足；技能晋升有独立门控。', output: '演示预设门控满足 → Active；保留环境与证据关联。', alternateOutput: '保持 Candidate；本次不进入 Active，不允许复用。'},
     ],
     report: [
-      {title: '问题与边界', text: '长期任务产生的执行轨迹不等于可靠技能。PMU-Graph 将过程记忆的生成、验证和激活拆成显式状态，目标是让复用行为有来源、有前置条件、有验证依据。当前项目仍在推进；本文结合公开仓库 README 与作品集项目说明整理。'},
+      {title: '问题与边界', text: '长期任务产生的执行轨迹不等于可靠技能。PMU-Graph 将过程记忆的生成、验证和激活拆成显式状态，目标是让复用行为有来源、有前置条件、有验证依据。本文结合公开仓库 README 与作品集项目说明整理。'},
       {title: '系统设计', text: 'FastAPI 与 Pydantic v2 承载管理及执行接口，SQLAlchemy 管理结构化状态。Metadata Knowledge Graph 组织来源、证据与风险关联；Scenario-Mediated Skill Graph 表达环境状态、技能与目标状态。两张图服务不同查询语义，避免把来源审计与任务规划混成一种关系。'},
       {title: '核心闭环', text: 'Candidate 先通过结构、风险与来源检查进入 Verified；激活还需验证闭环、执行证据与状态门控。失败路径交给 Repair，修复后仍需重新验证。Docker Sandbox 为执行提供隔离边界。已描述的接口覆盖 PMU 管理、任务执行、风险检测、图谱导出、状态流转和任务合成。'},
       {title: '设计取舍', text: '显式状态与双图谱增加了数据同步、状态一致性和查询维护的成本，但使复用决策和问题追踪有明确落点。容器隔离也有启动与资源成本；隔离执行不能替代对技能语义和环境假设的验证。'},
@@ -83,7 +83,7 @@ export const projectEvidence: Record<ProjectId, ProjectEvidence> = {
       {label: '闸门与修复', object: '隔离闸门', position: [0.74, 1.12, -0.45], input: '独立检查结论 + 权限 / 范围 / 执行模式', action: '统一闸门控制动作。修复时提交失效、隔离和限制保留，从干净输入创建新版本。', output: 'BLOCK → 隔离污染版本；干净重放，旧版本不重新激活。', alternateOutput: '演示预设的契约检查通过 → ALLOW；记录动作与来源。'},
     ],
     report: [
-      {title: '问题与边界', text: 'MAJD-Guard 是多智能体级联污染与防御的研究平台，连接攻击仿真、防御执行、来源追踪与运行观察。本文根据项目 README 和对应源码模块整理，仅展示机制和流程，不展示具体实验数据。'},
+      {title: '问题与边界', text: 'RAISE 是多智能体级联污染与防御的研究平台，连接攻击仿真、防御执行、来源追踪与运行观察。本文根据项目 README 和对应源码模块整理，仅展示机制和流程，不展示具体实验数据。'},
       {title: '版本化账本与动作闸门', text: 'MessageBus 连接事件流与 ProvenanceLedger。数据对象以不可变版本保存，后续变化追加到状态记录。ActionGateway 统一检查受保护动作的权限、参数来源、作用范围和执行模式；检测模型只能提供否决证据，不能直接产生授权。执行模式在闸门构造时固定，检查与执行之间的快照变化会使旧依据失效。'},
       {title: '双图分析与独立检查', text: 'RAISE 将分析分为保守图与紧图。紧图提出候选修复或保留方案，保守图承担安全判断；独立 checker 在干预后的保守图上重新检查残余污染路径。UNKNOWN 表示证据、范围或预算不足，UNSATISFIABLE 表示已证明没有可用切断方案，两者不混用。'},
       {title: '状态修复与界面', text: '状态控制器在复核后提交失效、隔离与限制保留。保留版本仍带强制标签，不能充当高影响动作的授权依据；恢复从干净输入创建新版本。FastAPI 与 WebSocket 提供经过裁剪的运行投影，React 界面连接策略编辑、来源图、事件追踪与回放。'},

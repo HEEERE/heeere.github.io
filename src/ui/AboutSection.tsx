@@ -1,5 +1,6 @@
 import {useSite} from '../app/site';
 import {profile} from '../data/profile';
+import {EditorialTitle} from './EditorialTitle';
 
 export const AboutSection = () => {
   const {openScene} = useSite();
@@ -13,11 +14,7 @@ export const AboutSection = () => {
 
       <div className="about">
         <div className="about__intro">
-          <h2>
-            在海南大学读数据科学，
-            <br />
-            也在做 Agent 系统。
-          </h2>
+          <EditorialTitle lines={['在海南大学读数据科学，', '也在做 Agent 系统。']} accent="Curiosity, put into practice" />
           <p className="about__lead">{profile.personalSummary}</p>
           <p className="about__quote">“{profile.tagline}”</p>
           <button className="scene-link" type="button" onClick={() => openScene('desk')}>

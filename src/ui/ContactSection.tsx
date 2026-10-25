@@ -3,6 +3,7 @@ import {profile} from '../data/profile';
 import {getScene} from '../data/scenes';
 import {SceneViewport} from './SceneViewport';
 import {useExperience} from '../experience/Experience';
+import {EditorialTitle} from './EditorialTitle';
 
 const nowInTianjin = (): string => {
   try {
@@ -26,7 +27,7 @@ export const ContactSection = () => {
         <p className="eyebrow">
           <span>CONTACT</span> / 街角邮箱
         </p>
-        <h2>雨还在下，<br />欢迎留一封信。</h2>
+        <EditorialTitle lines={['雨还在下，', '欢迎留一封信。']} accent="Let’s start a conversation" />
         <p className="contact__lead">欢迎交流 Agent 系统、知识图谱与安全研究。项目合作、架构讨论或演示交流，请通过邮件联系。</p>
         <div className="contact__actions">
           <a className="btn btn--primary" href={`mailto:${profile.email}`}>

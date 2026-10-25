@@ -29,7 +29,7 @@ try {
   await page.waitForFunction(() => document.documentElement.dataset.view === 'static');
   check('static reading works without downloading the 3D engine', !requests.some(path => /SceneRenderer-|three-vendor-/.test(path)));
   check('static mode does not allocate WebGL canvases', await page.locator('canvas').count() === 0);
-  await page.locator('.hero__directory button').first().click();
+  await page.locator('.hero__directory button').filter({hasText: '记忆档案室'}).click();
   await page.locator('.exhibit.is-open').waitFor();
   check('modal background is inert', await page.locator('main').evaluate(node => Boolean(node.closest('[inert]'))));
   await page.locator('.exhibit__close').focus();
@@ -40,7 +40,7 @@ try {
   await page.keyboard.press('Escape');
   await page.locator('.exhibit').waitFor({state: 'detached'});
   check('close returns to the original static URL', new URL(page.url()).hash === '#/simple');
-  check('focus returns to the scene opener', await page.locator('.hero__directory button').first().evaluate(node => node === document.activeElement));
+  check('focus returns to the scene opener', await page.locator('.hero__directory button').filter({hasText: '记忆档案室'}).evaluate(node => node === document.activeElement));
   await page.goForward();
   await page.locator('.exhibit').waitFor();
   check('browser Forward restores the scene', new URL(page.url()).hash === '#/scene/archive');
@@ -154,7 +154,7 @@ try {
   const fallback = await noGl.newPage();
   await fallback.goto(base.href);
   await fallback.locator('.webgl-note').waitFor();
-  await fallback.locator('.hero__directory button').first().click();
+  await fallback.locator('.hero__directory button').filter({hasText: '记忆档案室'}).click();
   await fallback.locator('.project-demo__steps button').nth(2).click();
   check('no-WebGL devices retain project interactions', (await fallback.locator('.scene-story-caption p').innerText()).includes('Active'));
   check('no-WebGL fallback has no live canvas', await fallback.locator('canvas').count() === 0);

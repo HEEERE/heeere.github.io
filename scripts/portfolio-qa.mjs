@@ -19,8 +19,14 @@ try {
   check('location and professional positioning', text.includes('天津') && text.includes('AI Agent 系统开发'));
   check('no internship or old location copy', !/实习|海口|HAIKOU|INTERNSHIP/i.test(text));
   check('hero contact link', await page.locator('.hero a[href="#contact"]').count() === 1);
+  check('PMU is the middle project in the records and hero shortcuts',
+    (await page.locator('.work__title').allTextContents()).join(',') === 'LLM4EKG,PMU-Graph,RAISE'
+    && await page.locator('.hero__directory button b').nth(1).innerText() === '记忆档案室');
+  check('RAISE is the default middle project in the scene gallery', await page.locator('.project-carousel').getAttribute('data-center') === 'security');
+  check('PMU and multi-agent project periods end in September 2026',
+    await page.locator('.work__meta dd').filter({hasText: /2026\.(01|04) — 2026\.09/}).count() === 2);
   await shot('desktop-hero');
-  await page.locator('.hero__directory button').first().click();
+  await page.locator('.hero__directory button').filter({hasText: '记忆档案室'}).click();
   await page.locator('.story-marker').first().waitFor();
   check('hero directory opens archive', await page.locator('#exhibit-title').innerText() === '记忆档案室');
   await page.keyboard.press('Escape');

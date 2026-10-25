@@ -5,6 +5,7 @@ import {konbiniScene} from '../data/scenes';
 import {profile} from '../data/profile';
 import {projects} from '../data/projects';
 import {SceneViewport} from './SceneViewport';
+import {KineticText} from './KineticText';
 
 const meta = konbiniScene;
 
@@ -26,8 +27,8 @@ export const Hero = () => {
           <span>PORTFOLIO</span> / 箱庭 HAKONIWA
         </p>
         <h1 className="hero__name">
-          纪喆元
-          <span className="hero__name-en">JI ZHEYUAN</span>
+          <span className="hero__name-zh"><span><KineticText text="纪喆元" /></span></span>
+          <span className="hero__name-en" lang="en"><span><KineticText text="Ji Zheyuan" /></span></span>
         </h1>
         <p className="hero__positioning">{profile.positioning}</p>
         <p className="hero__roles">

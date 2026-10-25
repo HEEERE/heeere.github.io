@@ -6,6 +6,7 @@ import {ProjectOutcomes} from './ProjectDossier';
 import {projectEvidence} from '../data/projectEvidence';
 import {IdentityMark} from './IdentityMark';
 import {ReportDownload} from './ReportDownload';
+import {EditorialTitle} from './EditorialTitle';
 
 export const WorksSection = () => {
   const {openScene} = useSite();
@@ -16,7 +17,7 @@ export const WorksSection = () => {
           <span>WORKS</span> / 项目档案
         </p>
         <div className="section__head-row">
-          <h2>从场景，走进系统。</h2>
+          <EditorialTitle lines={['从场景，走进系统。']} accent="Selected works" />
           <p className="section__lead">
             三个项目分别对应 Agent 的过程记忆、应急预案的知识图谱问答，以及多智能体链路里的污染检测与阻断。
           </p>
@@ -93,8 +94,8 @@ export const WorksSection = () => {
 
               <div className="work__meta">
                 <button className="work__specimen" type="button" onClick={() => openScene(project.scene)} aria-label={`查看${scene.nameZh}交互演示`}>
-                  <img src={`/images/scenes/${scene.id}.jpg`} alt={`${scene.nameZh}微缩场景`} loading="lazy" width="800" height="600" />
-                  <span><b>SCENE {scene.index}</b> {scene.nameZh} <i aria-hidden="true">↗</i></span>
+                  <span className="work__specimen-image"><img src={`/images/scenes/${scene.id}.jpg`} alt={`${scene.nameZh}微缩场景`} loading="lazy" width="800" height="600" /></span>
+                  <span className="work__specimen-caption"><b>SCENE {scene.index}</b> {scene.nameZh} <i aria-hidden="true">↗</i></span>
                 </button>
                 <dl>
                   <div>

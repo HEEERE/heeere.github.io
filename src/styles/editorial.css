@@ -80,10 +80,10 @@
 .work__meta dl > div { padding-block: 16px; }
 .work__specimen { display: block; width: 100%; margin-bottom: 30px; text-align: left; }
 .work__specimen img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: #101316; }
-.work__specimen > span { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid #c7ad8040; color: var(--paper-dim); font-size: 12px; }
+.work__specimen-caption { display: flex; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid #c7ad8040; color: var(--paper-dim); font-size: 12px; }
 .work__specimen b { font: 9px var(--font-mono); color: var(--brass); }
 .work__specimen i { margin-left: auto; font-style: normal; color: var(--brass); }
-.work__specimen:hover > span { color: var(--scene-accent); border-color: var(--scene-accent); }
+.work__specimen:hover .work__specimen-caption { color: var(--scene-accent); border-color: var(--scene-accent); }
 .work .project-outcomes { border-top-color: #c7ad8040; margin-top: 30px; }
 .work .project-outcomes strong { font-family: var(--font-serif-cn); font-size: 25px; }
 .work .project-outcomes span { font-size: 12px; }

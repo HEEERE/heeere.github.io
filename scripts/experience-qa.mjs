@@ -85,7 +85,7 @@ try {
   await page.keyboard.press('Escape');
   await page.reload();
   check('sound choices persist without autoplay', await page.evaluate(() => JSON.parse(localStorage.getItem('hakoniwa.sound.v1')).music && !JSON.parse(localStorage.getItem('hakoniwa.sound.v1')).enabled && window.__soundQA.contexts.length === 0));
-  await page.locator('.scene-card--featured').focus();
+  await page.locator('.scene-card[data-scene="archive"]').focus();
   await page.keyboard.press('Enter');
   await page.locator('#exhibit-title').waitFor();
   await page.locator('.exhibit .scene-viewport[data-load="ready"]').waitFor();
@@ -100,15 +100,15 @@ try {
   check('Escape closes sound settings before closing the scene', await page.locator('.exhibit').count() === 1 && await page.locator('.exhibit .sound__panel').count() === 0);
   await page.keyboard.press('Escape');
   await page.locator('.exhibit').waitFor({state: 'detached'});
-  check('closing returns focus and records a visit', await page.locator('.scene-card--featured').evaluate(node => node === document.activeElement && Boolean(node.querySelector('.scene-visited'))));
+  check('closing returns focus and records a visit', await page.locator('.scene-card[data-scene="archive"]').evaluate(node => node === document.activeElement && Boolean(node.querySelector('.scene-visited'))));
   await page.reload();
-  check('visited scenes survive reload within the session', await page.locator('.scene-card--featured .scene-visited').count() === 1);
+  check('visited scenes survive reload within the session', await page.locator('.scene-card[data-scene="archive"] .scene-visited').count() === 1);
   await page.locator('#works').evaluate(node => node.scrollIntoView({behavior: 'instant'}));
   await page.waitForTimeout(300);
   check('navigation marks the current section', await page.locator('.nav__links a[href="#works"]').getAttribute('aria-current') === 'location');
   await page.locator('.work__implementation summary').first().click();
   check('implementation details remain native and expandable', await page.locator('.work__implementation').first().getAttribute('open') !== null);
-  const reportLink = page.locator('.work .report-download').first();
+  const reportLink = page.locator('.work .report-download[href="/reports/pmu.md"]');
   // Observe the transient text before clicking. Software-rendered CI can return
   // the download event after the acknowledgement has already reset.
   await reportLink.evaluate(node => {

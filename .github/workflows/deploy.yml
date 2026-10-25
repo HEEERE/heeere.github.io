@@ -53,6 +53,7 @@ jobs:
             tmp/release-qa/
             tmp/portfolio-qa/
             tmp/experience-qa/
+            tmp/exhibition-qa/
           retention-days: 7
       - name: Configure Pages
         if: github.event_name != 'pull_request'

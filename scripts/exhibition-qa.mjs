@@ -1,0 +1,94 @@
+import assert from 'node:assert/strict';
+import {mkdir, writeFile} from 'node:fs/promises';
+import {launchBrowser} from './browser.mjs';
+
+const base = process.argv[2] ?? 'http://127.0.0.1:4173/';
+const out = 'tmp/exhibition-qa';
+await mkdir(out, {recursive: true});
+const browser = await launchBrowser();
+const page = await browser.newPage({viewport: {width: 1440, height: 1000}});
+const errors = [];
+const checks = [];
+page.on('pageerror', error => errors.push(error.message));
+const check = (name, result) => { assert.ok(result, name); checks.push(name); console.log(`PASS ${name}`); };
+const gallery = page.locator('.project-carousel');
+const center = () => gallery.getAttribute('data-center');
+const showGallery = async () => {
+  await gallery.evaluate(node => node.scrollIntoView({block: 'start', behavior: 'instant'}));
+  await page.waitForTimeout(1500);
+};
+try {
+  await page.goto(`${base}#/simple`);
+  await page.evaluate(() => document.fonts.ready);
+  await page.locator('.hero__name-zh .kinetic-text').hover();
+  check('letter hover produces motion', await page.locator('.hero__name-zh .kinetic-text__letter').evaluateAll(nodes => nodes.some(node => node.getAnimations().length > 0)));
+  await page.locator('.hero__name-zh .kinetic-text').click();
+  check('text click creates a decorative pulse without navigation', await page.locator('.pointer-accent__pulse').evaluate(node => node.getAnimations().length > 0) && new URL(page.url()).hash === '#/simple');
+  check('pointer accent never intercepts input', await page.locator('.pointer-accent').evaluate(node => getComputedStyle(node).pointerEvents === 'none'));
+  await page.screenshot({path: `${out}/text-click.png`});
+  await showGallery();
+  await gallery.hover();
+  check('RAISE is the initial main exhibit', await center() === 'security' && await page.locator('.scene-card--featured').getAttribute('data-scene') === 'security');
+  const originalCards = await page.locator('.project-carousel__slot').evaluateAll(nodes => nodes.map(node => {node.dataset.qaRetained = 'true'; return node.dataset.carouselProject;}));
+  await page.getByRole('button', {name: '下一个居中项目'}).click();
+  check('next rotates LLM4EKG into the middle', await center() === 'ekg');
+  check('rotation animates positions instead of remounting cards', await page.locator('.project-carousel__slot').evaluateAll(nodes => nodes.every(node => node.dataset.qaRetained === 'true') && nodes.some(node => node.getAnimations().length > 0)));
+  await page.waitForTimeout(1100);
+  await page.getByRole('button', {name: '将 PMU-Graph 居中展示'}).click();
+  await page.waitForTimeout(1100);
+  const boxes = await page.locator('.project-carousel__slot').evaluateAll(nodes => nodes.map(node => ({id: node.dataset.carouselProject, left: node.getBoundingClientRect().left})));
+  check('manual selection places PMU between its neighbors', boxes.sort((a, b) => a.left - b.left)[1].id === 'pmu');
+  check('all original project cards survive rotation', originalCards.length === 3 && await page.locator('[data-qa-retained="true"]').count() === 3);
+  await page.getByRole('button', {name: '将 RAISE 居中展示'}).click();
+  await page.waitForTimeout(1100);
+  await page.screenshot({path: `${out}/desktop-raise-center.png`});
+  await page.locator('.scene-card--featured').press('Enter');
+  await page.locator('.exhibit').waitFor();
+  check('center project opens the correct interactive exhibit', await page.locator('#exhibit-title').innerText() === '防御实验室');
+  check('open dialog pauses rotation', await gallery.getAttribute('data-playing') === 'false');
+  await page.keyboard.press('Escape');
+  await page.locator('.exhibit').waitFor({state: 'detached'});
+  check('focus returns to the same center scene', await page.locator('.scene-card--featured').evaluate(node => node === document.activeElement));
+
+  await page.clock.install();
+  await page.goto(`${base}#/simple`);
+  await showGallery();
+  await page.mouse.move(5, 5);
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.waitForFunction(() => document.querySelector('.project-carousel').dataset.playing === 'true');
+  const beforeAuto = await center();
+  await page.clock.fastForward(7100);
+  check('visible unattended gallery advances automatically', await center() !== beforeAuto);
+  await gallery.hover();
+  const beforeHover = await center();
+  await page.clock.fastForward(8000);
+  check('hover pauses automatic rotation', await center() === beforeHover && await gallery.getAttribute('data-playing') === 'false');
+  await page.getByRole('button', {name: '下一个居中项目'}).focus();
+  await page.mouse.move(5, 5);
+  await page.clock.fastForward(8000);
+  check('keyboard focus pauses automatic rotation', await center() === beforeHover);
+  await page.getByRole('button', {name: '暂停项目自动轮播'}).click();
+  await page.mouse.move(5, 5);
+  await page.evaluate(() => document.activeElement?.blur());
+  await page.clock.fastForward(8000);
+  check('explicit pause remains paused after pointer and focus leave', await center() === beforeHover && await gallery.getAttribute('data-playing') === 'false');
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.getByRole('button', {name: '将 PMU-Graph 居中展示'}).click();
+  check('reduced motion keeps manual controls without carousel animations', await center() === 'pmu' && await page.locator('.project-carousel__slot').evaluateAll(nodes => nodes.every(node => node.getAnimations().length === 0)));
+  check('reduced motion omits the pointer decoration', await page.locator('.pointer-accent').evaluate(node => getComputedStyle(node).display === 'none'));
+  for (const width of [320, 390, 768, 1024]) {
+    await page.setViewportSize({width, height: 900});
+    await page.getByRole('button', {name: '将 RAISE 居中展示'}).click();
+    await showGallery();
+    check(`${width}px rotating gallery has no page overflow`, await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+    if (width <= 980) check(`${width}px side previews cannot receive focus`, await page.locator('.project-carousel__slot:not(.is-center)').evaluateAll(nodes => nodes.every(node => node.inert)));
+    await page.screenshot({path: `${out}/gallery-${width}.png`});
+  }
+  const report = await page.request.get(`${base}reports/security.md`);
+  check('renamed project report keeps its stable download URL', report.ok() && (await report.text()).startsWith('# RAISE'));
+  check('no runtime errors', errors.length === 0);
+} finally {
+  await writeFile(`${out}/results.json`, JSON.stringify({checks, errors}, null, 2));
+  await browser.close();
+}
+console.log(`${checks.length} exhibition checks passed`);

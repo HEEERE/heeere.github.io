@@ -18,7 +18,9 @@
   --scene-glow: #ff9a4d;
 
   --font-display: 'Cormorant Garamond', 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', serif;
-  --font-sans: 'Inter', -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-latin: 'Inter Variable', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-cn: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  --font-sans: 'Inter Variable', 'Segoe UI', 'Helvetica Neue', Arial, var(--font-cn);
   --font-serif-cn: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', 'Source Han Serif SC', serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
 

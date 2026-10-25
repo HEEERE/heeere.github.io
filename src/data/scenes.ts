@@ -104,7 +104,7 @@ export const scenes: readonly SceneMeta[] = [
     kindLabel: 'PROJECT 03',
     tagline: '被污染的上下文，在闸门前停下。',
     description:
-      '实验室里隔出一间玻璃舱，三台 Agent 模块摆在架子上，门口是检测门和红色扫描口。沿着来源工作台、双图复核终端与动作闸门，逐步查看 MAJD-Guard 如何记录来源、拒绝危险动作并修复状态。',
+      '实验室里隔出一间玻璃舱，三台 Agent 模块摆在架子上，门口是检测门和红色扫描口。沿着来源工作台、双图复核终端与动作闸门，逐步查看 RAISE 如何记录来源、拒绝危险动作并修复状态。',
     accent: '#e0877a',
     glow: '#d4635a',
     projectId: 'security',

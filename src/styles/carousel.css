@@ -1,0 +1,55 @@
+.project-carousel { margin-bottom: clamp(72px, 9vw, 130px); scroll-margin-top: calc(var(--nav-height) + 20px); }
+.project-carousel__controls { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding-block: 20px; border-top: 1px solid var(--line-strong); }
+.project-carousel__current { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px 22px; }
+.project-carousel__current > span { color: var(--muted); font: 10px var(--font-sans); letter-spacing: .14em; }
+.project-carousel__current b { color: var(--brass); font: 400 24px var(--font-latin); letter-spacing: -.035em; }
+.project-carousel__navigation { display: flex; align-items: center; gap: 14px; }
+.project-carousel__navigation button { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); color: var(--paper); font-size: 20px; }
+.project-carousel__navigation button:hover { border-color: var(--brass); color: var(--brass); }
+.project-carousel__navigation .project-carousel__play { width: auto; padding-inline: 10px; border: 0; font-size: 11px; color: var(--muted); }
+.project-carousel__count { color: var(--muted); white-space: nowrap; font: 11px var(--font-latin); font-variant-numeric: tabular-nums; }
+.project-carousel__window { overflow: clip; padding: 8px 4px; margin-inline: -4px; }
+.project-carousel__track { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; align-items: start; }
+.project-carousel__slot { position: relative; min-width: 0; z-index: 1; }
+.project-carousel__slot.is-center { z-index: 2; }
+.project-carousel .scene-card { width: 100%; }
+.project-carousel .scene-card__stage { transition: aspect-ratio .95s var(--ease-out), clip-path 1.25s var(--ease-out), transform .7s var(--ease-out); }
+.project-carousel .scene-card--project { transition: margin-top .95s var(--ease-out); }
+.project-carousel .scene-card--featured .scene-card__feature-copy { animation: carousel-copy .8s var(--ease-out) .15s both; }
+.project-carousel__selectors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; margin-bottom: 24px; }
+.project-carousel__selectors button { position: relative; display: flex; align-items: baseline; gap: 12px; min-height: 52px; padding-block: 18px; border-top: 1px solid var(--line); text-align: left; color: var(--muted); font: 13px var(--font-latin); }
+.project-carousel__selectors button > span { color: var(--muted-2); font-size: 10px; font-variant-numeric: tabular-nums; }
+.project-carousel__selectors button[aria-pressed='true'] { color: var(--paper); }
+.project-carousel__selectors i { position: absolute; inset: -1px 0 auto; height: 1px; background: var(--brass); transform: scaleX(0); transform-origin: left; transition: transform .65s var(--ease-out); }
+.project-carousel__selectors button[aria-pressed='true'] i { transform: scaleX(1); }
+.project-carousel__selectors button:hover { color: var(--brass); }
+@keyframes carousel-copy { from { opacity: .2; translate: 0 8px; } to { opacity: 1; translate: none; } }
+
+@media (max-width: 980px) {
+  .project-carousel__controls { align-items: start; }
+  .project-carousel__current { flex-direction: column; gap: 8px; }
+  .project-carousel__current > span { font-size: 9px; }
+  .project-carousel__current b { font-size: 22px; }
+  .project-carousel__navigation { gap: 8px; }
+  .project-carousel__track { width: calc(300% - 112px); margin-left: calc(56px - 100%); gap: 16px; }
+  .project-carousel .scene-card { display: flex; flex-direction: column; gap: 0; padding: 0; margin: 0; border: 0; background: none; align-items: stretch; }
+  .project-carousel .scene-card__stage, .project-carousel .scene-card--featured .scene-card__stage { aspect-ratio: 1.2; }
+  .project-carousel .scene-card__body { padding: 22px 4px 0; }
+  .project-carousel .scene-card__edition { margin-bottom: 20px; }
+  .project-carousel__slot:not(.is-center) { opacity: .35; padding-top: 58px; }
+  .project-carousel__slot:not(.is-center) .scene-card__body { visibility: hidden; }
+  .project-carousel__selectors { gap: 16px; margin-bottom: 20px; }
+  .project-carousel__selectors button { flex-direction: column; gap: 8px; font-size: 12px; }
+  .project-carousel .scene-card__names h3 { font-size: clamp(24px, 4.5vw, 32px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-carousel .scene-card__feature-copy { animation: none; }
+}
+@media print {
+  .project-carousel__controls, .project-carousel__selectors { display: none; }
+  .project-carousel__window { overflow: visible; }
+  .project-carousel__track { width: 100%; margin: 0; display: block; }
+  .project-carousel__slot:not(.is-center) { opacity: 1; }
+  .project-carousel__slot:not(.is-center) .scene-card__body { visibility: visible; }
+}

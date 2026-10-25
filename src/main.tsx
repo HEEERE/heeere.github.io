@@ -1,4 +1,5 @@
 import {createRoot} from 'react-dom/client';
+import '@fontsource-variable/inter';
 import '@fontsource/cormorant-garamond/300.css';
 import '@fontsource/cormorant-garamond/400.css';
 import '@fontsource/cormorant-garamond/400-italic.css';
@@ -14,6 +15,10 @@ import './styles/dossier.css';
 import './styles/details.css';
 import './styles/editorial.css';
 import './styles/experience.css';
+import './styles/typography.css';
+import './styles/exhibition-motion.css';
+import './styles/carousel.css';
+import './styles/kinetic.css';
 import {App} from './app/App';
 
 const container = document.getElementById('root');

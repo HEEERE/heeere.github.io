@@ -13,10 +13,13 @@ import {Footer} from '../ui/Footer';
 import {ExhibitOverlay} from '../ui/ExhibitOverlay';
 import {ExperienceProvider} from '../experience/Experience';
 import {Opening} from '../ui/Opening';
+import {useExhibitionMotion} from '../experience/useExhibitionMotion';
+import {PointerAccent} from '../ui/PointerAccent';
 
 export const App = () => {
   const {route, openScene, navigateScene, closeScene} = useRoute();
   const capabilities = useCapabilities();
+  useExhibitionMotion(capabilities.reducedMotion);
   const [forceStatic, setForceStatic] = useState(() => window.location.hash === '#/simple');
 
   useEffect(() => {
@@ -70,6 +73,7 @@ export const App = () => {
           跳到场景列表
         </a>
         <Nav />
+        <span className="reading-progress" aria-hidden="true" />
         <main className="site">
           <Hero />
           <SceneGrid />
@@ -87,6 +91,7 @@ export const App = () => {
         </p>
       ) : null}
       <Opening />
+      <PointerAccent />
       </ExperienceProvider>
     </SiteContext.Provider>
   );

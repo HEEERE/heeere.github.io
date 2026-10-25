@@ -1,0 +1,120 @@
+/* Editorial type: quiet sans-serif information, expressive italic accents. */
+body { font-kerning: normal; }
+
+.nav__links, .nav__brand-text, .nav__github, .eyebrow,
+.section__meta, .hero__roles, .hero__meta dt, .hero__stage-index,
+.hero__directory > p span, .hero__directory button span,
+.scene-card__edition, .scene-card__no, .scene-link__index,
+.work__no, .work__type, .work__period, .work__meta dt,
+.stack__index, .fact-list dt, .footer__meta, .contact__time {
+  font-family: var(--font-sans);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.eyebrow { font-size: 11px; letter-spacing: .13em; }
+.eyebrow > span { font-weight: 500; letter-spacing: .2em; }
+.nav__links a { font-size: 13px; letter-spacing: .08em; }
+.nav__links a em { font-family: var(--font-latin); font-size: 10px; letter-spacing: .12em; }
+.nav__brand-text i { font-family: var(--font-latin); }
+
+/* Chinese and Latin have separate optical scales, weights and spacing. */
+.hero__name {
+  gap: 6px;
+  font-family: var(--font-cn);
+  font-size: clamp(62px, 7.2vw, 108px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: .04em;
+}
+.hero__name-zh, .hero__name-en { display: block; overflow: hidden; }
+.hero__name-zh { padding-block: .06em; }
+.hero__name-en {
+  padding: .02em .12em .16em 0;
+  color: var(--brass);
+  font: italic 400 clamp(34px, 3.9vw, 60px)/1.1 var(--font-display);
+  letter-spacing: -.035em;
+}
+.hero__name-zh > span, .hero__name-en > span { display: block; }
+.hero__positioning { margin-top: 24px; font-size: clamp(17px, 1.45vw, 21px); line-height: 1.65; letter-spacing: .035em; }
+.hero__roles { max-width: 48ch; font-size: 10px; line-height: 1.9; letter-spacing: .075em; }
+.hero__intro { max-width: 29em; line-height: 2; letter-spacing: .025em; }
+.hero__meta dd { line-height: 1.8; }
+
+.section__head h2.editorial-title,
+.about__intro h2.editorial-title,
+.contact__copy h2.editorial-title {
+  max-width: none;
+  font-family: var(--font-cn);
+  font-size: clamp(28px, 3.05vw, 44px);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: .035em;
+}
+.about__intro h2.editorial-title { font-size: clamp(25px, 2.35vw, 35px); }
+.contact__copy h2.editorial-title { font-size: clamp(32px, 3.6vw, 52px); }
+.editorial-title__line {
+  display: block;
+  overflow: hidden;
+  padding-block: .05em;
+  margin-block: -.05em;
+}
+.editorial-title__line > span, .editorial-title__line > em { display: block; }
+.editorial-title__accent {
+  margin-top: 12px;
+  padding: .06em .16em .2em 0;
+  color: var(--brass);
+  font: 400 clamp(32px, 3.2vw, 48px)/1.16 var(--font-display);
+  letter-spacing: -.025em;
+}
+.editorial-title__accent em { font-style: italic; }
+.section__lead { max-width: 30em; font-size: 14px; line-height: 2; letter-spacing: .025em; }
+.about__lead, .contact__lead, .work__desc { line-height: 2; letter-spacing: .02em; }
+.work__title { font-family: var(--font-latin); font-size: clamp(30px, 3.3vw, 48px); font-weight: 450; letter-spacing: -.05em; line-height: 1.2; }
+.work__subtitle { font-size: 14px; line-height: 1.85; letter-spacing: .04em; }
+.work__question { font-family: var(--font-sans); font-size: 19px; font-weight: 400; line-height: 1.85; letter-spacing: .015em; }
+.work__no { font-size: 38px; font-weight: 300; line-height: 1; letter-spacing: -.055em; }
+.work .project-outcomes strong { font-family: var(--font-sans); font-size: 23px; font-weight: 450; letter-spacing: -.025em; }
+.scene-card__no, .scene-card--featured .scene-card__no { font-weight: 300; letter-spacing: -.05em; }
+.scene-card__names p { font-family: var(--font-display); font-size: 23px; font-style: italic; line-height: 1.2; letter-spacing: .005em; text-transform: none; }
+.scene-card__names h3, .stack__group h3 { font-family: var(--font-cn); font-weight: 400; letter-spacing: .04em; }
+
+/* Remove the old all-at-once copy entrance. Only the two name lines animate. */
+.hero__copy { opacity: 1; transform: none; animation: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero__name-zh > span { animation: title-reveal 1s var(--ease-out) .25s both; }
+  .hero__name-en > span { animation: title-reveal 1s var(--ease-out) .43s both; }
+  html[data-opening='full'] .hero__name-zh > span { animation-delay: 1.05s; }
+  html[data-opening='full'] .hero__name-en > span { animation-delay: 1.23s; }
+  .editorial-title[data-reveal] .editorial-title__line > * {
+    transition: transform 850ms var(--ease-out), opacity 700ms ease;
+    transition-delay: calc(var(--line-index) * 140ms);
+  }
+  .editorial-title[data-reveal='pending'] .editorial-title__line > * { transform: translateY(105%); opacity: 0; }
+  .editorial-title[data-reveal='visible'] .editorial-title__line > * { transform: none; opacity: 1; }
+}
+@keyframes title-reveal {
+  from { opacity: 0; transform: translateY(105%); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 720px) {
+  .hero__name { font-size: clamp(60px, 15vw, 86px); letter-spacing: .055em; }
+  .hero__name-en { font-size: clamp(36px, 8vw, 46px); }
+  .hero__intro, .section__lead, .about__lead, .contact__lead { font-size: 14px; line-height: 1.95; }
+  .section__head h2.editorial-title { font-size: clamp(27px, 6.7vw, 36px); }
+  .about__intro h2.editorial-title { font-size: clamp(22px, 5.4vw, 30px); letter-spacing: .015em; }
+  .editorial-title__accent { font-size: clamp(30px, 7.7vw, 40px); margin-top: 10px; }
+  .work__no { font-size: 30px; }
+  .work__question { font-size: 18px; }
+  .work__title { font-size: clamp(30px, 8vw, 40px); }
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .hero__name-zh > span, .hero__name-en > span,
+  .editorial-title .editorial-title__line > * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

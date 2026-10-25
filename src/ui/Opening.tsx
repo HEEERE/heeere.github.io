@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useState, type CSSProperties} from 'react';
+import {useEffect, useLayoutEffect, useState} from 'react';
 import {useSite} from '../app/site';
 import {readLocal, writeLocal} from '../experience/preferences';
 import {IdentityMark} from './IdentityMark';
@@ -10,14 +10,24 @@ export const Opening = () => {
     return readLocal('hakoniwa.arrived') || matchMedia('(max-width: 720px)').matches ? 'brief' : 'full';
   });
   const [visible, setVisible] = useState(mode !== 'none');
-  const [target, setTarget] = useState({x: innerWidth * .7, y: innerHeight * .5});
+  const [word, setWord] = useState('H··/····,');
   useLayoutEffect(() => {
     if (!visible) return;
-    const stage = document.querySelector('.hero__stage-inner')?.getBoundingClientRect();
-    if (stage) setTarget({x: stage.left + stage.width * .53, y: stage.top + stage.height * .57});
     document.documentElement.dataset.opening = mode;
     return () => { delete document.documentElement.dataset.opening; };
   }, [mode, visible]);
+  useEffect(() => {
+    if (mode !== 'full' || !visible || reducedMotion) return;
+    const letters = Array.from('Hakoniwa,');
+    const symbols = ['·', '/', '—', '+'];
+    let frame = 0;
+    const timer = setInterval(() => {
+      frame++;
+      setWord(letters.map((letter, index) => index < frame / 1.4 ? letter : symbols[(frame + index) % symbols.length]).join(''));
+      if (frame >= letters.length * 1.4) clearInterval(timer);
+    }, 55);
+    return () => clearInterval(timer);
+  }, [mode, visible, reducedMotion]);
   useEffect(() => {
     writeLocal('hakoniwa.arrived', '1');
     if (!visible) return;
@@ -28,7 +38,13 @@ export const Opening = () => {
     return () => { clearTimeout(timer); events.forEach(name => window.removeEventListener(name, finish, true)); };
   }, [mode, visible, reducedMotion]);
   if (!visible || reducedMotion) return null;
-  return <div className={`opening opening--${mode}`} aria-hidden="true" style={{'--arrival-x': `${target.x}px`, '--arrival-y': `${target.y}px`} as CSSProperties}>
-    <div className="opening__mark"><IdentityMark /><span>箱庭 · HAKONIWA</span></div>
+  return <div className={`opening opening--${mode}`} aria-hidden="true">
+    <div className="opening__brand">
+      <p className="opening__kicker">纪喆元 / A PERSONAL COLLECTION</p>
+      <div className="opening__signature"><IdentityMark /><span className="opening__word">{word}</span></div>
+      <div className="opening__lines"><span>Intelligence.</span><span>Memory.</span><span>Trust.</span></div>
+      <span className="opening__rule" />
+      <p className="opening__edition">七个微缩世界，一份研究档案。<span>01 — 07</span></p>
+    </div>
   </div>;
 };

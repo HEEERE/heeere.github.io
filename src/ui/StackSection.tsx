@@ -1,6 +1,7 @@
 import {useSite} from '../app/site';
 import {profile} from '../data/profile';
 import {stackGroups} from '../data/stack';
+import {EditorialTitle} from './EditorialTitle';
 
 export const StackSection = () => {
   const {openScene} = useSite();
@@ -11,7 +12,7 @@ export const StackSection = () => {
           <span>STACK</span> / 技能与工具
         </p>
         <div className="section__head-row">
-          <h2>语言、框架与日常工具</h2>
+          <EditorialTitle lines={['语言、框架', '与日常工具。']} accent="Tools of the trade" />
           <p className="section__lead">
             按后端、AI / 数据、图谱与基础设施分成三组。后面是具体的能力清单。
           </p>
