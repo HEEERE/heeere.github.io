@@ -38,6 +38,16 @@ const energy = () => page.evaluate(() => {
   const samples = new Float32Array(meter.fftSize); meter.getFloatTimeDomainData(samples);
   return Math.sqrt(samples.reduce((sum, value) => sum + value * value, 0) / samples.length);
 });
+// Music and cues are scheduled on a 4s timer and only on some ticks, so a layer can
+// stay silent for several seconds after the toggle. Poll instead of sampling once.
+const waitForEnergy = async (predicate, timeout = 15000) => {
+  const deadline = Date.now() + timeout;
+  do {
+    if (predicate(await energy())) return true;
+    await page.waitForTimeout(150);
+  } while (Date.now() < deadline);
+  return predicate(await energy());
+};
 try {
   await page.goto(base, {waitUntil: 'domcontentloaded'});
   await page.locator('.opening--full').waitFor();
@@ -51,15 +61,13 @@ try {
   await page.locator('.nav .sound__trigger').click();
   await page.getByRole('button', {name: '开启声音', exact: true}).click();
   await page.locator('.nav [data-audio-status="playing"]').waitFor();
-  await page.waitForTimeout(1000);
-  check('enabled ambience produces a real audio signal', await energy() > .00001);
+  check('enabled ambience produces a real audio signal', await waitForEnergy(value => value > .00001));
   check('music starts disabled independently of ambience', !(await page.getByRole('checkbox', {name: '背景音乐', exact: false}).isChecked()));
   await page.getByRole('checkbox', {name: '环境音', exact: false}).uncheck();
   await page.waitForTimeout(2200);
   check('both layers disabled are silent', await energy() < .00001);
   await page.getByRole('checkbox', {name: '背景音乐', exact: false}).check();
-  await page.waitForTimeout(4700);
-  check('music can play without ambience', await energy() > .00001);
+  check('music can play without ambience', await waitForEnergy(value => value > .00001));
   await page.getByRole('checkbox', {name: '环境音', exact: false}).check();
   await page.evaluate(() => window.__soundQA.capture.start());
   await page.waitForTimeout(8500);
