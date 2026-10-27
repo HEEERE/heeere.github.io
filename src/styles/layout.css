@@ -89,7 +89,7 @@
   transition: color 0.3s ease;
 }
 
-.nav__links a span {
+.nav__links a > span {
   font-size: 12px;
   letter-spacing: 0.08em;
 }
@@ -352,20 +352,6 @@
   background: var(--scene-accent);
   box-shadow: 0 0 10px var(--scene-accent);
   content: '';
-}
-
-.hero__ghost {
-  position: absolute;
-  z-index: 0;
-  top: 1%;
-  left: 2%;
-  color: transparent;
-  font-family: var(--font-display);
-  font-size: clamp(170px, 21vw, 330px);
-  font-weight: 300;
-  line-height: 0.7;
-  pointer-events: none;
-  -webkit-text-stroke: 1px rgba(241, 236, 225, 0.055);
 }
 
 .hero__vertical {

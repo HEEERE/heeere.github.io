@@ -14,6 +14,6 @@ describe('sound preferences on real-world storage', () => {
   it('works when the browser denies storage access', () => {
     vi.stubGlobal('localStorage', {getItem: () => { throw new Error('Denied'); }, setItem: () => { throw new Error('Denied'); }});
     expect(readSound()).toEqual(soundDefaults);
-    expect(() => writeLocal('hakoniwa.arrived', '1')).not.toThrow();
+    expect(() => writeLocal('hakoniwa.visited', '[]')).not.toThrow();
   });
 });

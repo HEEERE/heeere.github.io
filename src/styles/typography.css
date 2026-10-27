@@ -36,7 +36,7 @@ body { font-kerning: normal; }
 }
 .hero__name-zh > span, .hero__name-en > span { display: block; }
 .hero__positioning { margin-top: 24px; font-size: clamp(17px, 1.45vw, 21px); line-height: 1.65; letter-spacing: .035em; }
-.hero__roles { max-width: 48ch; font-size: 10px; line-height: 1.9; letter-spacing: .075em; }
+.hero__roles { max-width: 66ch; font-size: 10px; line-height: 1.9; letter-spacing: .075em; }
 .hero__intro { max-width: 29em; line-height: 2; letter-spacing: .025em; }
 .hero__meta dd { line-height: 1.8; }
 
@@ -81,10 +81,9 @@ body { font-kerning: normal; }
 /* Remove the old all-at-once copy entrance. Only the two name lines animate. */
 .hero__copy { opacity: 1; transform: none; animation: none; }
 @media (prefers-reduced-motion: no-preference) {
-  .hero__name-zh > span { animation: title-reveal 1s var(--ease-out) .25s both; }
-  .hero__name-en > span { animation: title-reveal 1s var(--ease-out) .43s both; }
-  html[data-opening='full'] .hero__name-zh > span { animation-delay: 1.05s; }
-  html[data-opening='full'] .hero__name-en > span { animation-delay: 1.23s; }
+  /* The curtain always lifts at ~1.18s, so the two name lines start just before. */
+  .hero__name-zh > span { animation: title-reveal 1s var(--ease-out) 1.02s both; }
+  .hero__name-en > span { animation: title-reveal 1s var(--ease-out) 1.2s both; }
   .editorial-title[data-reveal] .editorial-title__line > * {
     transition: transform 850ms var(--ease-out), opacity 700ms ease;
     transition-delay: calc(var(--line-index) * 140ms);
@@ -100,6 +99,7 @@ body { font-kerning: normal; }
 @media (max-width: 720px) {
   .hero__name { font-size: clamp(60px, 15vw, 86px); letter-spacing: .055em; }
   .hero__name-en { font-size: clamp(36px, 8vw, 46px); }
+  .hero__roles { font-size: 9px; letter-spacing: .05em; line-height: 2; }
   .hero__intro, .section__lead, .about__lead, .contact__lead { font-size: 14px; line-height: 1.95; }
   .section__head h2.editorial-title { font-size: clamp(27px, 6.7vw, 36px); }
   .about__intro h2.editorial-title { font-size: clamp(22px, 5.4vw, 30px); letter-spacing: .015em; }

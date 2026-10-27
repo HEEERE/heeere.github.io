@@ -18,17 +18,20 @@ export type SceneViewportProps = {
 
 /** Keep the reading experience independent of WebGL and its download. */
 export const SceneViewport = (props: SceneViewportProps) => {
-  const {rich} = useSite();
+  const {rich, introDone} = useSite();
+  // The hero scene is the only one mounted on first paint; let the opening
+  // finish before building the WebGL context so the intro keeps its timing.
+  const gated = props.tier === 'hero' && !introDone;
   const holder = useRef<HTMLDivElement>(null);
   const [nearby, setNearby] = useState(props.tier !== 'card');
   const [load, setLoad] = useState<'loading' | 'ready' | 'failed'>('loading');
   const ready = useCallback(() => { setLoad('ready'); props.onReady?.(); }, [props.onReady]);
   const failed = useCallback(() => setLoad('failed'), []);
   useEffect(() => {
-    if (!rich || !nearby || load !== 'loading') return;
+    if (!rich || !nearby || gated || load !== 'loading') return;
     const timer = setTimeout(failed, 25000);
     return () => clearTimeout(timer);
-  }, [rich, nearby, load, failed]);
+  }, [rich, nearby, gated, load, failed]);
   useEffect(() => {
     if (nearby || !rich || !holder.current) return;
     const observer = new IntersectionObserver(([entry]) => {
@@ -43,13 +46,13 @@ export const SceneViewport = (props: SceneViewportProps) => {
 
   const fallback = <SceneArt key={props.meta.id} meta={props.meta} variant={props.tier} />;
   return (
-    <div ref={holder} className="scene-viewport" data-scene={props.meta.id} data-story-step={props.story?.step} data-story-variant={props.story?.variant} data-load={rich && nearby ? load : 'poster'}>
-      {rich && nearby && load !== 'failed' ? (
+    <div ref={holder} className="scene-viewport" data-scene={props.meta.id} data-story-step={props.story?.step} data-story-variant={props.story?.variant} data-load={rich && nearby && !gated ? load : 'poster'}>
+      {rich && nearby && !gated && load !== 'failed' ? (
         <SceneBoundary key={props.meta.id} fallback={fallback} label={props.meta.id} onFailure={failed}>
           <Suspense fallback={fallback}><SceneRenderer {...props} onReady={ready} /></Suspense>
         </SceneBoundary>
       ) : fallback}
-      {rich && nearby ? <span key={load} className={`scene-load scene-load--${load}`} role="status"><i aria-hidden="true" /><span className="visually-hidden">{load === 'loading' ? '场景正在亮起' : load === 'ready' ? '场景已就绪' : '已保留静态场景，可继续阅读'}</span></span> : null}
+      {rich && nearby && !gated ? <span key={load} className={`scene-load scene-load--${load}`} role="status"><i aria-hidden="true" /><span className="visually-hidden">{load === 'loading' ? '场景正在亮起' : load === 'ready' ? '场景已就绪' : '已保留静态场景，可继续阅读'}</span></span> : null}
     </div>
   );
 };

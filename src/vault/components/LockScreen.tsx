@@ -85,7 +85,7 @@ export const LockScreen = () => {
         </a>
 
         <div className="vault-lock__head">
-          <span className="vault-lock__eyebrow">HAKONIWA / PRIVATE GARDEN</span>
+          <span className="vault-lock__eyebrow">HEEERE / PRIVATE GARDEN</span>
           <h1>{creating ? '开启喆元的庭院' : '喆元的庭院'}</h1>
           <p>
             {creating
@@ -155,7 +155,7 @@ export const LockScreen = () => {
 
         <div className="vault-lock__foot">
           <span>端到端加密 · 离线优先</span>
-          <span className="vault-lock__dots">箱庭 / 2026</span>
+          <span className="vault-lock__dots">纪喆元 / 2026</span>
         </div>
       </div>
     </div>

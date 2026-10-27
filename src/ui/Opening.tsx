@@ -1,50 +1,94 @@
-import {useEffect, useLayoutEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useSite} from '../app/site';
-import {readLocal, writeLocal} from '../experience/preferences';
-import {IdentityMark} from './IdentityMark';
+import {motion} from '../shared/motion';
+import {DecodeText} from './DecodeText';
 
-export const Opening = () => {
+/** Ensures one performance per full page load, even if React remounts the tree. */
+let playedThisLoad = false;
+
+type Phase = 'playing' | 'decoding' | 'leaving' | 'done';
+
+const isPosterRequest = () => new URLSearchParams(window.location.search).has('poster');
+
+/**
+ * The opening is intentionally independent of the 3D bundle and of all remote
+ * assets: it runs on its own timer, starts lifting before the last byte loads
+ * and is removed from the DOM afterwards, so refresh never shows a long black
+ * screen while the scenes are still downloading.
+ */
+export const Opening = ({onDone}: {onDone?: () => void}) => {
   const {reducedMotion} = useSite();
-  const [mode] = useState(() => {
-    if (window.location.hash || new URLSearchParams(location.search).has('poster') || matchMedia('(prefers-reduced-motion: reduce)').matches) return 'none';
-    return readLocal('hakoniwa.arrived') || matchMedia('(max-width: 720px)').matches ? 'brief' : 'full';
-  });
-  const [visible, setVisible] = useState(mode !== 'none');
-  const [word, setWord] = useState('H··/····,');
-  useLayoutEffect(() => {
-    if (!visible) return;
-    document.documentElement.dataset.opening = mode;
-    return () => { delete document.documentElement.dataset.opening; };
-  }, [mode, visible]);
+  const startedRef = useRef(false);
+  const [phase, setPhase] = useState<Phase>(() => (isPosterRequest() ? 'done' : 'playing'));
+
+  // The module flag is set here rather than in the state initializer: a double
+  // invoked initializer would consume the flag before the overlay ever renders.
   useEffect(() => {
-    if (mode !== 'full' || !visible || reducedMotion) return;
-    const letters = Array.from('Hakoniwa,');
-    const symbols = ['·', '/', '—', '+'];
-    let frame = 0;
-    const timer = setInterval(() => {
-      frame++;
-      setWord(letters.map((letter, index) => index < frame / 1.4 ? letter : symbols[(frame + index) % symbols.length]).join(''));
-      if (frame >= letters.length * 1.4) clearInterval(timer);
-    }, 55);
-    return () => clearInterval(timer);
-  }, [mode, visible, reducedMotion]);
+    if (startedRef.current) return;
+    startedRef.current = true;
+    if (isPosterRequest()) return;
+    if (playedThisLoad) {
+      setPhase('done');
+      return;
+    }
+    playedThisLoad = true;
+  }, []);
+
   useEffect(() => {
-    writeLocal('hakoniwa.arrived', '1');
-    if (!visible) return;
-    const finish = () => setVisible(false);
-    const timer = setTimeout(finish, reducedMotion ? 0 : mode === 'full' ? 1800 : 500);
-    const events = ['pointerdown', 'wheel', 'touchstart', 'keydown', 'scroll'] as const;
-    events.forEach(name => window.addEventListener(name, finish, {passive: true, capture: true}));
-    return () => { clearTimeout(timer); events.forEach(name => window.removeEventListener(name, finish, true)); };
-  }, [mode, visible, reducedMotion]);
-  if (!visible || reducedMotion) return null;
-  return <div className={`opening opening--${mode}`} aria-hidden="true">
-    <div className="opening__brand">
-      <p className="opening__kicker">纪喆元 / A PERSONAL COLLECTION</p>
-      <div className="opening__signature"><IdentityMark /><span className="opening__word">{word}</span></div>
-      <div className="opening__lines"><span>Intelligence.</span><span>Memory.</span><span>Trust.</span></div>
-      <span className="opening__rule" />
-      <p className="opening__edition">七个微缩世界，一份研究档案。<span>01 — 07</span></p>
+    if (phase === 'done') {
+      delete document.documentElement.dataset.opening;
+      onDone?.();
+      return;
+    }
+    document.documentElement.dataset.opening = reducedMotion ? 'reduced' : 'logo';
+  }, [phase, reducedMotion, onDone]);
+
+  useEffect(() => {
+    if (phase !== 'playing') return;
+    const timer = setTimeout(
+      () => setPhase(reducedMotion ? 'done' : 'decoding'),
+      reducedMotion ? motion.opening.reduced : motion.opening.hold,
+    );
+    return () => clearTimeout(timer);
+  }, [phase, reducedMotion]);
+
+  useEffect(() => {
+    if (phase !== 'decoding') return;
+    const timer = setTimeout(() => setPhase(reducedMotion ? 'done' : 'leaving'), reducedMotion ? 0 : motion.opening.decode);
+    return () => clearTimeout(timer);
+  }, [phase, reducedMotion]);
+
+  useEffect(() => {
+    if (phase !== 'leaving') return;
+    const timer = setTimeout(() => setPhase('done'), motion.opening.exit);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
+  if (phase === 'done') return null;
+
+  return (
+    <div
+      className={`opening${phase === 'leaving' ? ' is-leaving' : ''}${reducedMotion ? ' opening--reduced' : ''}`}
+      aria-hidden="true"
+    >
+      <div className="opening__inner">
+        <img
+          className="opening__mark"
+          src="/images/brand/logo-mark-256.png"
+          srcSet="/images/brand/logo-mark-256.png 256w, /images/brand/logo-mark.png 512w"
+          sizes="(max-width: 720px) 96px, 132px"
+          width="256"
+          height="256"
+          alt=""
+          draggable={false}
+        />
+        <p className="opening__lockup">
+          <span className="opening__word"><span>HEEERE</span></span>
+          <span className="opening__note">纪喆元 · 个人作品集 · 2026</span>
+        </p>
+        <span className="opening__rule" />
+        <span className="opening__meta"><DecodeText text="AI AGENT / KNOWLEDGE GRAPH / SECURITY" play={phase === 'decoding'} /></span>
+      </div>
     </div>
-  </div>;
+  );
 };

@@ -223,9 +223,9 @@ const ContactBody = () => (
 const KonbiniBody = ({onNavigate}: {onNavigate: (id: SceneId) => void}) => (
   <div className="exhibit-body">
     <p className="exhibit-body__lead">
-      这个站点由七个微缩场景组成：雨夜便利店、学习工作台、记忆档案室、应急指挥室、防御实验室、工具工坊和街角邮箱。
+      除了这个雨夜街角，还有六个场景：三个项目，以及关于、技能和联系。每个都能拖拽旋转。
     </p>
-    <p className="exhibit-body__note">拖拽可以旋转这个街角。</p>
+    <p className="exhibit-body__note">拖动街角，看看另一边。</p>
 
     <section className="exhibit-block">
       <h3>作品入口</h3>

@@ -81,7 +81,7 @@ export const projects: readonly Project[] = [
     subtitle: '多智能体级联污染与防御可视化平台',
     period: '2026.04 — 2026.09',
     status: '已完成',
-    role: '独立设计与开发',
+    role: '核心概念设计与开发',
     color: '#e0877a',
     scene: 'security',
     sceneName: '防御实验室',

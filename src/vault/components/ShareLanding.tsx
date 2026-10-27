@@ -20,8 +20,8 @@ export const ShareLanding = ({onEnter}: Props) => {
   return (
     <div className="vault-share">
       <div className="vault-share__card">
-        <span className="vault-share__seal">箱</span>
-        <span className="vault-share__eyebrow">HAKONIWA / PRIVATE GARDEN</span>
+        <span className="vault-share__seal">庭</span>
+        <span className="vault-share__eyebrow">HEEERE / PRIVATE GARDEN</span>
         <h1>把庭院放进手机</h1>
         <p>
           这里是私人庭院。加上主屏幕之后，可以像普通 App 一样打开；从别的应用分享文字、链接或图片时，也会直接收进庭院。
@@ -35,7 +35,7 @@ export const ShareLanding = ({onEnter}: Props) => {
           <div>
             <IconShare size={18} />
             <strong>从系统分享</strong>
-            <span>分享菜单里选择「箱庭」，内容会先放进待整理队列，解锁后自动出现。</span>
+            <span>分享菜单里选择「私人庭院」，内容会先放进待整理队列，解锁后自动出现。</span>
           </div>
           <div>
             <IconCheck size={18} />

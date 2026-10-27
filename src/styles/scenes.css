@@ -376,7 +376,6 @@
   display: none;
 }
 
-html[data-view='static'] .hero__ghost,
 html[data-view='static'] .hero__stage-caption {
   display: none;
 }

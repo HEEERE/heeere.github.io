@@ -80,7 +80,7 @@ export const buildEnvelope = async (
 };
 
 export const openEnvelope = async (key: CryptoKey, envelope: SnapshotEnvelope): Promise<SnapshotPayload> => {
-  if (envelope?.app !== 'hakoniwa-vault' || envelope.v !== 1) throw new Error('这不是箱庭的同步文件');
+  if (envelope?.app !== 'hakoniwa-vault' || envelope.v !== 1) throw new Error('这不是私人庭院的同步文件');
   const payload = await decryptJson<SnapshotPayload>(key, envelope.cipher);
   if (payload.check !== SNAPSHOT_CHECK) throw new Error('同步文件校验失败');
   return payload;

@@ -15,7 +15,7 @@ const shopPoster = () => canvasTexture('hakoniwa/identity-poster', 240, 320, ctx
   ctx.fillStyle = '#e9dfc5'; ctx.fillRect(0, 0, 240, 320);
   ctx.save(); ctx.translate(52, 35); ctx.scale(3.4, 3.4); ctx.strokeStyle = '#725b37'; ctx.fillStyle = '#b9894d'; ctx.lineWidth = .8;
   ctx.stroke(new Path2D(identityPaths.room)); ctx.stroke(new Path2D(identityPaths.plinth)); ctx.fill(new Path2D(identityPaths.window)); ctx.restore();
-  text(ctx, 'HAKONIWA', 120, 221, {size: 22, font: FONT_MONO, align: 'center', color: '#4d483a'});
+  text(ctx, 'HEEERE', 120, 221, {size: 22, font: FONT_MONO, align: 'center', color: '#4d483a'});
   text(ctx, 'NIGHT STUDIES', 120, 249, {size: 12, font: FONT_MONO, align: 'center', color: '#766d5a'});
   text(ctx, '灯りのある場所', 120, 286, {size: 16, align: 'center', color: '#766d5a'});
 });

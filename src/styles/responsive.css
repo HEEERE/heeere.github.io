@@ -94,11 +94,6 @@
     inset: 0 -4% -2% -4%;
   }
 
-  .hero__ghost {
-    font-size: clamp(140px, 30vw, 260px);
-    bottom: 0;
-  }
-
   .hero__scroll {
     display: none;
   }

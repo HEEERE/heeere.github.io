@@ -1,19 +1,3 @@
-/* Arrive at the same warm window that lights the street. The layer never captures input. */
-.opening { position: fixed; z-index: 190; inset: 0; pointer-events: none; background: #08090b; animation: arrival-veil 1.8s ease both; }
-.opening__mark { position: absolute; top: 50%; left: 50%; color: #ffd09a; transform: translate(-50%, -50%); animation: arrival-mark 1.8s var(--ease-out) both; }
-.opening__mark .identity-mark { width: 100px; height: 100px; margin: auto; overflow: visible; }
-.opening__mark .identity-mark path:not(:last-child) { stroke-dasharray: 150; stroke-dashoffset: 150; animation: arrival-outline .8s ease .3s forwards; }
-.opening__mark .identity-mark path:last-child { filter: drop-shadow(0 0 8px #ffc078); animation: arrival-window .55s ease both; }
-.opening__mark > span { display: block; margin-top: 24px; white-space: nowrap; color: #c7ad80; font: 10px var(--font-mono); letter-spacing: .2em; animation: arrival-window .6s ease .4s both; }
-.opening--brief { animation: arrival-brief .5s ease both; }
-.opening--brief .opening__mark { display: none; }
-html[data-opening='full'] .hero__copy { animation-delay: 1.05s; }
-@keyframes arrival-veil { 0%, 45% { background: #08090b; } 85%, 100% { background: transparent; } 90% { opacity: 1; } 100% { opacity: 0; } }
-@keyframes arrival-outline { to { stroke-dashoffset: 0; } }
-@keyframes arrival-window { from { opacity: 0; } to { opacity: 1; } }
-@keyframes arrival-mark { 0%, 48% { transform: translate(-50%, -50%); opacity: 1; } 90%, 100% { transform: translate(calc(var(--arrival-x) - 50vw - 50%), calc(var(--arrival-y) - 50vh - 50%)) scale(.12); opacity: 0; } }
-@keyframes arrival-brief { from { opacity: .35; } to { opacity: 0; } }
-
 .scene-load { position: absolute; z-index: 6; left: 16px; bottom: 16px; pointer-events: none; display: block; }
 .scene-load > i { display: block; width: 5px; height: 5px; border-radius: 50%; background: #ffd09a; box-shadow: 0 0 9px #ffc07870; }
 .scene-load--loading > i { animation: lamp-wait 1.8s ease-in-out infinite; }
@@ -104,7 +88,6 @@ a.is-returned, button.is-returned { animation: return-light 1.4s ease-out; }
   .contact__miniature { height: 320px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .opening { display: none; }
   .scene-load--loading > i, .sound__bars.is-playing i { animation: none; }
   .scene-load--ready { opacity: 0; }
   .exhibit__stage > .scene-viewport, .exhibit__head { animation: none; }

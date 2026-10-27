@@ -4,6 +4,7 @@ import {getScene} from '../data/scenes';
 import {SceneViewport} from './SceneViewport';
 import {useExperience} from '../experience/Experience';
 import {EditorialTitle} from './EditorialTitle';
+import {DecodeText} from './DecodeText';
 
 const nowInTianjin = (): string => {
   try {
@@ -25,9 +26,9 @@ export const ContactSection = () => {
     <section id="contact" className={`section section--contact${contactWarm ? ' is-warm' : ''}`} onPointerEnter={() => setContactWarm(true)} onPointerLeave={() => setContactWarm(false)} onFocus={() => setContactWarm(true)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setContactWarm(false); }}>
       <div className="contact__copy">
         <p className="eyebrow">
-          <span>CONTACT</span> / 街角邮箱
+          <span>CONTACT</span> / 联系
         </p>
-        <EditorialTitle lines={['雨还在下，', '欢迎留一封信。']} accent="Let’s start a conversation" />
+        <EditorialTitle lines={['有事想聊，', '直接来信。']} accent="Say hello" />
         <p className="contact__lead">欢迎交流 Agent 系统、知识图谱与安全研究。项目合作、架构讨论或演示交流，请通过邮件联系。</p>
         <div className="contact__actions">
           <a className="btn btn--primary" href={`mailto:${profile.email}`}>
@@ -38,7 +39,7 @@ export const ContactSection = () => {
           </a>
         </div>
         <p className="contact__time">
-          <span>TIANJIN</span> {nowInTianjin()} <i>·</i> {profile.availability}
+          <span><DecodeText text="TIANJIN" /></span> {nowInTianjin()} <i>·</i> {profile.availability}
         </p>
       </div>
 

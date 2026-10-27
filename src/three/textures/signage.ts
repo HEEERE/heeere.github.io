@@ -486,7 +486,7 @@ export const plaqueTexture = (index: string, nameZh: string, nameEn: string, sub
     text(ctx, nameEn, 134, 94, {size: 17, weight: 700, font: FONT_SANS, color: 'rgba(74, 54, 24, 0.82)', tracking: 3});
 
     text(ctx, subtitle, width - 34, 56, {size: 13, weight: 600, font: FONT_SANS, color: 'rgba(74, 54, 24, 0.72)', align: 'right', tracking: 1});
-    text(ctx, 'HAKONIWA / MINIATURE SET', width - 34, 94, {size: 10, weight: 600, font: FONT_SANS, color: 'rgba(74, 54, 24, 0.5)', align: 'right', tracking: 2});
+    text(ctx, 'HEEERE / MINIATURE SET', width - 34, 94, {size: 10, weight: 600, font: FONT_SANS, color: 'rgba(74, 54, 24, 0.5)', align: 'right', tracking: 2});
   });
 
 export const labelTagTexture = (label: string, color: string, sub?: string): ReturnType<typeof canvasTexture> =>

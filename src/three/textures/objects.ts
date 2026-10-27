@@ -53,7 +53,7 @@ export const deskMatTexture = (): ReturnType<typeof canvasTexture> =>
     ctx.strokeRect(26, 22, width - 52, height - 44);
     ctx.setLineDash([]);
     text(ctx, 'JZY', 42, height - 46, {size: 44, weight: 800, font: FONT_SANS, color: 'rgba(222, 232, 220, 0.20)', tracking: 3});
-    text(ctx, 'HAKONIWA / 2026', width - 42, height - 46, {size: 12, weight: 600, font: FONT_MONO, color: 'rgba(222, 232, 220, 0.22)', align: 'right', tracking: 2});
+    text(ctx, 'HEEERE / 2026', width - 42, height - 46, {size: 12, weight: 600, font: FONT_MONO, color: 'rgba(222, 232, 220, 0.22)', align: 'right', tracking: 2});
   });
 
 export const laptopLidTexture = (): ReturnType<typeof canvasTexture> =>

@@ -154,6 +154,12 @@ node scripts/vault-icons.mjs   # 重新生成 PWA 图标
 在公开页依次输入 `garden` 或长按左上角「箱」字即可进入；它支持装成手机 PWA、系统分享收集、以及同步到你自己的私有 GitHub 仓库。
 它不依赖后端，也不会把任何明文内容放进这个公开仓库。设计与安全说明见 [docs/vault.md](docs/vault.md)。
 
+## 私人庭院 Android App
+
+「喆元的庭院」在 Garden 基础上增加研究概览、论文 / 实验 / Prompt / 复盘模板和 Android 离线安装包。
+运行 `npm run android:build` 生成 `deliverables/Zheyuan-Garden-1.0.1.apk`，运行 `npm run qa:garden` 验证包内页面。
+安装迁移、构建要求与签名备份见 [Android 使用说明](docs/garden-android.md)。
+
 ## GitHub Pages 部署
 
 仓库名为 `heeere.github.io`，Vite 使用根路径 `base: '/'`。推送到 `main` 后，`.github/workflows/deploy.yml` 会执行 `npm ci` → typecheck → lint → test → build → 依赖安全审计 → 生产浏览器验收 → 部署 `dist`。Pull Request 执行相同检查，不发布。

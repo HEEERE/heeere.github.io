@@ -2,6 +2,7 @@ import {useSite} from '../app/site';
 import {profile} from '../data/profile';
 import {stackGroups} from '../data/stack';
 import {EditorialTitle} from './EditorialTitle';
+import {DecodeText} from './DecodeText';
 
 export const StackSection = () => {
   const {openScene} = useSite();
@@ -9,10 +10,10 @@ export const StackSection = () => {
     <section id="stack" className="section section--stack">
       <header className="section__head">
         <p className="eyebrow">
-          <span>STACK</span> / 技能与工具
+          <span>STACK</span> / 技能
         </p>
         <div className="section__head-row">
-          <EditorialTitle lines={['语言、框架', '与日常工具。']} accent="Tools of the trade" />
+          <EditorialTitle lines={['语言、框架', '与日常工具。']} accent="Daily tools" />
           <p className="section__lead">
             按后端、AI / 数据、图谱与基础设施分成三组。后面是具体的能力清单。
           </p>
@@ -31,7 +32,7 @@ export const StackSection = () => {
             </header>
             <ul>
               {group.items.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item}><DecodeText text={item} /></li>
               ))}
             </ul>
           </article>

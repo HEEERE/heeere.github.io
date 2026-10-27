@@ -8,13 +8,13 @@ export const AboutSection = () => {
     <section id="about" className="section section--about">
       <header className="section__head">
         <p className="eyebrow">
-          <span>ABOUT</span> / 关于我
+          <span>ABOUT</span> / 关于
         </p>
       </header>
 
       <div className="about">
         <div className="about__intro">
-          <EditorialTitle lines={['在海南大学读数据科学，', '也在做 Agent 系统。']} accent="Curiosity, put into practice" />
+          <EditorialTitle lines={['在海南大学读数据科学，', '也在做 Agent 系统。']} accent="Study and practice" />
           <p className="about__lead">{profile.personalSummary}</p>
           <p className="about__quote">“{profile.tagline}”</p>
           <button className="scene-link" type="button" onClick={() => openScene('desk')}>

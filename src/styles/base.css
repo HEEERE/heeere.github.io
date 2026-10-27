@@ -231,7 +231,7 @@ canvas {
     transform 0.4s var(--ease-out);
 }
 
-.btn span {
+.btn > span[aria-hidden="true"] {
   transition: transform 0.3s var(--ease-out);
 }
 
@@ -240,7 +240,7 @@ canvas {
   color: var(--scene-accent);
 }
 
-.btn:hover span {
+.btn:hover > span[aria-hidden="true"] {
   transform: translate(2px, 2px);
 }
 

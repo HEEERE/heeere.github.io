@@ -6,6 +6,8 @@ import {profile} from '../data/profile';
 import {projects} from '../data/projects';
 import {SceneViewport} from './SceneViewport';
 import {KineticText} from './KineticText';
+import {DecodeText} from './DecodeText';
+import {IdentityMark} from './IdentityMark';
 
 const meta = konbiniScene;
 
@@ -23,8 +25,12 @@ export const Hero = () => {
       style={{'--scene-accent': meta.accent, '--scene-glow': meta.glow} as CSSProperties}
     >
       <div className="hero__copy">
-        <p className="eyebrow">
-          <span>PORTFOLIO</span> / 箱庭 HAKONIWA
+        <p className="hero__brand">
+          <span className="hero__brand-mark">
+            <IdentityMark small />
+          </span>
+          <span className="hero__brand-word">HEEERE</span>
+          <span className="hero__brand-note"><DecodeText text="PERSONAL PORTFOLIO · 2026" /></span>
         </p>
         <h1 className="hero__name">
           <span className="hero__name-zh"><span><KineticText text="纪喆元" /></span></span>
@@ -32,18 +38,18 @@ export const Hero = () => {
         </h1>
         <p className="hero__positioning">{profile.positioning}</p>
         <p className="hero__roles">
-          AI Agent Systems <i>·</i> Knowledge Graph <i>·</i> Agent Security
+          <DecodeText text="AI Agent Systems" /> <i>·</i> <DecodeText text="Knowledge Graph" /> <i>·</i> <DecodeText text="Agent Security" />
         </p>
         <p className="hero__intro">{profile.intro}</p>
         <div className="hero__actions">
           <a className="btn btn--primary" href="#works" onClick={scroll('works')}>
-            查看项目与成果 <span aria-hidden="true">↘</span>
+            查看项目 <span aria-hidden="true">↘</span>
           </a>
           <a className="btn" href="#contact" onClick={scroll('contact')}>
             联系我
           </a>
           <a className="btn btn--quiet" href={profile.github} target="_blank" rel="noreferrer">
-            GitHub <span aria-hidden="true">↗</span>
+            <DecodeText text="GitHub" /> <span aria-hidden="true">↗</span>
           </a>
         </div>
         <dl className="hero__meta">
@@ -67,23 +73,20 @@ export const Hero = () => {
           <SceneViewport meta={meta} tier="hero" paused={overlayOpen} />
         </div>
         <div className="hero__stage-caption">
-          <span className="hero__stage-index">SCENE {meta.index}</span>
+          <span className="hero__stage-index"><DecodeText text={`SCENE ${meta.index}`} /></span>
           <span className="hero__stage-name">
-            {meta.nameEn} <i>/</i> {meta.nameJp}
+            <DecodeText text={meta.nameEn} /> <i>/</i> {meta.nameJp}
           </span>
         </div>
         {rich ? <p className="hero__drag-hint">{reducedMotion ? '静态展示' : '拖拽旋转 · 鼠标查看'}</p> : null}
         <nav className="hero__directory" aria-label="项目场景直达">
-          <p>一座微缩街区，三条研究线索 <span>EXPLORE THE SYSTEMS</span></p>
+          <p>点开场景，查看对应的项目 <span><DecodeText text="OPEN THE SCENES" /></span></p>
           <div>{projects.map((project) => (
             <button key={project.id} onClick={() => openScene(project.scene)} type="button">
               <span>{project.number}</span><b>{project.sceneName}</b><i aria-hidden="true">↗</i>
             </button>
           ))}</div>
         </nav>
-        <span className="hero__ghost" aria-hidden="true">
-          01
-        </span>
       </div>
 
       <p className="hero__vertical" aria-hidden="true">

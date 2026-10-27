@@ -925,7 +925,7 @@ export const VaultProvider = ({children}: {children: ReactNode}) => {
         entries?: EntryRecord[];
         files?: (FileMeta & {ct: string})[];
       };
-      if (data.app !== 'hakoniwa-vault-backup' || !data.meta) throw new Error('这不是有效的箱庭加密备份');
+      if (data.app !== 'hakoniwa-vault-backup' || !data.meta) throw new Error('这不是有效的私人庭院加密备份');
       const backupMeta = data.meta;
       const key = await deriveKey(passphrase, backupMeta.salt, backupMeta.iterations);
       if (!(await checkVerifier(key, backupMeta.verifier))) throw new Error('备份口令不正确');

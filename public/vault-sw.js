@@ -1,5 +1,5 @@
 /**
- * 箱庭 · 私密庭院的 Service Worker
+ * 私人庭院 · Service Worker
  *
  * 只做两件事：
  * 1. 接收系统分享（Web Share Target），把内容暂存在 Cache Storage 里，然后

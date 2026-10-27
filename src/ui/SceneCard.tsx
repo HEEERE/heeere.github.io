@@ -5,6 +5,7 @@ import {SceneViewport} from './SceneViewport';
 import {projects} from '../data/projects';
 import {projectEvidence} from '../data/projectEvidence';
 import {useExperience} from '../experience/Experience';
+import {DecodeText} from './DecodeText';
 
 export const SceneCard = ({meta, featured = false}: {meta: SceneMeta; featured?: boolean}) => {
   const {rich, openScene, reducedMotion, overlayOpen} = useSite();
@@ -70,7 +71,7 @@ export const SceneCard = ({meta, featured = false}: {meta: SceneMeta; featured?:
           <span className="scene-card__no">{meta.index}</span>
           <div className="scene-card__names">
             <h3>{meta.nameZh}{visited.has(meta.id) ? <span className="scene-visited" aria-label="本次已到访" title="本次已到访" /> : null}</h3>
-            <p>{meta.nameEn}</p>
+            <p><DecodeText text={meta.nameEn} /></p>
           </div>
           <span className="scene-card__kind">{meta.kindLabel}</span>
         </div>

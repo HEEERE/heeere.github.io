@@ -6,6 +6,7 @@ import {IdentityMark} from './IdentityMark';
 import {SoundControls} from './SoundControls';
 import {useExperience} from '../experience/Experience';
 import {KineticText} from './KineticText';
+import {DecodeText} from './DecodeText';
 
 const links = [
   {id: 'scenes', label: '场景', en: 'SCENES'},
@@ -88,11 +89,11 @@ export const Nav = () => {
         }}
       >
         <span className="nav__mark" aria-hidden="true">
-          <IdentityMark />
+          <IdentityMark small />
         </span>
         <span className="nav__brand-text">
-          <b>箱庭</b>
-          <i>HAKONIWA</i>
+          <b>HEEERE</b>
+          <i>JI ZHEYUAN</i>
         </span>
       </a>
 
@@ -108,7 +109,7 @@ export const Nav = () => {
             }}
           >
             <span><KineticText text={link.label} /></span>
-            <em>{link.en}</em>
+            <em><DecodeText text={link.en} /></em>
           </a>
         ))}
       </nav>
@@ -116,7 +117,7 @@ export const Nav = () => {
       <div className="nav__actions">
         <SoundControls />
         <a className="nav__github" href={profile.github} target="_blank" rel="noreferrer">
-          GITHUB <span aria-hidden="true">↗</span>
+          <DecodeText text="GITHUB" /> <span aria-hidden="true">↗</span>
         </a>
         <button
           ref={menuRef}
@@ -143,12 +144,12 @@ export const Nav = () => {
               go(link.id);
             }}
           >
-            <em>{link.en}</em>
+            <em><DecodeText text={link.en} /></em>
             {link.label}
           </a>
         ))}
         <a href={profile.github} target="_blank" rel="noreferrer">
-          <em>GITHUB</em>代码仓库 ↗
+          <em><DecodeText text="GITHUB" /></em>代码仓库 ↗
         </a>
       </nav>
     </header>

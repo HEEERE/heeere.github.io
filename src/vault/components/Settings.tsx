@@ -506,7 +506,7 @@ export const Settings = ({onClose}: Props) => {
         </section>
 
         <footer className="vault-settings__foot">
-          <span>箱庭 · PRIVATE GARDEN</span>
+          <span>私人庭院 · PRIVATE GARDEN</span>
           <span>v{__APP_VERSION__}</span>
         </footer>
       </div>

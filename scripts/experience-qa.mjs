@@ -50,14 +50,16 @@ const waitForEnergy = async (predicate, timeout = 15000) => {
 };
 try {
   await page.goto(base, {waitUntil: 'domcontentloaded'});
-  await page.locator('.opening--full').waitFor();
-  check('first arrival uses the full window opening', await page.locator('.opening').evaluate(node => getComputedStyle(node).animationDuration === '1.8s' && getComputedStyle(node).pointerEvents === 'none'));
+  await page.locator('.opening').waitFor();
+  check('every full load plays the logo opening', await page.evaluate(() => document.documentElement.dataset.opening === 'logo' && getComputedStyle(document.querySelector('.opening')).pointerEvents === 'none'));
   await shot('opening');
   await page.locator('.opening').waitFor({state: 'detached'});
   await page.locator('.hero .scene-viewport[data-load="ready"]').waitFor();
   check('sound is opt-in and allocates no audio context before a gesture', await page.evaluate(() => window.__soundQA.contexts.length === 0));
   await page.reload({waitUntil: 'domcontentloaded'});
-  check('returning visitors get a brief fade', await page.evaluate(() => localStorage.getItem('hakoniwa.arrived') === '1' && !document.querySelector('.opening--full')));
+  await page.locator('.opening').waitFor();
+  check('refreshing replays the opening', await page.evaluate(() => document.documentElement.dataset.opening === 'logo'));
+  await page.locator('.opening').waitFor({state: 'detached'});
   await page.locator('.nav .sound__trigger').click();
   await page.getByRole('button', {name: '开启声音', exact: true}).click();
   await page.locator('.nav [data-audio-status="playing"]').waitFor();
@@ -155,8 +157,32 @@ try {
     } else { await page.waitForTimeout(1100); await shot('desk'); }
   }
   await page.emulateMedia({reducedMotion: 'reduce'});
+  await page.addInitScript(() => {
+    window.__openingQA = {added: [], removed: null};
+    const watch = () => new MutationObserver(() => {
+      const node = document.querySelector('.opening');
+      if (node && !window.__openingQA.seen) {
+        window.__openingQA.seen = node;
+        window.__openingQA.added.push({cls: node.className, t: Math.round(performance.now())});
+      } else if (!node && window.__openingQA.seen) {
+        window.__openingQA.seen = null;
+        window.__openingQA.removed = Math.round(performance.now());
+      }
+    }).observe(document.documentElement, {childList: true, subtree: true});
+    if (document.documentElement) watch();
+    else document.addEventListener('readystatechange', watch, {once: true});
+  });
   await page.goto(base);
-  check('reduced motion omits the opening', await page.locator('.opening').count() === 0);
+  await page.waitForFunction(() => {
+    const log = window.__openingQA;
+    return Boolean(log) && log.added.length > 0 && log.removed !== null;
+  }, null, {timeout: 4000}).catch(() => {});
+  await page.waitForTimeout(250);
+  check('reduced motion keeps only a short fade', await page.evaluate(() => {
+    const log = window.__openingQA;
+    const added = log.added[0];
+    return !document.querySelector('.opening') && Boolean(added) && added.cls.includes('opening--reduced') && log.removed - added.t < 700;
+  }));
   await page.locator('#contact').evaluate(node => node.scrollIntoView({behavior: 'instant'}));
   await page.locator('.contact__miniature .scene-viewport[data-load="ready"]').waitFor();
   await shot('contact');
@@ -174,15 +200,17 @@ try {
   const mobile = await browser.newContext({viewport: {width: 390, height: 844}});
   const mobilePage = await mobile.newPage();
   await mobilePage.goto(base, {waitUntil: 'domcontentloaded'});
-  check('first mobile visit uses the simplified entrance', await mobilePage.locator('.opening--full').count() === 0);
+  await mobilePage.locator('.opening').waitFor();
+  check('mobile also plays the opening once', await mobilePage.evaluate(() => document.documentElement.dataset.opening === 'logo'));
   await mobile.close();
   const skip = await browser.newContext({viewport: {width: 1440, height: 1000}});
   const skipPage = await skip.newPage();
   await skipPage.goto(base, {waitUntil: 'domcontentloaded'});
-  await skipPage.locator('.opening--full').waitFor();
-  await skipPage.mouse.wheel(0, 80);
-  await skipPage.locator('.opening').waitFor({state: 'detached', timeout: 1000});
-  check('scroll immediately dismisses the opening', true);
+  await skipPage.locator('.opening').waitFor();
+  const openingStart = Date.now();
+  await skipPage.locator('.opening').waitFor({state: 'detached', timeout: 4000});
+  const openingLength = Date.now() - openingStart;
+  check('opening lasts about 1.2–1.8s and never traps input', openingLength > 900 && openingLength < 2600 && await skipPage.evaluate(() => document.querySelector('.opening') === null));
   await skip.close();
   check('experience has no uncaught runtime errors', errors.length === 0);
 } catch (error) {

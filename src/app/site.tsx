@@ -8,6 +8,8 @@ export type SiteContextValue = {
   staticMode: boolean;
   /** True while the fullscreen exhibit overlay is open. */
   overlayOpen: boolean;
+  /** True once the opening moment has finished; heavier 3D mounting waits for it. */
+  introDone: boolean;
   reducedMotion: boolean;
   openScene: (id: SceneId) => void;
   toggleMode: () => void;
@@ -18,6 +20,7 @@ export const SiteContext = createContext<SiteContextValue>({
   webglAvailable: false,
   staticMode: true,
   overlayOpen: false,
+  introDone: true,
   reducedMotion: false,
   openScene: () => undefined,
   toggleMode: () => undefined,

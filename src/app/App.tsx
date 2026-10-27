@@ -21,6 +21,8 @@ export const App = () => {
   const capabilities = useCapabilities();
   useExhibitionMotion(capabilities.reducedMotion);
   const [forceStatic, setForceStatic] = useState(() => window.location.hash === '#/simple');
+  const [introDone, setIntroDone] = useState(false);
+  const finishIntro = useCallback(() => setIntroDone(true), []);
 
   useEffect(() => {
     const onHash = () => {
@@ -45,8 +47,8 @@ export const App = () => {
   }, [staticMode]);
 
   const siteValue = useMemo(
-    () => ({rich, webglAvailable: capabilities.webgl, staticMode, overlayOpen: route.kind === 'scene', reducedMotion: capabilities.reducedMotion, openScene, toggleMode}),
-    [rich, capabilities.webgl, staticMode, route.kind, capabilities.reducedMotion, openScene, toggleMode],
+    () => ({rich, webglAvailable: capabilities.webgl, staticMode, overlayOpen: route.kind === 'scene', introDone, reducedMotion: capabilities.reducedMotion, openScene, toggleMode}),
+    [rich, capabilities.webgl, staticMode, route.kind, introDone, capabilities.reducedMotion, openScene, toggleMode],
   );
 
   useEffect(() => {
@@ -90,7 +92,7 @@ export const App = () => {
           当前浏览器未启用 WebGL，已切换为静态展示版本。
         </p>
       ) : null}
-      <Opening />
+      <Opening onDone={finishIntro} />
       <PointerAccent />
       </ExperienceProvider>
     </SiteContext.Provider>
